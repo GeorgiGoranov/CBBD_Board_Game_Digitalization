@@ -28,6 +28,7 @@
 | **Result**            | The moderator is logged in.                        |
 
 ---
+<a name="register"></a>
 
 | **Name**              | Register                                           |
 |-----------------------|----------------------------------------------------|
@@ -37,6 +38,7 @@
 | **Result**            | The moderator is registered and can now log in.    |
 
 ---
+<a name="create-game-session"></a>
 
 | **Name**              | Create Game Session                                |
 |-----------------------|----------------------------------------------------|
@@ -46,6 +48,7 @@
 | **Result**            | A new game session is created, and a game code is generated. |
 
 ---
+<a name="edit-game-session"></a>
 
 | **Name**              | Edit Game Session                                  |
 |-----------------------|----------------------------------------------------|
@@ -55,6 +58,7 @@
 | **Result**            | The game session is updated with the new details.  |
 
 ---
+<a name="manage-rounds"></a>
 
 | **Name**              | Manage Rounds                                      |
 |-----------------------|----------------------------------------------------|
@@ -64,6 +68,7 @@
 | **Result**            | The rounds are managed and updated as per the moderator's input. |
 
 ---
+<a name="exportsave-outcomes"></a>
 
 | **Name**              | Export/Save Outcomes                               |
 |-----------------------|----------------------------------------------------|
@@ -73,6 +78,7 @@
 | **Result**            | The session outcomes are exported or saved.        |
 
 ---
+<a name="select-competency-cards"></a>
 
 | **Name**              | Select Competency Cards                            |
 |-----------------------|----------------------------------------------------|
@@ -82,6 +88,7 @@
 | **Result**            | The selected competency card is submitted for the round. |
 
 ---
+<a name="select-dilemma-cards"></a>
 
 | **Name**              | Select Dilemma Cards                               |
 |-----------------------|----------------------------------------------------|
@@ -91,6 +98,7 @@
 | **Result**            | The selected dilemma card is submitted for the round. |
 
 ---
+<a name="join-game-session"></a>
 
 | **Name**              | Join Game Session                                  |
 |-----------------------|----------------------------------------------------|
