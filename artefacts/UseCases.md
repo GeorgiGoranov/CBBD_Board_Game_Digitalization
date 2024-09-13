@@ -17,11 +17,9 @@
 ## Actors:
 - **Moderator**: The user responsible for creating and managing game sessions.
 - **Default User**: Anonymous participants who join game sessions.
-
 ---
 
-
-
+<a name="log-in"></a>
 | **Name**              | Log in                                             |
 |-----------------------|----------------------------------------------------|
 | **Description**       | The moderator logs into the system to gain access to create and manage game sessions. |
