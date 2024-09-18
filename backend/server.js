@@ -1,23 +1,32 @@
-    require('dotenv').config()    
-    
-    const express = require('express')
-    const routerRoutes = require('./routes/router')
+require('dotenv').config()
 
-    //express app
-    const app = express()
+const express = require('express')
+const routerRoutes = require('./routes/router')
+const mongoose = require('mongoose')
 
-    //middleware for logging
+//express app
+const app = express()
 
-    app.use(express.json()) //looks if there is an audit to the request/ if data was sent in to the server
-    app.use((req,res,next)=>{
-        console.log(req.path,req.method)
-        next()
+//middleware for logging
+
+app.use(express.json()) //looks if there is an audit to the request/ if data was sent in to the server
+app.use((req, res, next) => {
+    console.log(req.path, req.method)
+    next()
+})
+
+//route
+app.use('/api/routes', routerRoutes)
+
+//db
+mongoose.connect(process.env.MONG_URL)
+    .then(() => {
+        //listener for requests
+        app.listen(process.env.PORT, () => {
+            console.log('connected to db & listening on port', process.env.PORT)
+        })
+    }).catch((error) => {
+        console.log(error)
     })
 
-    //route
-    app.use('/api/routes', routerRoutes)
 
-    //listener for requests
-    app.listen(process.env.PORT, ()=>{
-        console.log('listening on port 4000')       
-    })
