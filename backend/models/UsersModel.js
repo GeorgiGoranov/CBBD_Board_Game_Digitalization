@@ -11,6 +11,14 @@ const userSchema = new Schema({
         type: String,
         required: false // if not picked the user name will become their name
     },
+    email:{
+        type: String,
+        required: true
+    },
+    role:{
+        type: String,
+        required: true
+    },
     nationality: {
         type: String,
         required: true
@@ -19,6 +27,8 @@ const userSchema = new Schema({
         type: String,
         required: true
     }
+    
+    
 
 }, { timestamps: true })
 
