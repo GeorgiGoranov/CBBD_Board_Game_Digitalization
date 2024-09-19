@@ -80,13 +80,42 @@ const updateUser = async (req, res) => {
     res.status(200).json(user)
 }
 
+const getUserLogin = async (req, res) => {
+    const { email, password } = req.body;
+
+    try {
+        // Try to find the user by username or email
+        const user = await User.findOne({
+            $or: [{ email: email }, { username: email }],
+        });
+        if (!user) {
+            return res.status(404).json({ error: "User not found!" });
+        }
+
+        // Verify password
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) {
+            return res.status(401).json({ error: "Invalid credentials" });
+        }
+        const token = createToken(user._id, user.role);
+
+        res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 }); // cookie operates in milisecond and not in minutes
+
+        res.status(200).json({ message: "Login successful", user: user._id });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Server error" });
+    }
+};
+
 
 module.exports ={
     createUser,
     getAllUsers,
     getUser,
     deleteUser,
-    updateUser
+    updateUser,
+    getUserLogin
 }
 
 
