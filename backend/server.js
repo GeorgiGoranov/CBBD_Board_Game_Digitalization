@@ -3,9 +3,11 @@ require('dotenv').config()
 const express = require('express')
 const routerRoutes = require('./routes/users')
 const mongoose = require('mongoose')
+const cors = require('cors');
 
 //express app
 const app = express()
+
 
 //middleware for logging
 
@@ -15,7 +17,9 @@ app.use((req, res, next) => {
     next()
 })
 
+app.use(cors());
 //route
+//removed the /api because the proxy is doubleing it and it has to be writen in the frontend as api/api/routes
 app.use('/api/routes', routerRoutes)
 
 //db
