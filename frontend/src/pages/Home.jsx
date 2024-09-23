@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useEffect } from "react"
 import UserDetails from "../components/UserDetails"
 import { useUsersContext } from "../hooks/useUsersContext";
 
@@ -15,12 +15,10 @@ const Home = () => {
             if (response.ok) {
                 dispatch({type: 'SET_USERS', payload: json})
             }
-
-
         }
 
         fetchUsers();
-    }, []);
+    }, [dispatch]);
 
 
 

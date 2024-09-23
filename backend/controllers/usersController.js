@@ -1,14 +1,44 @@
 const User = require('../models/UsersModel')
-
+const bcrypt = require("bcrypt");
 const mongoose = require('mongoose')
-
+const saltRounds = 10;
 
 //create user
 const createUser = async (req, res) =>{
     const { name, username, email,role,nationality, password } = req.body
 
+    let emptyFields = [];
+
+    if (!name) {
+        emptyFields.push("name");
+    }
+    if (!username) {
+        emptyFields.push("username");
+    }
+    if (!email) {
+        emptyFields.push("email");
+    }
+    if (!role) {
+        emptyFields.push("role");
+    }
+    if (!nationality) {
+        emptyFields.push("nationality");
+    }
+    if (!password) {
+        emptyFields.push("password");
+    }
+    
+
+    if (emptyFields.length > 0) {
+        return res
+            .status(400)
+            .json({ error: "Please fill in all the fields!", emptyFields });
+    }
+
     try {
-        const user = await User.create({ name, username, email,role,nationality, password })
+
+        const hashedPassword  = await bcrypt.hash(password, saltRounds)
+        const user = await User.create({ name, username, email,role,nationality, password: hashedPassword })
         res.status(200).json(user)
     } catch (error) {
         res.status(400).json({ error: error.message })
@@ -85,9 +115,7 @@ const getUserLogin = async (req, res) => {
 
     try {
         // Try to find the user by username or email
-        const user = await User.findOne({
-            $or: [{ email: email }, { username: email }],
-        });
+        const user = await User.findOne({email: email });
         if (!user) {
             return res.status(404).json({ error: "User not found!" });
         }
@@ -97,9 +125,9 @@ const getUserLogin = async (req, res) => {
         if (!isMatch) {
             return res.status(401).json({ error: "Invalid credentials" });
         }
-        const token = createToken(user._id, user.role);
+        // const token = createToken(user._id, user.role);
 
-        res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 }); // cookie operates in milisecond and not in minutes
+        // res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 }); // cookie operates in milisecond and not in minutes
 
         res.status(200).json({ message: "Login successful", user: user._id });
     } catch (error) {
