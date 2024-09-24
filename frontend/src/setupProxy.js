@@ -7,6 +7,8 @@ module.exports = function(app) {
     createProxyMiddleware({
       target: 'http://localhost:4000/api',  // Your backend server URL
       changeOrigin: true,
+      ws: true,  // Enable WebSocket proxying
     })
   );
+
 };
