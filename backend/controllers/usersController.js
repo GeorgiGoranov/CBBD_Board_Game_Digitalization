@@ -171,6 +171,35 @@ const createSession = async (req, res) => {
     }
 }
 
+const joinSession = async (req,res) =>{
+        try{
+            const {code, playerID} = req.body
+
+            // Find the game session using the provided 6-digit code
+
+            const session = await GameSession.findOne({ code });
+
+            if(!session){
+                return res.status(404).json({message: 'Game session not found!'})
+            }
+
+            if(!session.isActive){
+                return res.status(400).json({message: 'Game session not longer active!'})
+            }
+
+             // Add the player to the session's players array if not already present
+            if(!session.players.includes(playerID)){
+                session.players.push(playerID)
+                await session.save() // Save the updated session
+            }
+
+            res.status(200).json({message: 'Player joined the session successfully!', session})
+
+        }catch(error){
+            res.status(500).json({message: 'Error joining the sesion', session})
+        }
+}
+
 module.exports = {
     createUser,
     getAllUsers,
@@ -178,7 +207,8 @@ module.exports = {
     deleteUser,
     updateUser,
     getUserLogin,
-    createSession
+    createSession,
+    joinSession
 }
 
 
