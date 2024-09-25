@@ -5,6 +5,8 @@ const routerRoutes = require('./routes/users')
 const mongoose = require('mongoose')
 const cors = require('cors');
 
+const SessionModel = require('./models/SessionModel')
+
 const http = require('http')
 const { Server } = require('socket.io')
 
@@ -21,11 +23,24 @@ const io = new Server(server, {
 });
 
 io.on('connection', (socket) => {
-  console.log(`user connected:  ${socket.id}`)
+  // Handle when a player joins a session
+  socket.on('joinSession', async ({ code, playerID }) => {
+    const session = await SessionModel.findOne({ code });
+    if (session) {
+      session.players.push(playerID);
+      await session.save();
 
-  socket.on('send_message', (data) =>{
-    socket.broadcast.emit('receive_message', data)
-  })
+      // Notify all clients in this session about the new player
+      io.to(code).emit('playerJoined', { playerID, players: session.players });
+
+      // Join the player to a specific "room" (session)
+      socket.join(code);
+    }
+  });
+
+  socket.on('disconnect', () => {
+    console.log('A user disconnected');
+  });
 })
 
 server.listen(4000, ()=>{

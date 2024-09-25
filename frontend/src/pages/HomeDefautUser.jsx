@@ -7,11 +7,14 @@ const HomeDefautUser = () => {
     const [playerID, setPlayerID] = useState('');
     const [gameCode, setGameCode] = useState('');
     const [message, setMessage] = useState('');
+    const [players, setPlayers] = useState([]);
 
 
     const socket = io('http://localhost:4000');
 
     const joinGameSession = async () => {
+         // Emit an event to join the session via WebSocket
+         socket.emit('joinSession', { code: gameCode, playerID });
         // Make a POST request to the backend to join the session
         const response = await fetch('/api/routes/join-session', {
             method: 'POST',
@@ -23,6 +26,8 @@ const HomeDefautUser = () => {
 
         const data = await response.json();
         if (response.ok) {
+           
+           
             setMessage('Successfully joined the game session!');
             console.log(response)
 
@@ -31,18 +36,16 @@ const HomeDefautUser = () => {
         }
     };
 
-    const [infoMess, setInfoMess] = useState('')
-    const [receivedinfoMess, setreceivedInfoMess] = useState('')
-
-    const sendMessage = () => {
-        socket.emit('send_message', { message: infoMess }); // Correct event name
-    }
-
     useEffect(() => {
-        socket.on('receive_message', (data) => {
-            setreceivedInfoMess(data.message)
+        // Listen for new players joining the session
+        socket.on('playerJoined', ({ playerID, players }) => {
+            setPlayers(players);  // Update the players state with the updated list
+            setMessage(`${playerID} has joined the session`);
+        });
 
-        })
+        return () => {
+            socket.off('playerJoined');  // Clean up listener when component unmounts
+        };
     }, [socket])
 
     return (
@@ -62,15 +65,12 @@ const HomeDefautUser = () => {
             />
             <button onClick={joinGameSession}>Join Session</button>
             {message && <p>{message}</p>}
-
-            <h3>Send a Message:</h3>
-            <input placeholder='Message... '
-                onChange={(event) => {
-                    setInfoMess(event.target.value)
-                }} />
-            <button onClick={sendMessage}>Send Message</button> {/* Use onClick here */}
-            <h1>Message: </h1>
-            {receivedinfoMess}
+            <h3>Players in the session:</h3>
+            <ul>
+                {players.map((player, index) => (
+                    <li key={index}>{player}</li>
+                ))}
+            </ul>
 
         </div>
     );

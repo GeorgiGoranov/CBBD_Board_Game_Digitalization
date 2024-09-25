@@ -139,9 +139,9 @@ const getUserLogin = async (req, res) => {
 
 const generateCode = () => {
     return Math.floor(100000 + Math.random() * 900000).toString(); // Generates a random 6-digit number
-  };
+};
 
-  
+
 const createSession = async (req, res) => {
     try {
         const { host } = req.body // Get the host name from the request
@@ -150,54 +150,51 @@ const createSession = async (req, res) => {
         let sessionCode;
         let sessionExists;
 
-        do{
+        do {
             sessionCode = generateCode();
-            sessionExists = await GameSession.findOne({code: sessionCode})
-        }while(sessionExists) // Ensure that the code is unique
+            sessionExists = await GameSession.findOne({ code: sessionCode })
+        } while (sessionExists) // Ensure that the code is unique
 
         // Create a new game session in the database
         const newSession = new GameSession({
-        code: sessionCode,
-        host: host,
-        players: [],
-      });
+            code: sessionCode,
+            host: host,
+            players: [],
+        });
 
-      await newSession.save();
+        await newSession.save();
 
-      res.status(201).json({ code: sessionCode, message: 'Game session created!' });
+        res.status(201).json({ code: sessionCode, message: 'Game session created!' });
 
     } catch (error) {
         res.status(500).json({ message: 'Error creating session' });
     }
 }
 
-const joinSession = async (req,res) =>{
-        try{
-            const {code, playerID} = req.body
+const joinSession = async (req, res) => {
+    try {
+        const { code, playerID } = req.body
 
-            // Find the game session using the provided 6-digit code
-
-            const session = await GameSession.findOne({ code });
-
-            if(!session){
-                return res.status(404).json({message: 'Game session not found!'})
-            }
-
-            if(!session.isActive){
-                return res.status(400).json({message: 'Game session not longer active!'})
-            }
-
-             // Add the player to the session's players array if not already present
-            if(!session.players.includes(playerID)){
-                session.players.push(playerID)
-                await session.save() // Save the updated session
-            }
-
-            res.status(200).json({message: 'Player joined the session successfully!', session})
-
-        }catch(error){
-            res.status(500).json({message: 'Error joining the sesion', session})
+        const session = await GameSession.findOne({ code });
+        if (!session) {
+            return res.status(404).json({ message: 'Game session not found!' })
         }
+        if (!session.isActive) {
+            return res.status(400).json({ message: 'Game session not longer active!' })
+        }
+        // Add the player to the session's players array if not already present
+        if (!session.players.includes(playerID)) {
+            session.players.push(playerID)
+            await session.save() // Save the updated session
+        }
+
+
+
+        res.status(200).json({ message: 'Player joined the session successfully!', session })
+
+    } catch (error) {
+        res.status(500).json({ message: 'Error joining the sesion', session })
+    }
 }
 
 module.exports = {
