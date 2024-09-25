@@ -186,13 +186,16 @@ const joinSession = async (req, res) => {
         if (!session.players.includes(playerID)) {
             session.players.push(playerID)
             await session.save() // Save the updated session
+
+            // Emit the playerJoined event via Socket.io to all connected clients
+            const io = req.app.get('io');  // Access io instance
+            io.to(code).emit('playerJoined', { playerID, players: session.players });
+
         }
-
-
-
-        res.status(200).json({ message: 'Player joined the session successfully!', session })
+       return res.status(200).json({ message: 'Player joined the session successfully!', session })
 
     } catch (error) {
+        console.error('Error joining session:', error);
         res.status(500).json({ message: 'Error joining the sesion', session })
     }
 }
@@ -207,12 +210,3 @@ module.exports = {
     createSession,
     joinSession
 }
-
-
-
-
-
-
-
-
-
