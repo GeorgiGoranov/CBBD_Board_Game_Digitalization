@@ -2,6 +2,8 @@ const User = require('../models/UsersModel')
 const GameSession = require('../models/SessionModel')
 const bcrypt = require("bcrypt");
 const mongoose = require('mongoose')
+const jwt = require("jsonwebtoken");
+const { json } = require('express');
 const saltRounds = 10;
 
 //create user
@@ -26,7 +28,7 @@ const createUser = async (req, res) => {
         emptyFields.push("nationality");
     }
     if (!password) {
-        emptyFields.push("password");
+        emptyFields.push("password"); 
     }
 
 
@@ -113,7 +115,7 @@ const updateUser = async (req, res) => {
 
 const getUserLogin = async (req, res) => {
     const { email, password } = req.body;
-
+    
     try {
         // Try to find the user by username or email
         const user = await User.findOne({ email: email });
@@ -126,11 +128,12 @@ const getUserLogin = async (req, res) => {
         if (!isMatch) {
             return res.status(401).json({ error: "Invalid credentials" });
         }
-        // const token = createToken(user._id, user.role);
+       
+        const token = createToken(user._id, user.role);
 
-        // res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 }); // cookie operates in milisecond and not in minutes
+        res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 }); // cookie operates in milisecond and not in minutes
 
-        res.status(200).json({ message: "Login successful", user: user._id });
+        res.status(200).json({ message: "Login successful", user: user._id, token});
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Server error" });
@@ -200,6 +203,45 @@ const joinSession = async (req, res) => {
     }
 }
 
+const maxAge = 10 * 60 // time lenght 5 min
+const createToken = (id, role)=>{
+    return jwt.sign({id,role}, process.env.SECRET_KEY,{
+        expiresIn: maxAge
+    })
+}
+
+
+const isAuth = (req, res) => {
+    const token = req.cookies.jwt
+   
+
+    if(!token){
+        return res.status(200).json({authenticated: false})
+    }
+
+    jwt.verify(token, process.env.SECRET_KEY, async(error, decodeToken) =>{
+        if(error){
+            return res.status(200).json({authenticated: false})
+        }
+
+        try{
+            const user = await User.findById(decodeToken.id).select('-password')
+            if(!user){
+                return res.status(200).json({authenticated:false})
+            }
+            res.status(200).json({authenticated: true, user})
+        }catch(error){
+            console.error('Error fetching user: ' , error)
+            res.status(500),json({authenticated: false})
+        }
+    })
+}
+
+const logOut = async (req, res) => {
+    res.cookie("jwt", "", { maxAge: 1 });
+    res.redirect("/");
+};
+
 module.exports = {
     createUser,
     getAllUsers,
@@ -208,5 +250,7 @@ module.exports = {
     updateUser,
     getUserLogin,
     createSession,
-    joinSession
+    joinSession,
+    logOut,
+    isAuth
 }

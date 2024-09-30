@@ -3,14 +3,17 @@ const express = require('express')
 const routerRoutes = require('./routes/users')
 const mongoose = require('mongoose')
 const cors = require('cors');
-
-
+const cookieParser = require('cookie-parser')
 
 const http = require('http')
 const { Server } = require('socket.io')
 
 //express app
 const app = express()
+app.use((req, res, next) => {
+  console.log(req.path, req.method)
+  next()
+})
 const server = http.createServer(app)
 
 const io = new Server(server, {
@@ -41,19 +44,16 @@ io.on('connection', (socket) => {
   });
 });
 
-
-
 //middleware
-
-app.use(express.json()) //looks if there is an audit to the request/ if data was sent in to the server
 app.use(cors());
+app.use(express.json()) //looks if there is an audit to the request/ if data was sent in to the server
+app.use(cookieParser())
 //route
+
 app.use('/api/routes', routerRoutes)
 
-app.use((req, res, next) => {
-  console.log(req.path, req.method)
-  next()
-})
+
+
 
 //db
 mongoose.connect(process.env.MONG_URL)

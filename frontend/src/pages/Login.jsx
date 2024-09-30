@@ -14,6 +14,7 @@ const Login = () =>{
         e.preventDefault();
         setLoginSuccess(false)
         setError(null)
+      
 
         const userLogin = { email, password };
 
@@ -38,14 +39,11 @@ const Login = () =>{
             setLoginSuccess(true);
             console.log('User logged in', data);
     
-            // // Update the context state
-            // await login();
-    
             // Navigate based on the role of the logged-in user
             if (data.user && data.user.role === 'admin') {
               navigate('/');
             } else {
-              navigate('/');
+              navigate('/duser');
             }
           }
         } catch (error) {

@@ -1,24 +1,28 @@
 const express = require('express')
 
-const {createUser,getAllUsers,getUser,deleteUser,updateUser,getUserLogin,createSession,joinSession} = require('../controllers/usersController')
-
+const {createUser,getAllUsers,getUser,deleteUser,updateUser,getUserLogin,createSession,joinSession, isAuth,logOut} = require('../controllers/usersController')
+const { requireAuth } = require('../middleware/authMiddleware')
 const router = express.Router()
 
 
-router.get('/', getAllUsers)
-
 router.post('/login', getUserLogin)
+router.post('/', requireAuth , createUser)
 
-router.get('/:id',getUser)
+router.get('/', requireAuth, getAllUsers)
 
-router.post('/', createUser)
 
-router.delete('/:id',deleteUser)
+router.get('/:id',requireAuth,getUser)
 
-router.patch('/:id', updateUser)
+router.delete('/:id',requireAuth,deleteUser)
 
-router.post('/create-session', createSession)
+router.patch('/:id',requireAuth, updateUser)
 
-router.post('/join-session', joinSession)
+router.post('/create-session',requireAuth, createSession)
+
+router.post('/join-session',requireAuth, joinSession)
+
+router.get('/isAuth', isAuth)
+
+router.get('/logout', requireAuth, logOut)
 
 module.exports = router
