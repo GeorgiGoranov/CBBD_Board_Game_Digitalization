@@ -7,13 +7,15 @@ const HomeDefautUser = () => {
     const [playerID, setPlayerID] = useState('');
     const [gameCode, setGameCode] = useState('');
     const [message, setMessage] = useState('');
+    // const [players, setPlayers] = useState([]);
 
     //const socket = io('http://localhost:4000');
 
     const navigate = useNavigate()
 
     const joinGameSession = async () => {
-         
+         // Emit an event to join the session via WebSocket
+         socket.emit('joinSession', {message: `HElo ${playerID}` });
         // Make a POST request to the backend to join the session
         const response = await fetch('/api/routes/join-session', {
             method: 'POST',
@@ -38,17 +40,14 @@ const HomeDefautUser = () => {
         }
     };
 
-    // useEffect(() => {
-    //     // Listen for new players joining the session
-    //     socket.on('playerJoined', ({ playerID, players }) => {
-    //        // setPlayers(players);  // Update the players state with the updated list
-    //         setMessage(`${playerID} has joined the session`);
-    //     });
+    useEffect(() => {
+        // Listen for new players joining the session
+        socket.on('playerJoined', (data) => {
+            // setPlayers(players);  // Update the players state with the updated list
+            setMessage(data.message);
+        });
 
-    //     return () => {
-    //         socket.off('playerJoined');  // Clean up listener when component unmounts
-    //     };
-    // }, [socket])
+    }, [socket])
 
     return (
         <div>
@@ -67,7 +66,12 @@ const HomeDefautUser = () => {
             />
             <button onClick={joinGameSession}>Join Session</button>
             {message && <p>{message}</p>}
-            
+            {/* <h3>Players in the session:</h3>
+            <ul>
+                {players.map((player, index) => (
+                    <li key={index}>{player}</li>
+                ))}
+            </ul> */}
 
         </div>
     );

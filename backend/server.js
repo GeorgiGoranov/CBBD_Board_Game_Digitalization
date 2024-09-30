@@ -1,9 +1,11 @@
 require('dotenv').config()
-
 const express = require('express')
 const routerRoutes = require('./routes/users')
 const mongoose = require('mongoose')
 const cors = require('cors');
+
+
+
 const http = require('http')
 const { Server } = require('socket.io')
 
@@ -24,6 +26,15 @@ app.set('io', io);
 // WebSocket connection handler
 io.on('connection', (socket) => {
   console.log(`user connected:  ${socket.id}`);
+  // Handle when a player joins a session
+  socket.on('joinSession',  (data) => {
+    
+      // Notify all clients in this session about the new player
+      socket.broadcast.emit('playerJoined', data);
+
+      
+  
+  });
 
   socket.on('disconnect', () => {
     console.log('A user disconnected');
