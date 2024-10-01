@@ -18,14 +18,20 @@ header .container {
   max-width: 1400px;
   margin: 0 auto;
   padding: 10px 20px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
 }
 header a {
   color: #333;
   text-decoration: none;
 }
+
+header .items{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  
+}
+
+
 .pages{
   max-width: 1400px;
   padding: 20px;
@@ -82,7 +88,7 @@ input {
   max-width: 400px;
 }
 
-form button {
+button {
   background: var(--primary);
   border: 0;
   color: #fff;
@@ -91,6 +97,7 @@ form button {
   border-radius: 4px;
   cursor: pointer;
 }
+
 
 div.error {
   display: block;

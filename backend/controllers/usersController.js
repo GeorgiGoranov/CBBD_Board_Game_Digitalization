@@ -238,7 +238,7 @@ const isAuth = (req, res) => {
 
 const logOut = async (req, res) => {
     res.cookie("jwt", "", { maxAge: 1 });
-    res.redirect("/");
+    res.status(200).json({ message: "Logged out successfully" });
 };
 
 module.exports = {
