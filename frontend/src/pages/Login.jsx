@@ -1,6 +1,7 @@
 import { useState } from "react"
 import '../SCSS/login.scss'
 import { useNavigate } from "react-router-dom";
+import { useAuth } from '../auth/authContext';
 
 const Login = () =>{
     const [email,setEmail] = useState('');
@@ -9,13 +10,16 @@ const Login = () =>{
     const [loginSuccess, setLoginSuccess] = useState(false);
 
     const navigate = useNavigate()
+    const { login } = useAuth();
 
     const handleLogin = async (e) =>{
         e.preventDefault();
         setLoginSuccess(false)
         setError(null)
+      
 
         const userLogin = { email, password };
+      
 
         try {
           const response = await fetch('/api/routes/login', {
@@ -24,7 +28,7 @@ const Login = () =>{
             headers: {
               'Content-Type': 'application/json'
             },
-            // credentials: 'include' // Ensure cookies are sent with the request
+            credentials: 'include' // Ensure cookies are sent with the request
           });
     
           const data = await response.json();
@@ -38,14 +42,12 @@ const Login = () =>{
             setLoginSuccess(true);
             console.log('User logged in', data);
     
-            // // Update the context state
-            // await login();
-    
+            await login()
             // Navigate based on the role of the logged-in user
             if (data.user && data.user.role === 'admin') {
               navigate('/');
             } else {
-              navigate('/');
+              navigate('/duser');
             }
           }
         } catch (error) {

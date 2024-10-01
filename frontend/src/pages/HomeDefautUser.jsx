@@ -1,20 +1,21 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect} from 'react';
 import io from 'socket.io-client'
-
+import { useNavigate } from 'react-router-dom';
 
 
 const HomeDefautUser = () => {
     const [playerID, setPlayerID] = useState('');
     const [gameCode, setGameCode] = useState('');
     const [message, setMessage] = useState('');
-    const [players, setPlayers] = useState([]);
-
+    // const [players, setPlayers] = useState([]);
 
     const socket = io('http://localhost:4000');
 
+    const navigate = useNavigate()
+
     const joinGameSession = async () => {
          // Emit an event to join the session via WebSocket
-         socket.emit('joinSession', { code: gameCode, playerID });
+         socket.emit('joinSession', {message: `HElo ${playerID}` });
         // Make a POST request to the backend to join the session
         const response = await fetch('/api/routes/join-session', {
             method: 'POST',
@@ -27,9 +28,12 @@ const HomeDefautUser = () => {
         const data = await response.json();
         if (response.ok) {
            
-           
+           // Emit an event to join the session via WebSocket
+           // socket.emit('joinSession', { code: gameCode, playerID });
             setMessage('Successfully joined the game session!');
             console.log(response)
+            navigate('/room',{replace: true})
+            
 
         } else {
             setMessage(data.message || 'Error joining the session');
@@ -38,14 +42,11 @@ const HomeDefautUser = () => {
 
     useEffect(() => {
         // Listen for new players joining the session
-        socket.on('playerJoined', ({ playerID, players }) => {
-            setPlayers(players);  // Update the players state with the updated list
-            setMessage(`${playerID} has joined the session`);
+        socket.on('playerJoined', (data) => {
+            // setPlayers(players);  // Update the players state with the updated list
+            setMessage(data.message);
         });
 
-        return () => {
-            socket.off('playerJoined');  // Clean up listener when component unmounts
-        };
     }, [socket])
 
     return (
@@ -65,12 +66,12 @@ const HomeDefautUser = () => {
             />
             <button onClick={joinGameSession}>Join Session</button>
             {message && <p>{message}</p>}
-            <h3>Players in the session:</h3>
+            {/* <h3>Players in the session:</h3>
             <ul>
                 {players.map((player, index) => (
                     <li key={index}>{player}</li>
                 ))}
-            </ul>
+            </ul> */}
 
         </div>
     );

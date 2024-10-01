@@ -1,24 +1,31 @@
 const express = require('express')
 
-const {createUser,getAllUsers,getUser,deleteUser,updateUser,getUserLogin,createSession,joinSession} = require('../controllers/usersController')
-
+const {createUser,getAllUsers,getUser,deleteUser,updateUser,getUserLogin,createSession,joinSession, isAuth,logOut} = require('../controllers/usersController')
+const { requireAuth } = require('../middleware/authMiddleware')
 const router = express.Router()
 
 
-router.get('/', getAllUsers)
-
 router.post('/login', getUserLogin)
 
-router.get('/:id',getUser)
+router.post('/register' , createUser)
 
-router.post('/', createUser)
+router.get('/isAuth', isAuth)
 
-router.delete('/:id',deleteUser)
+router.get('/', requireAuth, getAllUsers)
 
-router.patch('/:id', updateUser)
+router.post('/create-session',requireAuth, createSession)
 
-router.post('/create-session', createSession)
+router.post('/join-session',requireAuth, joinSession)
 
-router.post('/join-session', joinSession)
+router.get('/logout', requireAuth, logOut)
+
+//***************/ all of the dynamic endpoint fucntions have to be below the rest so there is not express confusion
+//Express will incorrectly treat "isAuth" as an id parameter, causing a problem when trying to execute it.
+
+router.get('/:id',requireAuth ,getUser)
+
+router.delete('/:id',requireAuth,deleteUser)
+
+router.patch('/:id',requireAuth, updateUser)
 
 module.exports = router

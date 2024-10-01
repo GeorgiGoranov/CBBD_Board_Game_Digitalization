@@ -2,6 +2,8 @@ const User = require('../models/UsersModel')
 const GameSession = require('../models/SessionModel')
 const bcrypt = require("bcrypt");
 const mongoose = require('mongoose')
+const jwt = require("jsonwebtoken");
+const { json } = require('express');
 const saltRounds = 10;
 
 //create user
@@ -26,7 +28,7 @@ const createUser = async (req, res) => {
         emptyFields.push("nationality");
     }
     if (!password) {
-        emptyFields.push("password");
+        emptyFields.push("password"); 
     }
 
 
@@ -58,6 +60,8 @@ const getAllUsers = async (req, res) => {
 //get a single user
 const getUser = async (req, res) => {
     const { id } = req.params
+
+    console.log({id})
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
         return res.status(404).json({ error: 'No such User in the system!' })
@@ -126,11 +130,12 @@ const getUserLogin = async (req, res) => {
         if (!isMatch) {
             return res.status(401).json({ error: "Invalid credentials" });
         }
-        // const token = createToken(user._id, user.role);
+       
+        const token = createToken(user._id, user.role);
 
-        // res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 }); // cookie operates in milisecond and not in minutes
+        res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 }); // cookie operates in milisecond and not in minutes
 
-        res.status(200).json({ message: "Login successful", user: user._id });
+        res.status(200).json({ message: "Login successful", user: user._id, token});
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Server error" });
@@ -186,16 +191,59 @@ const joinSession = async (req, res) => {
         if (!session.players.includes(playerID)) {
             session.players.push(playerID)
             await session.save() // Save the updated session
+
+            // Emit the playerJoined event via Socket.io to all connected clients
+            const io = req.app.get('io');  // Access io instance
+            io.to(code).emit('playerJoined', { playerID, players: session.players });
+
         }
-
-
-
-        res.status(200).json({ message: 'Player joined the session successfully!', session })
+       return res.status(200).json({ message: 'Player joined the session successfully!', session })
 
     } catch (error) {
+        console.error('Error joining session:', error);
         res.status(500).json({ message: 'Error joining the sesion', session })
     }
 }
+
+const maxAge = 3 * 24 * 60 * 60 // time lenght 5 min
+const createToken = (id, role)=>{
+    return jwt.sign({id,role}, process.env.SECRET_KEY,{
+        expiresIn: maxAge
+    })
+}
+
+
+const isAuth = (req, res) => {
+    console.log("asdasdasd")
+    const token = req.cookies.jwt
+
+    if(!token){
+        return res.status(200).json({authenticated: false})
+    }
+
+    jwt.verify(token, process.env.SECRET_KEY, async(error, decodedToken) =>{
+        if(error){
+            return res.status(200).json({authenticated: false})
+        }
+        console.log("Decoded Token ID:", decodedToken.id);  // Log the decoded ID
+        try{
+            const user = await User.findById(decodedToken.id).select('-password')
+           
+            if(!user){
+                return res.status(200).json({authenticated:false})
+            }
+            res.status(200).json({authenticated: true, user})
+        }catch(error){
+            console.error('Error fetching user: ' , error)
+            res.status(500),json({authenticated: false})
+        }
+    })
+}
+
+const logOut = async (req, res) => {
+    res.cookie("jwt", "", { maxAge: 1 });
+    res.redirect("/");
+};
 
 module.exports = {
     createUser,
@@ -205,14 +253,7 @@ module.exports = {
     updateUser,
     getUserLogin,
     createSession,
-    joinSession
+    joinSession,
+    logOut,
+    isAuth
 }
-
-
-
-
-
-
-
-
-
