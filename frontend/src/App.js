@@ -11,20 +11,20 @@ import { AuthProvider } from './auth/authContext';
 function App() {
   return (
     <div className="App">
-      <AuthProvider>
-        <BrowserRouter>
+      <BrowserRouter>
+        <AuthProvider>
           <NavBar />
           <div className="pages">
             <Routes>
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/" element={<ProtectedRoute allowedRoles={['admin', 'user']}><Home /></ProtectedRoute>} />
-              <Route path="/duser" element={<ProtectedRoute allowedRoles={['admin','user']} ><HomeDefautUser /></ProtectedRoute>} />
+              <Route path="/duser" element={<ProtectedRoute allowedRoles={['admin', 'user']} ><HomeDefautUser /></ProtectedRoute>} />
               <Route path="/room" element={<ProtectedRoute allowedRoles={['admin', 'user']} ><Room /></ProtectedRoute>} />
             </Routes>
           </div>
-        </BrowserRouter>
-      </AuthProvider>
+        </AuthProvider>
+      </BrowserRouter>
     </div>
   );
 }

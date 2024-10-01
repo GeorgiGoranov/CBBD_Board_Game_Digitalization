@@ -7,6 +7,7 @@ const requireAuth = (req, res, next) => {
         jwt.verify(token, process.env.SECRET_KEY, (err, decodedToken) => {
             if (err) {
                 console.log(err.message);
+                
                 return res.status(401).send('Unauthorized: Invalid token');
             } else {
                 next();

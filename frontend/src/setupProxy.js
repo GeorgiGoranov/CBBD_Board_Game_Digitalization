@@ -6,7 +6,9 @@ module.exports = function(app) {
     '/api',
     createProxyMiddleware({
       target: 'http://localhost:4000/api',  // Your backend server URL
-      changeOrigin: true
+      changeOrigin: true,
+      credentials: 'include'
+
     })
   );
 

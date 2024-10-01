@@ -23,7 +23,7 @@ const Register = () => {
 
         const user = { name, username, email, role,nationality, password }
 
-        const response = await fetch('/api/routes/', {
+        const response = await fetch('/api/routes/register', {
             method: 'POST',
             body: JSON.stringify(user),
             headers: {

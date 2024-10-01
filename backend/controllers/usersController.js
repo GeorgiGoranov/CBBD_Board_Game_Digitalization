@@ -61,6 +61,8 @@ const getAllUsers = async (req, res) => {
 const getUser = async (req, res) => {
     const { id } = req.params
 
+    console.log({id})
+
     if (!mongoose.Types.ObjectId.isValid(id)) {
         return res.status(404).json({ error: 'No such User in the system!' })
 
@@ -115,7 +117,7 @@ const updateUser = async (req, res) => {
 
 const getUserLogin = async (req, res) => {
     const { email, password } = req.body;
-    
+
     try {
         // Try to find the user by username or email
         const user = await User.findOne({ email: email });
@@ -203,7 +205,7 @@ const joinSession = async (req, res) => {
     }
 }
 
-const maxAge = 10 * 60 // time lenght 5 min
+const maxAge = 3 * 24 * 60 * 60 // time lenght 5 min
 const createToken = (id, role)=>{
     return jwt.sign({id,role}, process.env.SECRET_KEY,{
         expiresIn: maxAge
@@ -212,20 +214,21 @@ const createToken = (id, role)=>{
 
 
 const isAuth = (req, res) => {
+    console.log("asdasdasd")
     const token = req.cookies.jwt
-   
 
     if(!token){
         return res.status(200).json({authenticated: false})
     }
 
-    jwt.verify(token, process.env.SECRET_KEY, async(error, decodeToken) =>{
+    jwt.verify(token, process.env.SECRET_KEY, async(error, decodedToken) =>{
         if(error){
             return res.status(200).json({authenticated: false})
         }
-
+        console.log("Decoded Token ID:", decodedToken.id);  // Log the decoded ID
         try{
-            const user = await User.findById(decodeToken.id).select('-password')
+            const user = await User.findById(decodedToken.id).select('-password')
+           
             if(!user){
                 return res.status(200).json({authenticated:false})
             }

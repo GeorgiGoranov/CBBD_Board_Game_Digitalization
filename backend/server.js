@@ -45,9 +45,9 @@ io.on('connection', (socket) => {
 });
 
 //middleware
-app.use(cors());
-app.use(express.json()) //looks if there is an audit to the request/ if data was sent in to the server
 app.use(cookieParser())
+app.use(express.json()) //looks if there is an audit to the request/ if data was sent in to the server
+app.use(cors());
 //route
 
 app.use('/api/routes', routerRoutes)
