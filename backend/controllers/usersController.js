@@ -61,8 +61,6 @@ const getAllUsers = async (req, res) => {
 const getUser = async (req, res) => {
     const { id } = req.params
 
-    console.log({id})
-
     if (!mongoose.Types.ObjectId.isValid(id)) {
         return res.status(404).json({ error: 'No such User in the system!' })
 
@@ -135,7 +133,7 @@ const getUserLogin = async (req, res) => {
 
         res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 }); // cookie operates in milisecond and not in minutes
 
-        res.status(200).json({ message: "Login successful", user: user._id, token});
+        res.status(200).json({ message: "Login successful", user: {_id: user._id, role: user.role}, token});
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Server error" });
@@ -214,7 +212,6 @@ const createToken = (id, role)=>{
 
 
 const isAuth = (req, res) => {
-    console.log("asdasdasd")
     const token = req.cookies.jwt
 
     if(!token){
@@ -225,7 +222,6 @@ const isAuth = (req, res) => {
         if(error){
             return res.status(200).json({authenticated: false})
         }
-        console.log("Decoded Token ID:", decodedToken.id);  // Log the decoded ID
         try{
             const user = await User.findById(decodedToken.id).select('-password')
            
