@@ -2,6 +2,7 @@ import React, { useState, useEffect} from 'react';
 import io from 'socket.io-client'
 import { useNavigate } from 'react-router-dom';
 
+const socket = io('http://localhost:4000');
 
 const HomeDefautUser = () => {
     const [playerID, setPlayerID] = useState('');
@@ -9,7 +10,6 @@ const HomeDefautUser = () => {
     const [message, setMessage] = useState('');
     // const [players, setPlayers] = useState([]);
 
-    const socket = io('http://localhost:4000');
 
     const navigate = useNavigate()
 

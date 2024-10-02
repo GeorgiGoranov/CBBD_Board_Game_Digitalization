@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import io from 'socket.io-client'
 
+const socket = io('http://localhost:4000');
 const Room = () =>{
 
-    const socket = io('http://localhost:4000');
     const [message, setMessage] = useState('');
 
     useEffect(() => {
@@ -13,6 +13,11 @@ const Room = () =>{
             setMessage(`${data.playerID} joined the game!`);
 
         });
+
+        // Cleanup the socket listener on component unmount
+    return () => {
+        socket.off('playerJoined');
+      };
 
     }, [])
     return(
