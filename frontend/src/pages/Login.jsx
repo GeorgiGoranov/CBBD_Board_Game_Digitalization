@@ -15,7 +15,7 @@ const Login = () => {
   // Check if user is already logged in and redirect to home if so
   useEffect(() => {
     if (isAuthenticated) {
-      navigate('/home');
+      navigate('/muser');
     }
   }, [isAuthenticated, navigate]);
 
@@ -53,7 +53,7 @@ const Login = () => {
         // Navigate based on the role of the logged-in user
         console.log(data.user.role)
         if (data.user && data.user.role === 'admin') {
-          navigate('/home');
+          navigate('/muser');
         } else {
           navigate('/duser');
         }
