@@ -9,7 +9,7 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
   }
 
   if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/" replace />;
   }
 //in case customer knows the website routes
   if (allowedRoles && !allowedRoles.includes(user?.role)) {

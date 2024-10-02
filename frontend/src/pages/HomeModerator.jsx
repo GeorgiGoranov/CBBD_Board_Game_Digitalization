@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 
 
 const Home = () => {
-    const [hostName, setHostName] = useState('');
+   
     const [sessionCode, setSessionCode] = useState('');
   
     const createGameSession = async () => {
@@ -11,7 +11,7 @@ const Home = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ host: hostName }),
+        credentials: 'include',  // Include cookies (JWT)
       });
   
       const data = await response.json();
@@ -25,12 +25,7 @@ const Home = () => {
     return (
       <div>
         <h2>Create a Game Session</h2>
-        <input
-          type="text"
-          value={hostName}
-          onChange={(e) => setHostName(e.target.value)}
-          placeholder="Enter your name"
-        />
+       
         <button onClick={createGameSession}>Create Session</button>
   
         {sessionCode && (

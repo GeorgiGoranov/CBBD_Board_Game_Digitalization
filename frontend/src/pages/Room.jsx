@@ -10,10 +10,11 @@ const Room = () =>{
         // Listen for new players joining the session
         socket.on('playerJoined', (data) => {
             // setPlayers(players);  // Update the players state with the updated list
-            setMessage(data.message);
+            setMessage(`${data.playerID} joined the game!`);
+
         });
 
-    }, [socket])
+    }, [])
     return(
         <div>
             <h1>Room</h1>

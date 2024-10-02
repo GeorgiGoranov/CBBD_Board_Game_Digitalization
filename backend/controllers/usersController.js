@@ -147,7 +147,7 @@ const generateCode = () => {
 
 const createSession = async (req, res) => {
     try {
-        const { host } = req.body // Get the host name from the request
+        const host = req.user.id // Get the host name from the request
 
         // Generate a unique 6-digit code
         let sessionCode;

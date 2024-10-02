@@ -15,7 +15,7 @@ const HomeDefautUser = () => {
 
     const joinGameSession = async () => {
          // Emit an event to join the session via WebSocket
-         socket.emit('joinSession', {message: `HElo ${playerID}` });
+         socket.emit('joinSession', {playerID, gameCode });
         // Make a POST request to the backend to join the session
         const response = await fetch('/api/routes/join-session', {
             method: 'POST',
@@ -44,10 +44,10 @@ const HomeDefautUser = () => {
         // Listen for new players joining the session
         socket.on('playerJoined', (data) => {
             // setPlayers(players);  // Update the players state with the updated list
-            setMessage(data.message);
+            setMessage(`${data.playerID} joined the game!`);
         });
 
-    }, [socket])
+    }, [])
 
     return (
         <div>

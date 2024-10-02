@@ -19,7 +19,7 @@ const NavBar = () => {
 
       if (response.ok) {
         await logout();  // Clear user context
-        navigate('/login');  // Redirect to login after logout
+        navigate('/');  // Redirect to login after logout
       } else {
         console.error('Logout failed');
       }

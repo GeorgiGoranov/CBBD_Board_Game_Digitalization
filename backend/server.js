@@ -19,7 +19,8 @@ const server = http.createServer(app)
 const io = new Server(server, {
   cors: {
     origin: "*", // Allow all origins (use frontend URL for security in production)
-    methods: ["GET", "POST"]
+    methods: ["GET", "POST"],
+    credentials: true,  // Enable credentials (cookies, authorization headers)
   }
 });
 
@@ -28,15 +29,23 @@ app.set('io', io);
 
 // WebSocket connection handler
 io.on('connection', (socket) => {
-  console.log(`user connected:  ${socket.id}`);
+  //console.log(`user connected:  ${socket.id}`);
   // Handle when a player joins a session
-  socket.on('joinSession',  (data) => {
-    
-      // Notify all clients in this session about the new player
-      socket.broadcast.emit('playerJoined', data);
+  socket.on('joinSession', (data) => {
 
-      
-  
+    const { playerID, gameCode } = data;
+
+    // Store playerID in the socket object for future use
+    socket.playerID = playerID;
+    socket.gameCode = gameCode;
+
+    console.log(`${playerID} joined the game session with code: ${gameCode}`);
+    // Notify all clients in this session about the new player
+    socket.broadcast.emit('playerJoined', {playerID});
+
+// You can also notify players in the same gameCode room only
+    // io.to(gameCode).emit('playerJoined', { playerID });
+
   });
 
   socket.on('disconnect', () => {
@@ -59,11 +68,11 @@ app.use('/api/routes', routerRoutes)
 mongoose.connect(process.env.MONG_URL)
   .then(() => {
     //listener for requests
-    server.listen(4000, ()=>{
+    server.listen(4000, () => {
       console.log('SERVER IS RUNNING & connected to db & listening on port', process.env.PORT)
     })
-      
-    
+
+
   }).catch((error) => {
     console.log(error)
   })
