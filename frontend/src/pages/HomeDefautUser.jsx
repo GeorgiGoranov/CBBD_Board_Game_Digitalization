@@ -8,7 +8,6 @@ const HomeDefautUser = () => {
     const [playerID, setPlayerID] = useState('');
     const [gameCode, setGameCode] = useState('');
     const [message, setMessage] = useState('');
-    // const [players, setPlayers] = useState([]);
 
 
     const navigate = useNavigate()
@@ -66,12 +65,6 @@ const HomeDefautUser = () => {
             />
             <button onClick={joinGameSession}>Join Session</button>
             {message && <p>{message}</p>}
-            {/* <h3>Players in the session:</h3>
-            <ul>
-                {players.map((player, index) => (
-                    <li key={index}>{player}</li>
-                ))}
-            </ul> */}
 
         </div>
     );
