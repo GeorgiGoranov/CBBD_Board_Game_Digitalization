@@ -1,4 +1,4 @@
-import React, { useState,useEffect  } from 'react';
+import React, { useState, useEffect } from 'react';
 import io from 'socket.io-client'
 import AvailableSessions from '../components/AvailableSessions';
 import { useSessionsContext } from '../hooks/useSessionContext';
@@ -6,10 +6,10 @@ import "../SCSS/homeModerator.scss"
 
 const socket = io('http://localhost:4000');
 const Home = () => {
-  
+
   const [sessionCode, setSessionCode] = useState('');
   const [players, setPlayers] = useState([]);
-  const { dispatch} = useSessionsContext()
+  const { dispatch } = useSessionsContext()
 
 
   const createGameSession = async () => {
@@ -24,7 +24,7 @@ const Home = () => {
 
     const data = await response.json();
     if (response.ok) {
-      dispatch({type: 'CREATE_SESSIONS', payload: data})
+      dispatch({ type: 'CREATE_SESSIONS', payload: data })
       setSessionCode(data.code); // Show the generated 6-digit code to the moderator
       socket.emit('joinSession', data.code); // Join the session room
     } else {
@@ -47,36 +47,18 @@ const Home = () => {
       <div className="create-session">
         <h2>Create a Game Session</h2>
         <button onClick={createGameSession}>Create Session</button>
-      </div>
 
-      <div className="dashboard-form">
-       
-        {players.length > 0 && (
-          <div>
-           {/* Only display if players is an array */}
-        {Array.isArray(players) && players.length > 0 && (
-          <div>
-            <h3>Players in session:</h3>
-            <ul>
-              {players.map((player, index) => (
-                <li key={index}>{player}</li>
-              ))}
-            </ul>
+        {sessionCode && (
+          <div className='container'>
+            <h3>Game Code: {sessionCode}</h3>
+            <p>Share this code with your players to join the session!</p>
           </div>
         )}
-          </div>
-        )}
-
       </div>
 
-      {sessionCode && (
-        <div className='container'>
-          <h3>Game Code: {sessionCode}</h3>
-          <p>Share this code with your players to join the session!</p>
-        </div>
-      )}
+
       <div className='container-for-sessions'>
-        <AvailableSessions/>
+        <AvailableSessions />
       </div>
     </div>
   );

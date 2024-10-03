@@ -1,6 +1,10 @@
 .container-sessions{
     width: 500px;
+    max-height: 500px;
+    overflow-y: auto;
+    
 }
+
 
 .container-sessions ul{
     padding: 0;
