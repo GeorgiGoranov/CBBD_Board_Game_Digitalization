@@ -68,8 +68,8 @@ const AvailableSessions = () => {
                             <div className="container-action-buttons">
                                 <p>Session Code: <span>{session.code}</span></p>
                                 <div className="container-for-action-buttons">
-                                    <i class="bi bi-play-btn-fill" onClick={() => handlePlayClick(session.code)}></i>
-                                    <i class="bi bi-x-circle" onClick={() => handleDeleteClick(session.code)}></i>
+                                    <i className="bi bi-play-btn-fill" onClick={() => handlePlayClick(session.code)}></i>
+                                    <i className="bi bi-x-circle" onClick={() => handleDeleteClick(session.code)}></i>
 
                                 </div>
                             </div>
@@ -77,7 +77,7 @@ const AvailableSessions = () => {
                             <p>Total Participants: <span>{session.players && session.players.length > 0 ? session.players.length : '0'}</span></p>
                             <div className="container-for-activity">
                                 <p className="p-activity">Active: <span>{session.isActive ? 'Yes' : 'No'}</span></p>
-                                <i class="bi bi-sliders"></i>
+                                <i className="bi bi-sliders"></i>
                             </div>
                         </li>
                     ))}
