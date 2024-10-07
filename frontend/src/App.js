@@ -10,6 +10,7 @@ import { AuthProvider } from './auth/authContext';
 import AvailableSessions from "./components/AvailableSessions"
 
 
+
 function App() {
   return (
     <div className="App">

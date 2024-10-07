@@ -8,7 +8,7 @@ const socket = io('http://localhost:4000');
 const Home = () => {
 
   const [sessionCode, setSessionCode] = useState('');
-  const [players, setPlayers] = useState([]);
+  // const [players, setPlayers] = useState([]);
   const { dispatch } = useSessionsContext()
 
 
@@ -37,7 +37,7 @@ const Home = () => {
   useEffect(() => {
     if (sessionCode) {
       socket.on('playerJoined', (data) => {
-        setPlayers(data.players || []); // Update the players state with the new list or set empty array if undefined
+        // setPlayers(data.players || []); // Update the players state with the new list or set empty array if undefined
       });
     }
   }, [sessionCode]);

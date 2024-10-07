@@ -2,7 +2,6 @@
     width: 500px;
     max-height: 500px;
     overflow-y: auto;
-    
 }
 
 
@@ -29,4 +28,39 @@ p span{
 .idividual-containers p{
     margin: 0 0 10px 0;
     color: black
+}
+
+.container-action-buttons{
+    display: flex;
+    justify-content: space-between;
+}
+
+.container-for-action-buttons{
+    display: flex;
+    gap: 15px;
+}
+
+.bi.bi-x-circle{
+   font-size: 1.5em;
+   cursor: pointer;
+}
+.bi.bi-play-btn-fill{
+    font-size: 1.5em;
+    cursor: pointer;
+}
+.bi.bi-sliders{
+    font-size: 1.5em;
+    
+
+}
+
+.container-for-activity{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    
+}
+p.p-activity {
+    margin: 0;
+    padding: 0;
 }

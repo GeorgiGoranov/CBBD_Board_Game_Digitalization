@@ -50,16 +50,6 @@ const createUser = async (req, res) => {
 
 }
 
-//get all users
-const getAllAvailableSessions = async (req, res) => {
-    try {
-        const allSessions = await SessionModel.find({}).sort({ createdAt: -1 });
-        res.status(200).json(allSessions);
-    } catch (error) {
-        console.error('Error fetching sessions:', error);
-        res.status(500).json({ message: 'Error fetching available sessions', error: error.message });
-    }
-};
 
 
 //get a single user
@@ -80,22 +70,22 @@ const getUser = async (req, res) => {
     res.status(200).json(user)
 }
 
-//delete User
-const deleteUser = async (req, res) => {
-    const { id } = req.params
+// //delete User
+// const deleteUser = async (req, res) => {
+//     const { id } = req.params
 
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-        return res.status(404).json({ error: 'No such User in the system!' })
-    }
+//     if (!mongoose.Types.ObjectId.isValid(id)) {
+//         return res.status(404).json({ error: 'No such User in the system!' })
+//     }
 
-    const user = await User.findByIdAndDelete({ _id: id })
+//     const user = await User.findByIdAndDelete({ _id: id })
 
-    if (!user) {
-        return res.status(404).json({ error: 'No such User found!' })
-    }
+//     if (!user) {
+//         return res.status(404).json({ error: 'No such User found!' })
+//     }
 
-    res.status(200).json(user)
-}
+//     res.status(200).json(user)
+// }
 
 //update User
 const updateUser = async (req, res) => {
@@ -248,6 +238,16 @@ const logOut = async (req, res) => {
     res.cookie("jwt", "", { maxAge: 1 });
     res.status(200).json({ message: "Logged out successfully" });
 };
+//get all users
+const getAllAvailableSessions = async (req, res) => {
+    try {
+        const allSessions = await SessionModel.find({}).sort({ createdAt: -1 });
+        res.status(200).json(allSessions);
+    } catch (error) {
+        console.error('Error fetching sessions:', error);
+        res.status(500).json({ message: 'Error fetching available sessions', error: error.message });
+    }
+};
 
 const fetchPlayers = async (req, res) => {
     const { sessionCode  } = req.params;
@@ -269,16 +269,45 @@ const fetchPlayers = async (req, res) => {
     }
 }
 
+// DELETE session by ID
+const deleteSession = async (req, res) => {
+    const { code } = req.params;
+
+    // Log the code received to confirm it's being passed correctly
+    console.log('Session code received:', code);
+
+    if (!code) {
+        return res.status(400).json({ error: 'Session code is missing' });
+    }
+
+    try {
+        // Attempt to find and delete the session by code
+        const session = await SessionModel.findOneAndDelete({ code: code });
+
+        if (!session) {
+            console.log('Session not found');
+            return res.status(404).json({ error: 'Session not found' });
+        }
+
+        console.log('Session deleted:', session);
+        res.status(200).json({ message: 'Session deleted successfully' });
+    } catch (error) {
+        console.error('Error during session deletion:', error);
+        res.status(500).json({ error: 'Failed to delete session' });
+    }
+};
+
 module.exports = {
     createUser,
     getAllAvailableSessions,
     getUser,
-    deleteUser,
+    // deleteUser,
     updateUser,
     getUserLogin,
     createSession,
     joinSession,
     logOut,
     isAuth,
-    fetchPlayers
+    fetchPlayers,
+    deleteSession
 }

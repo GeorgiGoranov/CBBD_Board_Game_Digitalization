@@ -13,6 +13,10 @@ export const sessionReducer = (state, action) =>{
             return{
                 sessions: [action.payload, ...state.sessions]
             }
+        case 'DELETE_SESSION':
+            return {
+                sessions: state.sessions.filter(session => session.code !== action.payload) // Remove the session by ID
+            };
         default:
             return state
     }
