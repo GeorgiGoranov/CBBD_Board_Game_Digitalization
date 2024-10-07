@@ -18,7 +18,7 @@ router.get('/available-sessions', requireAuth, getAllAvailableSessions)
 
 router.post('/create-session',requireAuth, createSession)
 
-router.post('/join-session',requireAuth, joinSession)
+router.post('/join-session', joinSession)
 
 router.get('/logout', requireAuth, logOut)
 

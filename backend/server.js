@@ -18,7 +18,7 @@ const server = http.createServer(app)
 
 const io = new Server(server, {
   cors: {
-    origin: "*", // Allow all origins (use frontend URL for security in production)
+    origin: 'http://localhost:3000',
     methods: ["GET", "POST"],
     credentials: true,  // Enable credentials (cookies, authorization headers)
   }
@@ -29,11 +29,13 @@ app.set('io', io);
 
 // WebSocket connection handler
 io.on('connection', (socket) => {
-  //console.log(`user connected:  ${socket.id}`);
+  
+  console.log(`user connected:  ${socket.id}`);
   // Handle when a player joins a session
   socket.on('joinSession', (data) => {
 
     const { playerID, gameCode } = data;
+    console.log(`Player joined: ${playerID}, Game Code: ${gameCode}`);
 
     // Store playerID in the socket object for future use
     socket.playerID = playerID;

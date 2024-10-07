@@ -12,9 +12,6 @@ const AvailableSessions = () => {
     const navigate = useNavigate(); // Use navigate to programmatically change routes
 
 
-
-
-
     // useEffect to fetch sessions when the component mounts
     useEffect(() => {
         // Function to fetch available sessions
@@ -37,6 +34,8 @@ const AvailableSessions = () => {
     // Handle Play Button Click - navigate to the session room
     const handlePlayClick = (sessionCode) => {
         navigate(`/session/${sessionCode}`);
+        // navigate(`/room`);
+
     };
 
     // Handle Play Button Click - navigate to the session room
