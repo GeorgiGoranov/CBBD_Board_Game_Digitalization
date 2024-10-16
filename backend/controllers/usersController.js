@@ -1,5 +1,6 @@
 const User = require('../models/UsersModel')
 const SessionModel = require('../models/SessionModel')
+
 const bcrypt = require("bcrypt");
 const mongoose = require('mongoose')
 const jwt = require("jsonwebtoken");

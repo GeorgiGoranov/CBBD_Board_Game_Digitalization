@@ -1,6 +1,8 @@
 require('dotenv').config()
 const express = require('express')
-const routerRoutes = require('./routes/users')
+const userRoutes = require('./routes/users')
+const cardsAndSheetsRoutes = require('./routes/cardsAndSheets')
+
 const mongoose = require('mongoose')
 const cors = require('cors');
 const cookieParser = require('cookie-parser')
@@ -61,7 +63,9 @@ app.use(express.json()) //looks if there is an audit to the request/ if data was
 app.use(cors());
 //route
 
-app.use('/api/routes', routerRoutes)
+app.use('/api/routes', userRoutes)
+
+app.use('/api/routesCardsAndSheets', cardsAndSheetsRoutes)
 
 
 

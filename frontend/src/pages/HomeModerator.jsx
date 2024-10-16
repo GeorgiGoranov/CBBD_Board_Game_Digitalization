@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import io from 'socket.io-client'
+import { useNavigate } from "react-router-dom";
 import AvailableSessions from '../components/AvailableSessions';
 import { useSessionsContext } from '../hooks/useSessionContext';
 import "../SCSS/homeModerator.scss"
@@ -10,6 +11,7 @@ const Home = () => {
   const [sessionCode, setSessionCode] = useState('');
   // const [players, setPlayers] = useState([]);
   const { dispatch } = useSessionsContext()
+  const navigate = useNavigate()
 
 
   const createGameSession = async () => {
@@ -42,11 +44,16 @@ const Home = () => {
     }
   }, [sessionCode]);
 
+  const goToCardAndSheetCreation = () => {
+    navigate('/additions')
+  }
+
   return (
     <div className='container-layout'>
       <div className="create-session">
         <h2>Create a Game Session</h2>
         <button onClick={createGameSession}>Create Session</button>
+        <button onClick={goToCardAndSheetCreation}>Create new Cards and Sheets</button>
 
         {sessionCode && (
           <div className='container'>

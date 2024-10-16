@@ -8,6 +8,11 @@ import Room from './pages/Room';
 import ProtectedRoute from './components/ProtectedRoute';
 import { AuthProvider } from './auth/authContext';
 import AvailableSessions from "./components/AvailableSessions"
+import Cards from "./components/Cards"
+import Sheets from "./components/Sheets"
+import Additions from './pages/Additions';
+
+
 
 
 
@@ -24,7 +29,12 @@ function App() {
               <Route path="/muser" element={<ProtectedRoute allowedRoles={['admin', 'user']}><Home/></ProtectedRoute>} />
               <Route path="/duser" element={<ProtectedRoute allowedRoles={['admin', 'user']} ><HomeDefautUser /></ProtectedRoute>} />
               <Route path="/room" element={<ProtectedRoute allowedRoles={['admin', 'user']} ><Room /></ProtectedRoute>} />
+              <Route path="/additions" element={<ProtectedRoute allowedRoles={['admin', 'user']} ><Additions/></ProtectedRoute>} />
+              {/* component routes below*/}
               <Route path="/av" element={<ProtectedRoute allowedRoles={['admin', 'user']} ><AvailableSessions /></ProtectedRoute>} />
+              <Route path="/cards" element={<ProtectedRoute allowedRoles={['admin', 'user']} ><Cards/></ProtectedRoute>} />
+              <Route path="/sheets" element={<ProtectedRoute allowedRoles={['admin', 'user']} ><Sheets/></ProtectedRoute>} />
+              
             </Routes>
           </div>
         </AuthProvider>

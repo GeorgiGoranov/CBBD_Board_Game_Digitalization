@@ -23,6 +23,8 @@ router.post('/join-session', joinSession)
 router.get('/logout', requireAuth, logOut)
 
 
+
+
 //***************/ all of the dynamic endpoint fucntions have to be below the rest so there is not express confusion
 //Express will incorrectly treat "isAuth" as an id parameter, causing a problem when trying to execute it.
 router.delete('/delete-session/:code', requireAuth, deleteSession)
