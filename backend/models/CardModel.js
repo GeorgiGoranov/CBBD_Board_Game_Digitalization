@@ -4,11 +4,15 @@ const Schema = mongoose.Schema
 
 const cardSchema = new Schema({
 
-    name: { 
-        type: String, 
-        required: true, 
-        unique: true 
-    }, // 6-digit code
+    category: {
+        type: String,
+        required: true,
+        unique: true // Ensure that category is unique, not name
+    },
+    options: {
+        nl: { type: String, required: true },
+        de: { type: String, required: true }
+    },
     role:{
         type: String,
         required: true
@@ -20,7 +24,7 @@ const cardSchema = new Schema({
     createdAt: { 
         type: Date, 
         default: Date.now 
-    } // Timestamp for session creation
+    }, // Timestamp for session creation
 
 })
 

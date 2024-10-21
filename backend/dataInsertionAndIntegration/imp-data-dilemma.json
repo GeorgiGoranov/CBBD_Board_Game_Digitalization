@@ -1,0 +1,99 @@
+[
+    {
+        "category": "leadership",
+        "subcategories": [
+            {
+                "name": "manager-instructions",
+                "options": {
+                    "nl": "Medewerkers volgen de aanwijzingen van de manager zonder verdere uitleg, deze is immers de expert. Medewerkers krijgen uitleg over de gegeven instructie zodat ze het waarom van de taak begrijpen.",
+                    "de": "Mitarbeiter folgen den Anweisungen des Managers ohne weitere Erläuterung, da er der Experte ist. Anweisungen werden vom Vorgesetzten erläutert, damit die Mitarbeiter die Gründe für eine Tätigkeit verstehen."
+                }
+            },
+            {
+                "name": "hierarchy-preference",
+                "options": {
+                    "nl": "hiërarchieën zijn relatief steil. Er bestaan veel interne regels zodat structuur gecreëerd wordt. hiërarchieën zijn relatief vlak. Er zijn weinig regels zodat ruimte voor creativiteit ontstaat.",
+                    "de": "Hierarchien sind relativ hoch. Viele interne Regeln sorgen dafür, dass Struktur erschaffen wird. Hierarchien sind relativ flach. Nur wenige interne Regeln existieren damit Raum für Kreativität geschaffen wird."
+                }
+            },
+            {
+                "name": "manager-visibility",
+                "options": {
+                    "nl": "De teamleider/manager kan men herkennen aan zijn eigen kantoor, parkeerplaats etc. De teamleider/manager werkt vaak tussen de medewerkers en heeft geen speciale benefits.",
+                    "de": "Der Vorgesetzte ist daran zu erkennen, dass er ein eigenes Büro, einen eigenen Parkplatz etc. hat. Der Vorgesetzte arbeitet häufig im gleichen Raum wie die Mitarbeiter und genießt keine besonderen Vorzüge."
+                }
+            },
+            {
+                "name": "responsibility-delegation",
+                "options": {
+                    "nl": "De teamleider controleert het werk van de medewerkers om te voorkomen dat fouten gemaakt worden. De teamleider geeft de medewerkers eigen verantwoordelijkheden en daar kan hij op vertrouwen.",
+                    "de": "Der Teamleiter kontrolliert die Arbeit der Mitarbeiter, um sicherzustellen, dass keine Fehler gemacht werden. Der Teamleiter überträgt seinen Mitarbeitern Verantwortung und kann sich auf sie verlassen."
+                }
+            },
+            {
+                "name": "decision-making",
+                "options": {
+                    "nl": "Medewerkers mogen ideeën aandragen. Maar de manager weet het beste wat de juiste beslissing is. Medewerkers zijn betrokken bij het besluitvormingsproces. De teamleider neemt elke idee mee, elke mening is even belangrijk in het besluitvormingsproces.",
+                    "de": "Mitarbeiter dürfen gerne ihre Ideen äußern. Der Manager weiß jedoch am besten, welche Entscheidung die richtige ist. Mitarbeiter sind in die Entscheidungsfindung involviert. Der Teamleiter zieht jede Idee in Betracht, jede Meinung ist gleich wichtig, wenn Entscheidungen getroffen werden."
+                }
+            }
+        ]
+    },
+    {
+        "category": "communication",
+        "subcategories": [
+            {
+                "name": "internal-communication",
+                "options": {
+                    "nl": "De communicatie volgt de hiërarchische lijn. Als niet anders is afgesproken, worden personen met de achternaam aangesproken. Het is niet respectvol direct te tutoyeren. Het is het meest efficiënt als je ook eens de telefoon pakt en over koetjes en kalfjes te praten, om zo een persoonlijk contact op te bouwen.",
+                    "de": "Die Kommunikation folgt der gegebenen Hierarchie. Wenn nicht anderweitig festgelegt, werden Personen mit dem Nachnamen angesprochen. Es ist respektlos, direkt zum „Du“ und zum Vornamen zu wechseln. Es ist am effizientesten, auch mal zu telefonieren und Small Talk zu führen, um auch einen persönlichen Kontakt herzustellen."
+                }
+            },
+            {
+                "name": "communication-medium",
+                "options": {
+                    "nl": "Het is het meest efficiënt om per E-mail te communiceren en direct de reden voor het contact te noemen. Het is het meest efficiënt als je ook eens de telefoon pakt en over koetjes en kalfjes te praten, om zo een persoonlijk contact op te bouwen.",
+                    "de": "Es ist am effizientesten, per E-Mail zu kommunizieren und direkt den Grund für die Kontaktaufnahme zu nennen. Es ist am effizientesten, auch mal zu telefonieren und Small Talk zu führen, um auch einen persönlichen Kontakt herzustellen."
+                }
+            }
+        ]
+    },
+    {
+        "category": "conflict-management",
+        "subcategories": [
+            {
+                "name": "Confrontation Style",
+                "options": {
+                    "nl": "Ik sta open voor confrontatie en heb er geen probleem mee een discussie te beginnen. Ik spreek alleen zaken aan om een probleem op te lossen. Ik vermijd confrontatie als het niet perse nodig is.",
+                    "de": "Ich bin offen für Konfrontationen und habe kein Problem damit, eine Diskussion zu beginnen. Ich diskutiere nur, um Probleme zu lösen. Ich vermeide unnötige Diskussionen."
+                }
+            },
+            {
+                "name": "Feedback Delivery",
+                "options": {
+                    "nl": "Negative feedback wordt direct gegeven en gezien als een kans voor verbetering. Negative feedback wordt gecombineerd met positieve feedback zodat het constructief blijft.",
+                    "de": "Negatives Feedback wird direkt gegeben und wird als Chance zur Verbesserung angesehen. Negatives Feedback wird mit positivem Feedback kombiniert, um konstruktiv zu sein."
+                }
+            }
+        ]
+    },
+    {
+        "category": "teamwork",
+        "subcategories": [
+            {
+                "name": "work-relationships",
+                "options": {
+                    "nl": "Werkrelaties worden relatief snel opgebouwd, maar ook makkelijker losgelaten. Werkrelaties worden langzaam opgebouwd, maar zijn langer vastgehouden.",
+                    "de": "Berufliche Beziehungen werden schnell aufgebaut, aber auch schnell fallen gelassen. Berufliche Beziehungen werden eher langsam aufgebaut, jedoch hält man an ihnen fest."
+                }
+            },
+            {
+                "name": "work-life-balance",
+                "options": {
+                    "nl": "Lange werkdagen zijn normaal. Waarbij het bedrijf diverse extra’s biedt zoals kinderopvang, lidmaatschap van sportclubs etc. Het bedrijf biedt niet veel extra’s aan. De arbeidstijden zijn ‘normaal’.",
+                    "de": "Lange Arbeitstage sind normal. Im Gegenzug bieten Firmen verschiedene Zusatzleistungen an, z.B. Kinderbetreuung oder Mitgliedschaften bei Sportvereinen/ -clubs. Firmen bieten weniger Zusatzleistungen an, dafür sind die Arbeitszeiten normal."
+                }
+            }
+        ]
+    }
+]

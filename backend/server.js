@@ -65,7 +65,7 @@ app.use(cors());
 
 app.use('/api/routes', userRoutes)
 
-app.use('/api/routesCardsAndSheets', cardsAndSheetsRoutes)
+app.use('/api/cards', cardsAndSheetsRoutes)
 
 
 

@@ -1,0 +1,265 @@
+[
+    {
+        "category": "experience-duration",
+        "subcategories": [
+            {
+                "name": "0-2-years",
+                "options": {
+                    "nl": "0-2 JAAR",
+                    "de": "0-2 JAHR"
+                }
+            },
+            {
+                "name": "2-5-years",
+                "options": {
+                    "nl": "2-5 JAAR",
+                    "de": "2-5 JAHR"
+                }
+            },
+            {
+                "name": "5-7-years",
+                "options": {
+                    "nl": "5-7 JAAR",
+                    "de": "5-7 JAHR"
+                }
+            },
+            {
+                "name": "7-10-years",
+                "options": {
+                    "nl": "7-10 JAAR",
+                    "de": "7-10 JAHR"
+                }
+            },
+            {
+                "name": "more-than-10-years",
+                "options": {
+                    "nl": "> 10 JAAR",
+                    "de": "> 10 JAHR"
+                }
+            },
+            {
+                "name": "more-than-5-years",
+                "options": {
+                    "nl": "> 5 JAAR",
+                    "de": "> 5 JAHR"
+                }
+            },
+            {
+                "name": "more-than-15-years",
+                "options": {
+                    "nl": "> 15 JAAR",
+                    "de": "> 15 JAHR"
+                }
+            }
+        ]
+    },
+    {
+        "category": "experience-level",
+        "subcategories": [
+            {
+                "name": "mbo+",
+                "options": {
+                    "nl": "MBO+",
+                    "de": "MBO+"
+                }
+            },
+            {
+                "name": "hbo",
+                "options": {
+                    "nl": "HBO",
+                    "de": "HBO"
+                }
+            },
+            {
+                "name": "university",
+                "options": {
+                    "nl": "UNIVERSITAIR",
+                    "de": "UNIVERSITÄT"
+                }
+            },
+            {
+                "name": "master",
+                "options": {
+                    "nl": "MASTER",
+                    "de": "MASTER"
+                }
+            },
+            {
+                "name": "bachelor",
+                "options": {
+                    "nl": "BACHELOR",
+                    "de": "BACHELOR"
+                }
+            },
+            {
+                "name": "university-of-applied-sciences",
+                "options": {
+                    "nl": "FACHHOCHSCHULE",
+                    "de": "FACHHOCHSCHULE"
+                }
+            },
+            {
+                "name": "professional-training",
+                "options": {
+                    "nl": "BERUFSAUSBILDUNG",
+                    "de": "BERUFSAUSBILDUNG"
+                }
+            }
+        ]
+    },
+    {
+        "category": "experience-type",
+        "subcategories": [
+            {
+                "name": "general",
+                "options": {
+                    "nl": "ALGEMEEN",
+                    "de": "ALLGEMEIN"
+                }
+            },
+            {
+                "name": "comparabl-position",
+                "options": {
+                    "nl": "VERGELIJKBARE FUNCTIE",
+                    "de": "VERGLEICHBAREN POSITION"
+                }
+            },
+            {
+                "name": "leadership",
+                "options": {
+                    "nl": "LEIDINGGEVENDE",
+                    "de": "FÜHRUNGSERFAHRUNG"
+                }
+            },
+            {
+                "name": "industry-specific",
+                "options": {
+                    "nl": "IN BRANCHE",
+                    "de": "IN BRANCHE"
+                }
+            }
+        ]
+    },
+    {
+        "category": "ict-skills",
+        "subcategories": [
+            {
+                "name": "microsoft-office",
+                "options": {
+                    "nl": "MS OFFICE",
+                    "de": "MS OFFICE"
+                }
+            },
+            {
+                "name": "word",
+                "options": {
+                    "nl": "WORD",
+                    "de": "WORD"
+                }
+            },
+            {
+                "name": "excel",
+                "options": {
+                    "nl": "EXCEL",
+                    "de": "EXCEL"
+                }
+            },
+            {
+                "name": "powerpoint",
+                "options": {
+                    "nl": "POWERPOINT",
+                    "de": "POWERPOINT"
+                }
+            },
+            {
+                "name": "access",
+                "options": {
+                    "nl": "ACCESS",
+                    "de": "ACCESS"
+                }
+            },
+            {
+                "name": "sap-erp",
+                "options": {
+                    "nl": "SAP/ERP",
+                    "de": "SAP/ERP"
+                }
+            },
+            {
+                "name": "auto-cad",
+                "options": {
+                    "nl": "AUTOCAD",
+                    "de": "AUTOCAD"
+                }
+            },
+            {
+                "name": "wms",
+                "options": {
+                    "nl": "WMS",
+                    "de": "WMS"
+                }
+            },
+            {
+                "name": "cloud-services",
+                "options": {
+                    "nl": "CLOUD SERVICES",
+                    "de": "CLOUD SERVICES"
+                }
+            },
+            {
+                "name": "solidWorks",
+                "options": {
+                    "nl": "SOLIDWORKS",
+                    "de": "SOLIDWORKS"
+                }
+            }
+        ]
+    },
+    {
+        "category": "functional-skills",
+        "subcategories": [
+            {
+                "name": "project-management",
+                "options": {
+                    "nl": "PROJECT MANAGEMENT METHODEN (Z.B./B.V. PRINCE)",
+                    "de": "PROJEKT MANAGEMENT METHODEN (Z.B. PRINCE)"
+                }
+            },
+            {
+                "name": "lean-management",
+                "options": {
+                    "nl": "LEAN MANAGEMENT (SIX SIGMA)",
+                    "de": "LEAN MANAGEMENT (SIX SIGMA)"
+                }
+            },
+            {
+                "name": "quality-management-methods",
+                "options": {
+                    "nl": "QM-METHODEN",
+                    "de": "QM-METHODEN"
+                }
+            },
+            {
+                "name": "coaching",
+                "options": {
+                    "nl": "BETREUEN/COACHEN",
+                    "de": "BETREUEN/COACHEN"
+                }
+            },
+            {
+                "name": "presentation-skills",
+                "options": {
+                    "nl": "PRESENTEREN",
+                    "de": "PRÄSENTIEREN"
+                }
+            },
+            {
+                "name": "safety-management",
+                "options": {
+                    "nl": "VEILIGHEIDSMANAGEMENT",
+                    "de": "SICHERHEITSMANAGEMENT"
+                }
+            }
+        ]
+    }
+]

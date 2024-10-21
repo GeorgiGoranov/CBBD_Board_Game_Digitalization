@@ -6,6 +6,6 @@ const { requireAuth } = require('../middleware/authMiddleware')
 
 const router = express.Router()
 
-router.post('/cards', requireAuth, createCards)
+router.post('/compenetices', requireAuth, createCards)
 
 module.exports = router

@@ -2,29 +2,43 @@ const CardModel = require('../models/CardModel')
 
 const createCards = async (req, res) => {
     try {
-        const { name,role} = req.body
+        const { category,options,role} = req.body
 
-        const host = req.user.id // Get the host name from the request
+        const host = "dflt" //req.user.id // Get the host name from the request
 
-        do {
-            cardExists = await CardModel.findOne({ name: name })
-        } while (cardExists) // Ensure that the code is unique
+        // Check if a card with the same category already exists
+        const cardExists = await CardModel.findOne({ category: category });
 
-        // Create a new game session in the database
+        if (cardExists) {
+            return res.status(400).json({ message: 'Card with this category already exists!' });
+        }
+        // Create a new card in the database
         const newCard = new CardModel({
-            name: name,
-            role: role,
-            host: host
+            category,
+            options: {
+                nl: options.nl,
+                de: options.de
+            },
+            role,
+            host,
         });
 
         await newCard.save();
-        /*adding the additional values the responce so that 
-        when the web context/hook is triggered can take the unfo
-         and filled in without having to make a call to the DB
-        */
-        res.status(201).json({ name: name ,role: role,host: host, message: 'New Card created!' });
+
+        // Respond with the new card data
+        res.status(201).json({
+            category,
+            options: {
+                nl: options.nl,
+                de: options.de
+            },
+            role,
+            host,
+            message: 'New Card created!'
+        });
 
     } catch (error) {
+        console.error(error); // Log the actual error for debugging
         res.status(500).json({ message: 'Error creating card' });
     }
 }
