@@ -51,8 +51,6 @@ const createUser = async (req, res) => {
 
 }
 
-
-
 //get a single user
 const getUser = async (req, res) => {
     const { id } = req.params
@@ -189,10 +187,6 @@ const joinSession = async (req, res) => {
             session.players.push(playerID)
             await session.save() // Save the updated session
 
-            // Emit the playerJoined event via Socket.io to all connected clients
-            const io = req.app.get('io');  // Access io instance
-            io.to(code).emit('playerJoined', { playerID, players: session.players });
-
         }
         return res.status(200).json({ message: 'Player joined the session successfully!', session })
 
@@ -202,7 +196,7 @@ const joinSession = async (req, res) => {
     }
 }
 
-const maxAge = 3 * 24 * 60 * 60 // time lenght 5 min
+const maxAge = 1 * 24 * 60 * 60 // time lenght 5 min
 const createToken = (id, role) => {
     return jwt.sign({ id, role }, process.env.SECRET_KEY, {
         expiresIn: maxAge

@@ -34,7 +34,6 @@ const AvailableSessions = () => {
     // Handle Play Button Click - navigate to the session room
     const handlePlayClick = (sessionCode) => {
         navigate(`/session/${sessionCode}`);
-        // navigate(`/room`);
 
     };
 

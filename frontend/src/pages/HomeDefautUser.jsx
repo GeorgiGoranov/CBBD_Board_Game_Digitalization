@@ -1,20 +1,17 @@
-import React, { useState, useEffect} from 'react';
-import io from 'socket.io-client'
+import React, { useState} from 'react';
+import initSocket from '../context/socket';
 import { useNavigate } from 'react-router-dom';
-
-const socket = io('http://localhost:4000');
 
 const HomeDefautUser = () => {
     const [playerID, setPlayerID] = useState('');
     const [gameCode, setGameCode] = useState('');
     const [message, setMessage] = useState('');
-
+    const socket = initSocket();  // Initialize the WebSocket but don't connect
 
     const navigate = useNavigate()
 
     const joinGameSession = async () => {
-         // Emit an event to join the session via WebSocket
-         socket.emit('joinSession', {playerID, gameCode });
+        
         // Make a POST request to the backend to join the session
         const response = await fetch('/api/routes/join-session', {
             method: 'POST',
@@ -23,30 +20,19 @@ const HomeDefautUser = () => {
             },
             body: JSON.stringify({ code: gameCode, playerID }),
         });
-
+        
         const data = await response.json();
         if (response.ok) {
-           
-           // Emit an event to join the session via WebSocket
-           // socket.emit('joinSession', { code: gameCode, playerID });
+            // Emit an event to join the session via WebSocket
             setMessage('Successfully joined the game session!');
-            console.log(response)
-            navigate('/room',{replace: true})
+            navigate(`/room/${gameCode}`);
+            socket.emit('joinSession', {playerID, gameCode });
             
 
         } else {
             setMessage(data.message || 'Error joining the session');
         }
     };
-
-    useEffect(() => {
-        // Listen for new players joining the session
-        socket.on('playerJoined', (data) => {
-            // setPlayers(players);  // Update the players state with the updated list
-            setMessage(`${data.playerID} joined the game!`);
-        });
-
-    }, [])
 
     return (
         <div>

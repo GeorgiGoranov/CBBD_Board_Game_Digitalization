@@ -1,12 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import io from 'socket.io-client'
+import { useParams } from 'react-router-dom';
+import initSocket from '../context/socket';
 
-const socket = io('http://localhost:4000');
-const Room = () =>{
+
+const Room = () => {
+    const { roomId } = useParams(); // Fetch roomId from the URL
 
     const [message, setMessage] = useState('');
+    const socket = initSocket();  
 
     useEffect(() => {
+        socket.connect()
+       
         // Listen for new players joining the session
         socket.on('playerJoined', (data) => {
             // setPlayers(players);  // Update the players state with the updated list
@@ -14,15 +19,21 @@ const Room = () =>{
 
         });
 
-        // Cleanup the socket listener on component unmount
-    return () => {
-        socket.off('playerJoined');
-      };
+        // socket.on('playerLeft', (data) => {
+        //     // setPlayers(players);  // Update the players state with the updated list
+        //     setMessage(`${data.playerID} left!`);
 
-    }, [])
-    return(
+        // });
+
+        // Cleanup listener when the component unmounts
+        return () => {
+            socket.off('playerJoined'); // Remove the listener when the component unmounts
+            // socket.off('playerLeft');
+        };
+    }, [roomId,socket]);
+    return (
         <div>
-            <h1>Room</h1>
+            <h1>Room ID: {roomId}</h1>
             {message && <p>{message}</p>}
         </div>
     )
