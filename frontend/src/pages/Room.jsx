@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams,useNavigate, replace } from 'react-router-dom';
 import initSocket from '../context/socket';
 
 
@@ -8,6 +8,7 @@ const Room = () => {
     const [message, setMessage] = useState('');
     const [playerID, setPlayerID] = useState('');
     const socket = initSocket();  
+    const navigate = useNavigate()
 
     useEffect(() => {
 
@@ -19,6 +20,9 @@ const Room = () => {
             // Automatically reconnect the user to the room
             socket.connect()
             socket.emit('joinSession', { playerID: storedPlayerID, gameCode: roomId });
+        }else{
+            //if user is unknow navigate him to dafault page
+            navigate('/duser',replace)
         }
 
        

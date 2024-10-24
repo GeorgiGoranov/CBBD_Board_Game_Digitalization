@@ -6,7 +6,6 @@ import { useNavigate } from 'react-router-dom';
 
 const AvailableSessions = () => {
 
-    //const [sessions, setSessions] = useState([]);
     const [error, setError] = useState(null);
     const { sessions, dispatch } = useSessionsContext()
     const navigate = useNavigate(); // Use navigate to programmatically change routes
@@ -33,7 +32,7 @@ const AvailableSessions = () => {
 
     // Handle Play Button Click - navigate to the session room
     const handlePlayClick = (sessionCode) => {
-        navigate(`/session/${sessionCode}`);
+        navigate(`/room/${sessionCode}`);
 
     };
 

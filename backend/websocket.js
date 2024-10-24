@@ -1,8 +1,4 @@
-
 const { Server } = require('socket.io');
-
-// In-memory store to keep track of players and their rooms
-const players = {};
 
 // WebSocket setup
 function setupWebSocket(server) {
@@ -29,9 +25,7 @@ function setupWebSocket(server) {
       const { playerID, gameCode } = data;
       console.log(`Player joined: ${playerID}, Game Code: ${gameCode}`);
 
-      // Store the player and the gameCode in the in-memory store
-      players[socket.id] = { playerID, gameCode };
-
+    
       // Add the player to the specific room associated with the gameCode
       socket.join(gameCode);
 
