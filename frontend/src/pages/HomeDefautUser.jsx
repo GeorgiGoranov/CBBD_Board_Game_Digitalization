@@ -7,7 +7,6 @@ const HomeDefautUser = () => {
     const [gameCode, setGameCode] = useState('');
     const [message, setMessage] = useState('');
     const socket = initSocket();  // Initialize the WebSocket but don't connect
-
     const navigate = useNavigate()
 
     const joinGameSession = async () => {
@@ -25,10 +24,10 @@ const HomeDefautUser = () => {
         if (response.ok) {
             // Emit an event to join the session via WebSocket
             setMessage('Successfully joined the game session!');
+            localStorage.setItem('playerID', playerID);  // Store in localStorage
+            localStorage.setItem('gameCode', gameCode);  // Store the game code
             navigate(`/room/${gameCode}`);
             socket.emit('joinSession', {playerID, gameCode });
-            
-
         } else {
             setMessage(data.message || 'Error joining the session');
         }
