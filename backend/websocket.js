@@ -40,20 +40,6 @@ function setupWebSocket(server) {
       console.log(playerID)
     });
 
-    socket.on('disconnect', () => {
-      // Retrieve the player's info from the in-memory store
-      const playerInfo = players[socket.id];
-      if (playerInfo) {
-        const { playerID, gameCode } = playerInfo;
-
-        // Notify the room that the player has disconnected
-        io.to(gameCode).emit('playerLeft', { playerID });
-        // Remove the player from the in-memory store
-        delete players[socket.id];
-      } else {
-        console.log(`Player with socket ID ${socket.id} was not found in the players list.`);
-      }
-    });
   });
 
   return io;
