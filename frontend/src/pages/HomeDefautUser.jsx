@@ -1,13 +1,28 @@
-import React, { useState} from 'react';
-import initSocket from '../context/socket';
-import { useNavigate } from 'react-router-dom';
+import React, { useState,useEffect} from 'react';
 
+import { useNavigate } from 'react-router-dom';
+import initSocket from '../context/socket';
 const HomeDefautUser = () => {
     const [playerID, setPlayerID] = useState('');
     const [gameCode, setGameCode] = useState('');
     const [message, setMessage] = useState('');
-    const socket = initSocket();  // Initialize the WebSocket but don't connect
+    const socket = initSocket();
+    
     const navigate = useNavigate()
+
+    // Disconnect from the WebSocket when on the HomeDefautUser page
+    useEffect(() => {
+        if (socket.connected) {
+            socket.disconnect();  // Disconnect the WebSocket when this page is loaded
+        }
+
+        return () => {
+            // Cleanup in case the component is unmounted before disconnect
+            if (socket.connected) {
+                socket.disconnect();
+            }
+        };
+    }, [socket]);
 
     const joinGameSession = async () => {
         
@@ -22,12 +37,9 @@ const HomeDefautUser = () => {
         
         const data = await response.json();
         if (response.ok) {
-            // Emit an event to join the session via WebSocket
             setMessage('Successfully joined the game session!');
             localStorage.setItem('playerID', playerID);  // Store in localStorage
-            localStorage.setItem('gameCode', gameCode);  // Store the game code
             navigate(`/room/${gameCode}`);
-            socket.emit('joinSession', {playerID, gameCode });
         } else {
             setMessage(data.message || 'Error joining the session');
         }

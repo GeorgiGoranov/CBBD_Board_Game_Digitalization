@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams,useNavigate, replace } from 'react-router-dom';
+import { useParams,useNavigate } from 'react-router-dom';
 import initSocket from '../context/socket';
 
 
@@ -16,13 +16,14 @@ const Room = () => {
         const storedPlayerID = localStorage.getItem('playerID');
         setPlayerID(storedPlayerID);
 
-        if(storedPlayerID){
+        if(storedPlayerID && roomId){
             // Automatically reconnect the user to the room
             socket.connect()
             socket.emit('joinSession', { playerID: storedPlayerID, gameCode: roomId });
+            console.log(`Reconnecting to room: ${roomId} as player: ${storedPlayerID}`);
         }else{
             //if user is unknow navigate him to dafault page
-            navigate('/duser',replace)
+            navigate('/duser')
         }
 
        
@@ -37,7 +38,7 @@ const Room = () => {
         return () => {
             socket.off('playerJoined'); // Remove the listener when the component unmounts
         };
-    }, [roomId,socket]);
+    }, [roomId,socket, navigate]);
     return (
         <div>
             <h1>Room ID: {roomId}</h1>

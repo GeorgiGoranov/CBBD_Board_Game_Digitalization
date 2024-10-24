@@ -21,11 +21,9 @@ function setupWebSocket(server) {
 
     // Handle when a player joins a session
     socket.on('joinSession', (data) => {
-    
-      const { playerID, gameCode } = data;
-      console.log(`Player joined: ${playerID}, Game Code: ${gameCode}`);
 
-    
+      const { playerID, gameCode } = data;
+      
       // Add the player to the specific room associated with the gameCode
       socket.join(gameCode);
 
