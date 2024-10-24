@@ -1,7 +1,8 @@
 import React, { useState,useEffect} from 'react';
-
 import { useNavigate } from 'react-router-dom';
 import initSocket from '../context/socket';
+
+
 const HomeDefautUser = () => {
     const [playerID, setPlayerID] = useState('');
     const [gameCode, setGameCode] = useState('');
@@ -12,15 +13,12 @@ const HomeDefautUser = () => {
 
     // Disconnect from the WebSocket when on the HomeDefautUser page
     useEffect(() => {
-        if (socket.connected) {
-            socket.disconnect();  // Disconnect the WebSocket when this page is loaded
-        }
+        // Disconnect socket when the page loads
+        socket.disconnect();
 
         return () => {
-            // Cleanup in case the component is unmounted before disconnect
-            if (socket.connected) {
-                socket.disconnect();
-            }
+            // Disconnect again in case the component is unmounted
+            socket.disconnect();
         };
     }, [socket]);
 
@@ -40,6 +38,7 @@ const HomeDefautUser = () => {
             setMessage('Successfully joined the game session!');
             localStorage.setItem('playerID', playerID);  // Store in localStorage
             navigate(`/room/${gameCode}`);
+
         } else {
             setMessage(data.message || 'Error joining the session');
         }
