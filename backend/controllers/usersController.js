@@ -164,7 +164,7 @@ const createSession = async (req, res) => {
         when the web context/hook is triggered can take the unfo
          and filled in without having to make a call to the DB
         */
-        res.status(201).json({ code: sessionCode,host: host,isActive: true, message: 'Game session created!' });
+        res.status(201).json({ code: sessionCode, host: host, isActive: true, message: 'Game session created!' });
 
     } catch (error) {
         res.status(500).json({ message: 'Error creating session' });
@@ -176,6 +176,7 @@ const joinSession = async (req, res) => {
         const { code, playerID } = req.body
 
         const session = await SessionModel.findOne({ code });
+
         if (!session) {
             return res.status(404).json({ message: 'Game session not found!' })
         }
@@ -183,12 +184,15 @@ const joinSession = async (req, res) => {
             return res.status(400).json({ message: 'Game session not longer active!' })
         }
         // Add the player to the session's players array if not already present
-        if (!session.players.includes(playerID)) {
-            session.players.push(playerID)
+        // Add the player to the session's players array with role 'user'
+        const player = { id: playerID, role: 'user' };
+        if (!session.players.find(p => p.id === playerID)) {
+            session.players.push(player);
             await session.save() // Save the updated session
 
         }
-        return res.status(200).json({ message: 'Player joined the session successfully!', session })
+        // Return the player's role along with the session data
+        return res.status(200).json({ message: 'Player joined successfully', role: player.role });
 
     } catch (error) {
         console.error('Error joining session:', error);
@@ -245,11 +249,11 @@ const getAllAvailableSessions = async (req, res) => {
 };
 
 const fetchPlayers = async (req, res) => {
-    const { sessionCode  } = req.params;
+    const { sessionCode } = req.params;
 
     try {
         // Find the game session by its unique 6-digit code
-        const session = await SessionModel.findOne({ code: sessionCode  });
+        const session = await SessionModel.findOne({ code: sessionCode });
 
         // If no session is found, return an error response
         if (!session) {

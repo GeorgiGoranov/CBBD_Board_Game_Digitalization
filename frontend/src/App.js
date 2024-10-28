@@ -26,9 +26,9 @@ function App() {
             <Routes>
               <Route path="/" element={<Login />} />
               <Route path="/register" element={<Register />} />
-              <Route path="/muser" element={<ProtectedRoute allowedRoles={['admin', 'user']}><Home/></ProtectedRoute>} />
               <Route path="/duser" element={<HomeDefautUser />} />
               <Route path="/room/:roomId" element={<Room />} />
+              <Route path="/muser" element={<ProtectedRoute allowedRoles={['admin', 'user']}><Home/></ProtectedRoute>} />
               <Route path="/additions" element={<ProtectedRoute allowedRoles={['admin', 'user']} ><Additions/></ProtectedRoute>} />
               {/* component routes below*/}
               <Route path="/av" element={<ProtectedRoute allowedRoles={['admin', 'user']} ><AvailableSessions /></ProtectedRoute>} />
