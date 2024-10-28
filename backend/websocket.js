@@ -16,12 +16,11 @@ function setupWebSocket(server) {
   // Save io in app locals so that it can be accessed from controllers
   // You can choose to return io instead if you don't need to access it from app.locals
   io.on('connection', (socket) => {
-    console.log(`User initial connection: ${socket.id}`);
+    console.log(`User back-end initial connection: ${socket.id}`);
 
     socket.on('disconnect', () => {
-      console.log(`User disconnected: ${socket.id}`);
+      console.log(`User back-end disconnected: ${socket.id}`);
     });
-
 
     // Handle when a player joins a session
     socket.on('joinSession', (data) => {

@@ -1,6 +1,5 @@
 section{
     display: flex;
-   
     flex-direction: column;
     align-items: center;
 }
@@ -38,6 +37,16 @@ div.success {
     padding-bottom: 25px;
 }
 
+.registry_container h3{
+    font-size: 0.8rem;
+}
+
 .button-container{
     text-align: center; // Center the button horizontally
+}
+
+#registry{
+    margin-top: 1rem;
+    margin-bottom: 0;
+
 }

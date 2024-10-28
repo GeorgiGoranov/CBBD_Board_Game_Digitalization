@@ -1,5 +1,5 @@
-import React, { useState, useEffect  } from 'react';
-import { useParams,useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import initSocket from '../context/socket';
 
 let hasJoined = false // Ref to track if the user has already joined
@@ -9,15 +9,19 @@ const Room = () => {
     const [message, setMessage] = useState('');
     const [players, setPlayers] = useState([]);
     const [playerID, setPlayerID] = useState('');
-    const socket = initSocket();  
+    const socket = initSocket();
     const navigate = useNavigate()
-    
-    
-    useEffect(() => {
 
+
+    useEffect(() => {
         // Retrieve playerID from localStorage
         const storedPlayerID = localStorage.getItem('playerID');
         setPlayerID(storedPlayerID);
+
+        // Connect the socket if it's not already connected
+        if (!socket.connected) {
+            socket.connect();
+        }
 
         /* when the page is ran for the first time the boolean is false, 
         we check the stored value in the localStorage and if we have 
@@ -27,18 +31,17 @@ const Room = () => {
 
         it can be done with useRef react hook but it is almost the same context as the boolean
         */
-        if(!hasJoined && storedPlayerID && roomId){
+        if (!hasJoined && storedPlayerID && roomId) {
             hasJoined = true;
             // Automatically reconnect the user to the room
             socket.connect()
             socket.emit('joinSession', { playerID: storedPlayerID, gameCode: roomId });
-            console.log(`Reconnecting to room: ${roomId} as player: ${storedPlayerID}`);
-        }else if (!storedPlayerID){
+        } else if (!storedPlayerID) {
             //if user is unknow navigate him to dafault page
             navigate('/duser')
         }
 
-       
+
         // Listen for new players joining the session
         socket.on('playerJoined', (data) => {
             // setPlayers(players);  // Update the players state with the updated list
@@ -46,8 +49,8 @@ const Room = () => {
 
         });
 
-         // Listen for updates to the player list
-         socket.on('updatePlayerList', (playerList) => {
+        // Listen for updates to the player list
+        socket.on('updatePlayerList', (playerList) => {
             setPlayers(playerList);  // Update the player list when received from the server
         });
 
@@ -56,7 +59,8 @@ const Room = () => {
             socket.off('playerJoined'); // Remove the listener when the component unmounts
             socket.off('updatePlayerList');
         };
-    }, [roomId,socket, navigate]);
+    }, [roomId, socket, navigate]);
+
     return (
         <div>
             <h1>Room ID: {roomId}</h1>

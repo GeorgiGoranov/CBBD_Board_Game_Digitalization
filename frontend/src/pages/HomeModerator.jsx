@@ -1,17 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import io from 'socket.io-client'
 import { useNavigate } from "react-router-dom";
 import AvailableSessions from '../components/AvailableSessions';
 import { useSessionsContext } from '../hooks/useSessionContext';
 import "../SCSS/homeModerator.scss"
+import initSocket from '../context/socket';
 
-const socket = io('http://localhost:4000');
 const Home = () => {
 
   const [sessionCode, setSessionCode] = useState('');
   // const [players, setPlayers] = useState([]);
   const { dispatch } = useSessionsContext()
   const navigate = useNavigate()
+  const socket = initSocket();
 
 
   const createGameSession = async () => {
@@ -35,16 +35,10 @@ const Home = () => {
 
   };
 
-  // Listen for new players joining the session
-  useEffect(() => {
-    if (sessionCode) {
-      socket.on('playerJoined', (data) => {
-        // setPlayers(data.players || []); // Update the players state with the new list or set empty array if undefined
-      });
-    }
-  }, [sessionCode]);
+
 
   const goToCardAndSheetCreation = () => {
+    socket.connect()
     navigate('/additions')
   }
 
