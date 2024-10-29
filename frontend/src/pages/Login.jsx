@@ -51,7 +51,7 @@ const Login = () => {
 
         await login()
         // Navigate based on the role of the logged-in user
-        console.log(data.user.role)
+       
         if (data.user && data.user.role === 'admin') {
           navigate('/muser');
         } else {

@@ -75,6 +75,10 @@ const Room = () => {
         socket.on('updatePlayerList', (playerList) => {
             setPlayers(playerList);  // Update the player list when received from the server
         });
+        
+        socket.on('playerLeftRoom', (playerList) => {
+            setMessage(`${playerList} left the game!`);  
+        });
 
         // Cleanup listener when the component unmounts
         return () => {
