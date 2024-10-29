@@ -54,6 +54,30 @@ const AvailableSessions = () => {
         }
     };
 
+    // Function to toggle the activity status
+    const handleActivityClick = async (sessionCode) => {
+        try {
+            // Send request to backend to toggle activity
+            const response = await fetch(`/api/routes/toggle-activity/${sessionCode}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+            });
+            const updatedSession = await response.json();
+
+            if (response.ok) {
+                // Update state with the new session data
+                dispatch({
+                    type: 'UPDATE_SESSION',
+                    payload: updatedSession
+                });
+            } else {
+                throw new Error('Error toggling activity');
+            }
+        } catch (error) {
+            setError(error.message);
+        }
+    };
+
     return (
         <div>
             <h2>Available Game Sessions</h2>
@@ -74,7 +98,7 @@ const AvailableSessions = () => {
                             <p>Total Participants: <span>{session.players && session.players.length > 0 ? session.players.length : '0'}</span></p>
                             <div className="container-for-activity">
                                 <p className="p-activity">Active: <span>{session.isActive ? 'Yes' : 'No'}</span></p>
-                                <i className="bi bi-sliders"></i>
+                                <i className="bi bi-sliders" onClick={() => handleActivityClick(session.code)}></i>
                             </div>
                         </li>
                     ))}

@@ -303,6 +303,20 @@ const userRole = async (req,res) =>{
     res.status(200).json({ role });
 }
 
+const toggleActivity = async (req,res) =>{
+    try {
+        const session = await SessionModel.findOne({ code: req.params.code });
+        if (!session) return res.status(404).json({ message: 'Session not found' });
+        
+        session.isActive = !session.isActive; // Toggle the isActive status
+        await session.save();
+
+        res.json(session);
+    } catch (error) {
+        res.status(500).json({ message: 'Error toggling session activity', error: error.message });
+    }
+}
+
 module.exports = {
     createUser,
     getAllAvailableSessions,
@@ -316,5 +330,6 @@ module.exports = {
     isAuth,
     fetchPlayers,
     deleteSession,
-    userRole
+    userRole,
+    toggleActivity
 }
