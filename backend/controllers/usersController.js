@@ -184,15 +184,17 @@ const joinSession = async (req, res) => {
             return res.status(400).json({ message: 'Game session not longer active!' })
         }
         // Add the player to the session's players array if not already present
-        // Add the player to the session's players array with role 'user'
-        const player = { id: playerID, role: 'user' };
-        if (!session.players.find(p => p.id === playerID)) {
-            session.players.push(player);
-            await session.save() // Save the updated session
 
+        if (!session.players.includes(playerID)) {
+            session.players.push(playerID)
+            await session.save() // Save the updated session
         }
-        // Return the player's role along with the session data
-        return res.status(200).json({ message: 'Player joined successfully', role: player.role });
+
+        const token = createToken(playerID, 'user');
+        
+        res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 }); // cookie operates in milisecond and not in minutes
+
+        return res.status(200).json({ message: 'Player joined the session successfully!', session })
 
     } catch (error) {
         console.error('Error joining session:', error);
@@ -296,6 +298,11 @@ const deleteSession = async (req, res) => {
     }
 };
 
+const userRole = async (req,res) =>{
+    const { role } = req.user; // Decoded JWT should have role
+    res.status(200).json({ role });
+}
+
 module.exports = {
     createUser,
     getAllAvailableSessions,
@@ -308,5 +315,6 @@ module.exports = {
     logOut,
     isAuth,
     fetchPlayers,
-    deleteSession
+    deleteSession,
+    userRole
 }

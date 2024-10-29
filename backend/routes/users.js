@@ -2,7 +2,7 @@ const express = require('express')
 
 const {createUser,getAllAvailableSessions,getUser,updateUser,
     getUserLogin,createSession,joinSession, isAuth,logOut, fetchPlayers,
-    deleteSession} = require('../controllers/usersController')
+    deleteSession,userRole} = require('../controllers/usersController')
 
 const { requireAuth } = require('../middleware/authMiddleware')
 const router = express.Router()
@@ -21,6 +21,8 @@ router.post('/create-session',requireAuth, createSession)
 router.post('/join-session', joinSession)
 
 router.get('/logout', requireAuth, logOut)
+
+router.get('/user-role', requireAuth, userRole)
 
 
 //***************/ all of the dynamic endpoint fucntions have to be below the rest so there is not express confusion

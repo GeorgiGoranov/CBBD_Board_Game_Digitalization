@@ -9,11 +9,34 @@ const Room = () => {
     const [message, setMessage] = useState('');
     const [players, setPlayers] = useState([]);
     const [playerID, setPlayerID] = useState('');
+    const [role, setRole] = useState(null); // Role state to determine layout
+    const [loading, setLoading] = useState(true);
     const socket = initSocket();
     const navigate = useNavigate()
 
 
     useEffect(() => {
+
+        const fetchUserRole = async () => {
+            try {
+                const response = await fetch('/api/routes/user-role', {
+                    method: 'GET',
+                    credentials: 'include', // Include JWT cookies
+                });
+                const data = await response.json();
+
+                if (response.ok) {
+                    setRole(data.role); // Set the role (e.g. "admin" or "user")
+                    console.log(data.role)
+                }
+            } catch (error) {
+                console.error('Error fetching role:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchUserRole();
         // Retrieve playerID from localStorage
         const storedPlayerID = localStorage.getItem('playerID');
         setPlayerID(storedPlayerID);
@@ -41,7 +64,6 @@ const Room = () => {
             navigate('/duser')
         }
 
-
         // Listen for new players joining the session
         socket.on('playerJoined', (data) => {
             // setPlayers(players);  // Update the players state with the updated list
@@ -61,8 +83,10 @@ const Room = () => {
         };
     }, [roomId, socket, navigate]);
 
+    if (loading) return <div>Loading...</div>;
+
     return (
-        <div>
+        <div className='room-container'>
             <h1>Room ID: {roomId}</h1>
             {message && <p>{message}</p>}
 
@@ -72,6 +96,13 @@ const Room = () => {
                     <li key={index}>{player}</li>
                 ))}
             </ul>
+
+            {role === 'admin' ? (
+                <div>Moderator Layout for Room {roomId}</div>
+            ) : (
+                <div>Player Layout for Room {roomId}</div>
+            )}
+
         </div>
     )
 }

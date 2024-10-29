@@ -37,7 +37,6 @@ const HomeDefautUser = () => {
         if (response.ok) {
             setMessage('Successfully joined the game session!');
             localStorage.setItem('playerID', playerID);  // Store in localStorage
-            localStorage.setItem('role', data.role)
             navigate(`/room/${gameCode}`);
 
         } else {
