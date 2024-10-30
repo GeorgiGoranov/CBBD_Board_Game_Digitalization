@@ -31,8 +31,15 @@ const AvailableSessions = () => {
     }, [dispatch]);
 
     // Handle Play Button Click - navigate to the session room
-    const handlePlayClick = (sessionCode) => {
-        navigate(`/room/${sessionCode}`);
+    const handlePlayClick = (session) => {
+
+        if(!session.isActive){
+          
+            alert("This session is INACTIVE and cannot be joined.");
+        }else{
+            navigate(`/room/${session.code}`);
+
+        }
 
     };
 
@@ -89,7 +96,7 @@ const AvailableSessions = () => {
                             <div className="container-action-buttons">
                                 <p>Session Code: <span>{session.code}</span></p>
                                 <div className="container-for-action-buttons">
-                                    <i className="bi bi-play-btn-fill" onClick={() => handlePlayClick(session.code)}></i>
+                                    <i className="bi bi-play-btn-fill" onClick={() => handlePlayClick(session)}></i>
                                     <i className="bi bi-x-circle" onClick={() => handleDeleteClick(session.code)}></i>
 
                                 </div>
