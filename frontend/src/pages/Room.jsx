@@ -2,8 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import initSocket from '../context/socket';
 import ModeratorRoomLayout from '../components/ModeratorRoomLayout';
-
 import { useLanguage } from '../context/LanguageContext';
+import "../SCSS/room.scss"
+import "../SCSS/moderatorContainerLayout.scss"
+import ParticipantRoomLayout from '../components/ParticipantRoomLayout';
+import Rounds from '../components/Rounds';
 
 let hasJoined = false // Ref to track if the user has already joined
 
@@ -32,6 +35,8 @@ const Room = () => {
                 if (response.ok) {
                     setRole(data.role); // Set the role (e.g. "admin" or "user")
                     console.log(data.role)
+                    console.log(data.name)
+
                 }
             } catch (error) {
                 console.error('Error fetching role:', error);
@@ -40,10 +45,11 @@ const Room = () => {
             }
         };
 
+        const storedPlayerID = localStorage.getItem('playerID');
         fetchUserRole();
         // Retrieve playerID from localStorage
-        const storedPlayerID = localStorage.getItem('playerID');
         setPlayerID(storedPlayerID);
+
 
         // Connect the socket if it's not already connected
         if (!socket.connected) {
@@ -79,9 +85,9 @@ const Room = () => {
         socket.on('updatePlayerList', (playerList) => {
             setPlayers(playerList);  // Update the player list when received from the server
         });
-        
+
         socket.on('playerLeftRoom', (playerList) => {
-            setMessage(`${playerList} left the game!`);  
+            setMessage(`${playerList} left the game!`);
         });
 
         // Cleanup listener when the component unmounts
@@ -95,26 +101,34 @@ const Room = () => {
 
     return (
         <div className='room-container'>
-            <h1>Room ID: {roomId}</h1>
-            {message && <p>{message}</p>}
-            <h1>language:{language}</h1>
+            <div className="information-pannel">
+                <h1>Room ID: {roomId}</h1>
+                {message && <p>{message}</p>}
 
-            <h2>Players in the Room:</h2>
-            <ul>
-                {players.map((player, index) => (
-                    <li key={index}>{player}</li>
-                ))}
-            </ul>
+                <h2>Players in the Room:</h2>
+                <ul>
+                    {players.map((player, index) => (
+                        <li key={index}>{player}</li>
+                    ))}
+                </ul>
+                <Rounds/>
+            </div>
+            <div className="role-based-layout">
+                {role === 'admin' ? (
+                    <div className='moderator-container-layout'>Moderator Layout for Room {roomId}
 
-            {role === 'admin' ? (
-                <div>Moderator Layout for Room {roomId}
-                <ModeratorRoomLayout/>
-               
-                </div>
-                
-            ) : (
-                <div>Player Layout for Room {roomId}</div>
-            )}
+                        <ModeratorRoomLayout />
+
+                    </div>
+
+                ) : (
+                    <div>Player Layout for Room {roomId}
+                    <ParticipantRoomLayout/>
+                    </div>
+                )}
+
+            </div>
+
 
         </div>
     )

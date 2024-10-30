@@ -72,6 +72,7 @@ function setupWebSocket(server) {
         // Emit the updated player list to everyone in the room
         io.to(roomCode).emit('updatePlayerList', rooms[roomCode].map(player => player.playerID));
         io.to(roomCode).emit('playerLeftRoom', playerID);
+        
 
         console.log(`${playerID} left room: ${roomCode}`);
       }

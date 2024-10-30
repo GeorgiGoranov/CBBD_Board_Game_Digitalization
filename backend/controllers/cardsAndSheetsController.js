@@ -43,7 +43,45 @@ const createCards = async (req, res) => {
     }
 }
 
+// Fetch one card per subcategory within each category
+const getOneCardPerCategory = async (req, res) => {
+   try {
+        // Fetch all unique categories
+        const categories = await CardModel.distinct('category');
+
+        // Find one subcategory for each category
+        const cards = await Promise.all(
+            categories.map(async (category) => {
+                // Find the first card that belongs to this category
+                const card = await CardModel.findOne({ category }).select('category subcategories').lean();
+
+                if (!card || !card.subcategories || card.subcategories.length === 0) return null;
+
+                 // Select a random subcategory from the list
+                const randomIndex = Math.floor(Math.random() * card.subcategories.length);
+                // Select the first subcategory (or randomize by replacing 0 with Math.floor(Math.random() * card.subcategories.length))
+                const selectedSubcategory = card.subcategories[randomIndex];
+
+                return {
+                    category: card.category,
+                    subcategory: selectedSubcategory.name,
+                    options: selectedSubcategory.options
+                };
+            })
+        );
+
+        // Filter out any null entries in case some categories have no subcategories
+        const filteredCards = cards.filter(Boolean);
+
+        res.status(200).json(filteredCards);
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching cards', error: error.message });
+    }
+};
+
+
 
 module.exports = {
-    createCards
+    createCards,
+    getOneCardPerCategory
 }

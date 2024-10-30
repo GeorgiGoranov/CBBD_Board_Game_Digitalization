@@ -69,23 +69,6 @@ const getUser = async (req, res) => {
     res.status(200).json(user)
 }
 
-// //delete User
-// const deleteUser = async (req, res) => {
-//     const { id } = req.params
-
-//     if (!mongoose.Types.ObjectId.isValid(id)) {
-//         return res.status(404).json({ error: 'No such User in the system!' })
-//     }
-
-//     const user = await User.findByIdAndDelete({ _id: id })
-
-//     if (!user) {
-//         return res.status(404).json({ error: 'No such User found!' })
-//     }
-
-//     res.status(200).json(user)
-// }
-
 //update User
 const updateUser = async (req, res) => {
     const { id } = req.params
@@ -123,7 +106,7 @@ const getUserLogin = async (req, res) => {
             return res.status(401).json({ error: "Invalid credentials" });
         }
 
-        const token = createToken(user._id, user.role);
+        const token = createToken(user._id, user.role, user.name);
 
         res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 }); // cookie operates in milisecond and not in minutes
 
@@ -203,8 +186,8 @@ const joinSession = async (req, res) => {
 }
 
 const maxAge = 1 * 24 * 60 * 60 // time lenght 5 min
-const createToken = (id, role) => {
-    return jwt.sign({ id, role }, process.env.SECRET_KEY, {
+const createToken = (id, role,name) => {
+    return jwt.sign({ id, role, name }, process.env.SECRET_KEY, {
         expiresIn: maxAge
     })
 }
@@ -299,8 +282,8 @@ const deleteSession = async (req, res) => {
 };
 
 const userRole = async (req,res) =>{
-    const { role } = req.user; // Decoded JWT should have role
-    res.status(200).json({ role });
+    const { role, name } = req.user; // Decoded JWT should have role
+    res.status(200).json({ role, name });
 }
 
 const toggleActivity = async (req,res) =>{
