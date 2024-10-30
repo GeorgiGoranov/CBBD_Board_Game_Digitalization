@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import initSocket from '../context/socket';
+import ModeratorRoomLayout from '../components/ModeratorRoomLayout';
+
+import { useLanguage } from '../context/LanguageContext';
 
 let hasJoined = false // Ref to track if the user has already joined
 
@@ -13,6 +16,7 @@ const Room = () => {
     const [loading, setLoading] = useState(true);
     const socket = initSocket();
     const navigate = useNavigate()
+    const { language } = useLanguage(); // Access selected language
 
 
     useEffect(() => {
@@ -93,6 +97,7 @@ const Room = () => {
         <div className='room-container'>
             <h1>Room ID: {roomId}</h1>
             {message && <p>{message}</p>}
+            <h1>language:{language}</h1>
 
             <h2>Players in the Room:</h2>
             <ul>
@@ -102,7 +107,11 @@ const Room = () => {
             </ul>
 
             {role === 'admin' ? (
-                <div>Moderator Layout for Room {roomId}</div>
+                <div>Moderator Layout for Room {roomId}
+                <ModeratorRoomLayout/>
+               
+                </div>
+                
             ) : (
                 <div>Player Layout for Room {roomId}</div>
             )}
