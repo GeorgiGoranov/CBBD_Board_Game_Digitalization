@@ -6,7 +6,7 @@ import { useLanguage } from '../context/LanguageContext';
 const NavBar = () => {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const navigate = useNavigate();
-  const { logout } = useAuth();
+  const {isAuthenticated, logout } = useAuth();
   const {language, setLanguage} = useLanguage()
 
   const handleLogout = async () => {
@@ -46,16 +46,18 @@ const NavBar = () => {
               <option value="de">de</option>
               <option value="nl">nl</option>
             </select>
-            <button
-              onClick={handleLogout}
-              disabled={isLoggingOut}
-              style={{
-                backgroundColor: isLoggingOut ? 'red' : '', // Apply red background when logging out
-                color: isLoggingOut ? 'white' : '',         // Change text color for contrast
-              }}
-            >
-              {isLoggingOut ? 'Logging out...' : 'Log Out'}
-            </button>
+            {isAuthenticated && (
+              <button
+                onClick={handleLogout}
+                disabled={isLoggingOut}
+                style={{
+                  backgroundColor: isLoggingOut ? 'red' : '', // Apply red background when logging out
+                  color: isLoggingOut ? 'white' : '',         // Change text color for contrast
+                }}
+              >
+                {isLoggingOut ? 'Logging out...' : 'Log Out'}
+              </button>
+            )}
           </div>
         </div>
       </div>

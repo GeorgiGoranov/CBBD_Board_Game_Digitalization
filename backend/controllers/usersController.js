@@ -204,7 +204,13 @@ const isAuth = (req, res) => {
         if (error) {
             return res.status(200).json({ authenticated: false })
         }
+        // Validate the decodedToken.id to ensure it's a valid ObjectId
+        if (!mongoose.Types.ObjectId.isValid(decodedToken.id)) {
+            console.warn("Invalid object name!")
+            return res.status(200).json({ authenticated: false, error: "Invalid user ID" });
+        }
         try {
+
             const user = await User.findById(decodedToken.id).select('-password')
 
             if (!user) {

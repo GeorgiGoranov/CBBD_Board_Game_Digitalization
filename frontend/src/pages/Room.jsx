@@ -23,8 +23,6 @@ const Room = () => {
     const [randomCardsC, setRandomCardsC] = useState([]);
 
 
-
-
     useEffect(() => {
 
         const fetchUserRole = async () => {
