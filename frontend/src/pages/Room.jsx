@@ -20,8 +20,9 @@ const Room = () => {
     const socket = initSocket();
     const navigate = useNavigate()
     const { language } = useLanguage(); // Access selected language
-    const [randomCards, setRandomCards] = useState([]);
-    
+    const [randomCardsC, setRandomCardsC] = useState([]);
+
+
 
 
     useEffect(() => {
@@ -72,6 +73,7 @@ const Room = () => {
             socket.connect()
             socket.emit('joinSession', { playerID: storedPlayerID, gameCode: roomId });
             fetchRandomCards();
+        
         } else if (!storedPlayerID) {
             //if user is unknow navigate him to dafault page
             navigate('/duser')
@@ -102,14 +104,16 @@ const Room = () => {
 
     const fetchRandomCards = async () => {
         try {
-            const response = await fetch('/api/cards/competency-cards'); // Adjust endpoint path
+            const response = await fetch('/api/cards/competency/random'); // Adjust endpoint path
             if (!response.ok) throw new Error('Error fetching cards');
             const data = await response.json();
-            setRandomCards(data);
+            setRandomCardsC(data);
+            
         } catch (error) {
-           console.log(error)
+            console.log(error)
         }
     };
+
 
     if (loading) return <div>Loading...</div>;
 
@@ -126,15 +130,15 @@ const Room = () => {
                     ))}
                 </ul>
                 <ul className='api-list'>
-                {randomCards.map((card, index) => (
-                    <li className='api-item' key={index}>
-                        <h3>{card.category}</h3>
-                        <p>Subcategory: {card.subcategory}</p>
-                        <p>Options ({language.toUpperCase()}): {card.options[language] || 'Not available'}</p>
-                    </li>
-                ))}
-            </ul>
-                <Rounds/>
+                    {randomCardsC.map((card, index) => (
+                        <li className='api-item' key={index}>
+                            <h3>{card.category}</h3>
+                            <p>Subcategory: {card.subcategory}</p>
+                            <p>Options ({language}): {card.options[language] || 'Not available'}</p>
+                        </li>
+                    ))}
+                </ul>
+                <Rounds />
             </div>
             <div className="role-based-layout">
                 {role === 'admin' ? (
@@ -146,7 +150,7 @@ const Room = () => {
 
                 ) : (
                     <div>Player Layout for Room {roomId}
-                    <ParticipantRoomLayout/>
+                        <ParticipantRoomLayout />
                     </div>
                 )}
 

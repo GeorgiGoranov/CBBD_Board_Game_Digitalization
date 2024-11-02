@@ -1,11 +1,12 @@
+require('dotenv').config({path: '../.env'});
+console.log('MongoDB URL:', process.env.MONG_URL_CBBD); 
 const { MongoClient } = require('mongodb');
 const fs = require('fs');
-require('dotenv').config()
 
 // Connection URL
-const url = process.env.MONG_URL;
+const url = process.env.MONG_URL_CBBD;
 const dbName = 'CBBD';
-const collectionName = 'other';
+const collectionName = 'other-cards';
 
 // Read the JSON file
 const jsonData = JSON.parse(fs.readFileSync('imp-data-other.json', 'utf8'));
