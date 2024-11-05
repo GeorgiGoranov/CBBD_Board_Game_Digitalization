@@ -173,7 +173,7 @@ const joinSession = async (req, res) => {
             await session.save() // Save the updated session
         }
 
-        const token = createToken(playerUsername, 'user', playerUsername);
+        const token = createToken(playerUsername, 'user', playerUsername, code);
         
         res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 }); // cookie operates in milisecond and not in minutes
 
@@ -186,43 +186,61 @@ const joinSession = async (req, res) => {
 }
 
 const maxAge = 1 * 24 * 60 * 60 // time lenght 5 min
-const createToken = (id, role, name) => {
-    return jwt.sign({ id, role, name }, process.env.SECRET_KEY, {
+const createToken = (id, role, name, sessionCode) => {
+    return jwt.sign({ id, role, name,sessionCode }, process.env.SECRET_KEY, {
         expiresIn: maxAge
     })
 }
 
 
-const isAuth = (req, res) => {
-    const token = req.cookies.jwt
+const isAuth = (req, res, next) => {
+    const token = req.cookies.jwt;
 
     if (!token) {
-        return res.status(200).json({ authenticated: false })
+        return res.status(200).json({ authenticated: false });
     }
 
     jwt.verify(token, process.env.SECRET_KEY, async (error, decodedToken) => {
         if (error) {
-            return res.status(200).json({ authenticated: false })
+            return res.status(200).json({ authenticated: false });
         }
+
         // Validate the decodedToken.id to ensure it's a valid ObjectId
         if (!mongoose.Types.ObjectId.isValid(decodedToken.id)) {
-            console.warn("Invalid object name!")
+            console.warn("Invalid object name!");
             return res.status(200).json({ authenticated: false, error: "Invalid user ID" });
         }
-        try {
 
-            const user = await User.findById(decodedToken.id).select('-password')
+        try {
+            const user = await User.findById(decodedToken.id).select('-password');
 
             if (!user) {
-                return res.status(200).json({ authenticated: false })
+                return res.status(200).json({ authenticated: false });
             }
-            res.status(200).json({ authenticated: true, user })
+
+            req.user = {
+                id: user._id,
+                role: user.role,
+                name: user.name,
+            };
+
+            if (user.role === 'admin') {
+                return res.status(200).json({ authenticated: true, user: req.user });
+            }
+            // Include sessionCode only if it's provided in the token
+            if (decodedToken.sessionCode) {
+                req.user.sessionCode = decodedToken.sessionCode;
+            }
+
+            next();
+            // res.status(200).json({ authenticated: true, user })
         } catch (error) {
-            console.error('Error fetching user: ', error)
-            res.status(500), json({ authenticated: false })
+            console.error('Error fetching user: ', error);
+            res.status(500).json({ authenticated: false });
         }
-    })
-}
+    });
+};
+
 
 const logOut = async (req, res) => {
     res.cookie("jwt", "", { maxAge: 1 });
@@ -288,8 +306,8 @@ const deleteSession = async (req, res) => {
 };
 
 const userRole = async (req,res) =>{
-    const {id,role,name } = req.user;
-    res.status(200).json({ id,role,name});
+    const { id, role, name, sessionCode } = req.user;
+    res.status(200).json({ id, role, name, sessionCode });
 }
 
 const toggleActivity = async (req,res) =>{

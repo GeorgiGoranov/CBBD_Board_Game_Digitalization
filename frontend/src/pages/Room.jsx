@@ -8,8 +8,6 @@ import initSocket from '../context/socket';
 import "../SCSS/room.scss"
 import "../SCSS/moderatorContainerLayout.scss"
 
-let hasJoined = false // Ref to track if the user has already joined
-
 
 const Room = () => {
     const { roomId } = useParams(); // Fetch roomId from the URL
@@ -22,6 +20,7 @@ const Room = () => {
     const navigate = useNavigate()
     const { language } = useLanguage(); // Access selected language
     const [cards, setCards] = useState({ competencyCard: [], otherCard: [] });
+    const [userSessionCode, setUserSessionCode] = useState(null);
 
     if (!socketRef.current) {
         socketRef.current = initSocket();
@@ -38,12 +37,16 @@ const Room = () => {
             const data = await response.json();
 
             if (response.ok) {
+                setUserSessionCode(data.sessionCode);
                 setRole(data.role); // Set the role (e.g. "admin" or "user")
                 setPlayerID(data.id);
                 console.warn(data)
+            }else{
+                navigate('/duser')
             }
         } catch (error) {
             console.error('Error fetching role:', error);
+            navigate('/duser');
         } finally {
             setLoading(false);
         }
@@ -59,9 +62,14 @@ const Room = () => {
     };
 
     useEffect(() => {
-        fetchUserRole()
-        fetchAllCards()
-    }, [])
+        if (userSessionCode && userSessionCode !== roomId || null) {
+            // User is trying to access a room they haven't joined
+            navigate('/duser'); // Redirect to home or show an error
+        }else{
+            fetchUserRole()
+            fetchAllCards() 
+        }
+    }, [userSessionCode, navigate,roomId])
 
     useEffect(() => {
         // Connect the socket if it's not already connected
@@ -96,6 +104,7 @@ const Room = () => {
         if (playerID && roomId) {
             socket.emit('joinSession', { playerID, gameCode: roomId });
         }
+        
 
     }, [playerID, roomId, socket])
 
