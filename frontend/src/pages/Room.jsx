@@ -39,7 +39,7 @@ const Room = () => {
             if (response.ok) {
                 setUserSessionCode(data.sessionCode);
                 setRole(data.role); // Set the role (e.g. "admin" or "user")
-                setPlayerID(data.id);
+                setPlayerID(data.name);
                 console.warn(data)
             }else{
                 navigate('/duser')
