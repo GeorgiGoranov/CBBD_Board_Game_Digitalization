@@ -69,23 +69,6 @@ const getUser = async (req, res) => {
     res.status(200).json(user)
 }
 
-// //delete User
-// const deleteUser = async (req, res) => {
-//     const { id } = req.params
-
-//     if (!mongoose.Types.ObjectId.isValid(id)) {
-//         return res.status(404).json({ error: 'No such User in the system!' })
-//     }
-
-//     const user = await User.findByIdAndDelete({ _id: id })
-
-//     if (!user) {
-//         return res.status(404).json({ error: 'No such User found!' })
-//     }
-
-//     res.status(200).json(user)
-// }
-
 //update User
 const updateUser = async (req, res) => {
     const { id } = req.params
@@ -123,7 +106,7 @@ const getUserLogin = async (req, res) => {
             return res.status(401).json({ error: "Invalid credentials" });
         }
 
-        const token = createToken(user._id, user.role);
+        const token = createToken(user._id, user.role, user.username);
 
         res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 }); // cookie operates in milisecond and not in minutes
 
@@ -164,7 +147,7 @@ const createSession = async (req, res) => {
         when the web context/hook is triggered can take the unfo
          and filled in without having to make a call to the DB
         */
-        res.status(201).json({ code: sessionCode,host: host,isActive: true, message: 'Game session created!' });
+        res.status(201).json({ code: sessionCode, host: host, isActive: true, message: 'Game session created!' });
 
     } catch (error) {
         res.status(500).json({ message: 'Error creating session' });
@@ -173,9 +156,10 @@ const createSession = async (req, res) => {
 
 const joinSession = async (req, res) => {
     try {
-        const { code, playerID } = req.body
+        const { code, playerUsername } = req.body
 
         const session = await SessionModel.findOne({ code });
+
         if (!session) {
             return res.status(404).json({ message: 'Game session not found!' })
         }
@@ -183,11 +167,16 @@ const joinSession = async (req, res) => {
             return res.status(400).json({ message: 'Game session not longer active!' })
         }
         // Add the player to the session's players array if not already present
-        if (!session.players.includes(playerID)) {
-            session.players.push(playerID)
-            await session.save() // Save the updated session
 
+        if (!session.players.includes(playerUsername)) {
+            session.players.push(playerUsername)
+            await session.save() // Save the updated session
         }
+
+        const token = createToken(playerUsername, 'user', playerUsername, code);
+        
+        res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 }); // cookie operates in milisecond and not in minutes
+
         return res.status(200).json({ message: 'Player joined the session successfully!', session })
 
     } catch (error) {
@@ -197,37 +186,61 @@ const joinSession = async (req, res) => {
 }
 
 const maxAge = 1 * 24 * 60 * 60 // time lenght 5 min
-const createToken = (id, role) => {
-    return jwt.sign({ id, role }, process.env.SECRET_KEY, {
+const createToken = (id, role, name, sessionCode) => {
+    return jwt.sign({ id, role, name,sessionCode }, process.env.SECRET_KEY, {
         expiresIn: maxAge
     })
 }
 
 
-const isAuth = (req, res) => {
-    const token = req.cookies.jwt
+const isAuth = (req, res, next) => {
+    const token = req.cookies.jwt;
 
     if (!token) {
-        return res.status(200).json({ authenticated: false })
+        return res.status(200).json({ authenticated: false });
     }
 
     jwt.verify(token, process.env.SECRET_KEY, async (error, decodedToken) => {
         if (error) {
-            return res.status(200).json({ authenticated: false })
+            return res.status(200).json({ authenticated: false });
         }
+
+        // Validate the decodedToken.id to ensure it's a valid ObjectId
+        if (!mongoose.Types.ObjectId.isValid(decodedToken.id)) {
+            console.warn("Invalid object name!");
+            return res.status(200).json({ authenticated: false, error: "Invalid user ID" });
+        }
+
         try {
-            const user = await User.findById(decodedToken.id).select('-password')
+            const user = await User.findById(decodedToken.id).select('-password');
 
             if (!user) {
-                return res.status(200).json({ authenticated: false })
+                return res.status(200).json({ authenticated: false });
             }
-            res.status(200).json({ authenticated: true, user })
+
+            req.user = {
+                id: user._id,
+                role: user.role,
+                name: user.name,
+            };
+
+            if (user.role === 'admin') {
+                return res.status(200).json({ authenticated: true, user: req.user });
+            }
+            // Include sessionCode only if it's provided in the token
+            if (decodedToken.sessionCode) {
+                req.user.sessionCode = decodedToken.sessionCode;
+            }
+
+            next();
+            // res.status(200).json({ authenticated: true, user })
         } catch (error) {
-            console.error('Error fetching user: ', error)
-            res.status(500), json({ authenticated: false })
+            console.error('Error fetching user: ', error);
+            res.status(500).json({ authenticated: false });
         }
-    })
-}
+    });
+};
+
 
 const logOut = async (req, res) => {
     res.cookie("jwt", "", { maxAge: 1 });
@@ -245,11 +258,11 @@ const getAllAvailableSessions = async (req, res) => {
 };
 
 const fetchPlayers = async (req, res) => {
-    const { sessionCode  } = req.params;
+    const { sessionCode } = req.params;
 
     try {
         // Find the game session by its unique 6-digit code
-        const session = await SessionModel.findOne({ code: sessionCode  });
+        const session = await SessionModel.findOne({ code: sessionCode });
 
         // If no session is found, return an error response
         if (!session) {
@@ -292,6 +305,25 @@ const deleteSession = async (req, res) => {
     }
 };
 
+const userRole = async (req,res) =>{
+    const { id, role, name, sessionCode } = req.user;
+    res.status(200).json({ id, role, name, sessionCode });
+}
+
+const toggleActivity = async (req,res) =>{
+    try {
+        const session = await SessionModel.findOne({ code: req.params.code });
+        if (!session) return res.status(404).json({ message: 'Session not found' });
+        
+        session.isActive = !session.isActive; // Toggle the isActive status
+        await session.save();
+
+        res.json(session);
+    } catch (error) {
+        res.status(500).json({ message: 'Error toggling session activity', error: error.message });
+    }
+}
+
 module.exports = {
     createUser,
     getAllAvailableSessions,
@@ -304,5 +336,7 @@ module.exports = {
     logOut,
     isAuth,
     fetchPlayers,
-    deleteSession
+    deleteSession,
+    userRole,
+    toggleActivity
 }

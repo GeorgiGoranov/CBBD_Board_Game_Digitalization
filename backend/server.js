@@ -34,7 +34,7 @@ app.use('/api/cards', cardsAndSheetsRoutes)
 
 
 //db
-mongoose.connect(process.env.MONG_URL)
+mongoose.connect(process.env.MONG_URL_CBBD)
   .then(() => {
     //listener for requests
     server.listen(4000, () => {

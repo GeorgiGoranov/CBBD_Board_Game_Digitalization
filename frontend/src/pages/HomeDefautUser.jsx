@@ -4,7 +4,7 @@ import initSocket from '../context/socket';
 
 
 const HomeDefautUser = () => {
-    const [playerID, setPlayerID] = useState('');
+    const [playerUsername, setPlayerUsername] = useState('');
     const [gameCode, setGameCode] = useState('');
     const [message, setMessage] = useState('');
     const socket = initSocket();
@@ -30,13 +30,12 @@ const HomeDefautUser = () => {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ code: gameCode, playerID }),
+            body: JSON.stringify({ code: gameCode, playerUsername }),
         });
         
         const data = await response.json();
         if (response.ok) {
             setMessage('Successfully joined the game session!');
-            localStorage.setItem('playerID', playerID);  // Store in localStorage
             navigate(`/room/${gameCode}`);
 
         } else {
@@ -49,8 +48,8 @@ const HomeDefautUser = () => {
             <h2>Join a Game Session</h2>
             <input
                 type="text"
-                value={playerID}
-                onChange={(e) => setPlayerID(e.target.value)}
+                value={playerUsername}
+                onChange={(e) => setPlayerUsername(e.target.value)}
                 placeholder="Enter your name"
             />
             <input

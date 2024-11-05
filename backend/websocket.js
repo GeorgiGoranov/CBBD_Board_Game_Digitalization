@@ -16,12 +16,11 @@ function setupWebSocket(server) {
   // Save io in app locals so that it can be accessed from controllers
   // You can choose to return io instead if you don't need to access it from app.locals
   io.on('connection', (socket) => {
-    console.log(`User initial connection: ${socket.id}`);
+    console.log(`User back-end initial connection: ${socket.id}`);
 
     socket.on('disconnect', () => {
-      console.log(`User disconnected: ${socket.id}`);
+      console.log(`User back-end disconnected: ${socket.id}`);
     });
-
 
     // Handle when a player joins a session
     socket.on('joinSession', (data) => {
@@ -50,7 +49,7 @@ function setupWebSocket(server) {
       io.to(gameCode).emit('playerJoined', { playerID });
       // Notify everyone in this specific room with the updated player list
       io.to(gameCode).emit('updatePlayerList', rooms[gameCode].map(player => player.playerID));
-    });
+    });~
 
     socket.on('disconnect', () => {
       let roomCode = null;
@@ -72,6 +71,9 @@ function setupWebSocket(server) {
       if (roomCode) {
         // Emit the updated player list to everyone in the room
         io.to(roomCode).emit('updatePlayerList', rooms[roomCode].map(player => player.playerID));
+        io.to(roomCode).emit('playerLeftRoom', playerID);
+        
+
         console.log(`${playerID} left room: ${roomCode}`);
       }
     });

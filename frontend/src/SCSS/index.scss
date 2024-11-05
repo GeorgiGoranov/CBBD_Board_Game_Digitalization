@@ -31,6 +31,16 @@ header .items{
   
 }
 
+header .right-side-container{
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
+header .input{
+  width: 50px;
+}
+
 
 .pages{
   max-width: 1400px;

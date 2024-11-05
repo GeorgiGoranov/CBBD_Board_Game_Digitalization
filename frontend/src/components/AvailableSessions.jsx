@@ -31,8 +31,15 @@ const AvailableSessions = () => {
     }, [dispatch]);
 
     // Handle Play Button Click - navigate to the session room
-    const handlePlayClick = (sessionCode) => {
-        navigate(`/room/${sessionCode}`);
+    const handlePlayClick = (session) => {
+
+        if(!session.isActive){
+          
+            alert(`Session ${session.code} is INACTIVE and cannot be joined.`);
+        }else{
+            navigate(`/room/${session.code}`);
+
+        }
 
     };
 
@@ -54,6 +61,30 @@ const AvailableSessions = () => {
         }
     };
 
+    // Function to toggle the activity status
+    const handleActivityClick = async (sessionCode) => {
+        try {
+            // Send request to backend to toggle activity
+            const response = await fetch(`/api/routes/toggle-activity/${sessionCode}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+            });
+            const updatedSession = await response.json();
+
+            if (response.ok) {
+                // Update state with the new session data
+                dispatch({
+                    type: 'UPDATE_SESSION',
+                    payload: updatedSession
+                });
+            } else {
+                throw new Error('Error toggling activity');
+            }
+        } catch (error) {
+            setError(error.message);
+        }
+    };
+
     return (
         <div>
             <h2>Available Game Sessions</h2>
@@ -65,7 +96,7 @@ const AvailableSessions = () => {
                             <div className="container-action-buttons">
                                 <p>Session Code: <span>{session.code}</span></p>
                                 <div className="container-for-action-buttons">
-                                    <i className="bi bi-play-btn-fill" onClick={() => handlePlayClick(session.code)}></i>
+                                    <i className="bi bi-play-btn-fill" onClick={() => handlePlayClick(session)}></i>
                                     <i className="bi bi-x-circle" onClick={() => handleDeleteClick(session.code)}></i>
 
                                 </div>
@@ -74,7 +105,7 @@ const AvailableSessions = () => {
                             <p>Total Participants: <span>{session.players && session.players.length > 0 ? session.players.length : '0'}</span></p>
                             <div className="container-for-activity">
                                 <p className="p-activity">Active: <span>{session.isActive ? 'Yes' : 'No'}</span></p>
-                                <i className="bi bi-sliders"></i>
+                                <i className="bi bi-sliders" onClick={() => handleActivityClick(session.code)}></i>
                             </div>
                         </li>
                     ))}
