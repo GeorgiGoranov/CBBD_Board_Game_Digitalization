@@ -21,6 +21,9 @@ const Room = () => {
     const { language } = useLanguage(); // Access selected language
     const [cards, setCards] = useState({ competencyCard: [], otherCard: [] });
     const [userSessionCode, setUserSessionCode] = useState(null);
+    const [categories, setCategories] = useState([]); // State for categories
+    const [selectedCategory, setSelectedCategory] = useState(null); // New state for selected category
+
 
     if (!socketRef.current) {
         socketRef.current = initSocket();
@@ -40,8 +43,7 @@ const Room = () => {
                 setUserSessionCode(data.sessionCode);
                 setRole(data.role); // Set the role (e.g. "admin" or "user")
                 setPlayerID(data.name);
-                console.warn(data)
-            }else{
+            } else {
                 navigate('/duser')
             }
         } catch (error) {
@@ -61,15 +63,34 @@ const Room = () => {
         setCards({ competencyCard, otherCard });
     };
 
+    const fetchCategories = async () => {
+        try {
+            const response = await fetch('/api/cards/get-all'); // Adjust endpoint if necessary
+            if (response.ok) {
+                const data = await response.json();
+                setCategories(data); // Update categories state
+            } else {
+                console.error('Error fetching categories');
+            }
+        } catch (error) {
+            console.error('Error fetching categories:', error);
+        }
+    }
+
+    const handleCategoryClick = (category) => {
+        setSelectedCategory(category);
+    };
+
     useEffect(() => {
-        if (userSessionCode && userSessionCode !== roomId || null) {
+        if (userSessionCode != null && userSessionCode !== roomId) {
             // User is trying to access a room they haven't joined
             navigate('/duser'); // Redirect to home or show an error
-        }else{
+        } else {
+            fetchCategories()
             fetchUserRole()
-            fetchAllCards() 
+            // fetchAllCards() 
         }
-    }, [userSessionCode, navigate,roomId])
+    }, [userSessionCode, navigate, roomId])
 
     useEffect(() => {
         // Connect the socket if it's not already connected
@@ -104,7 +125,7 @@ const Room = () => {
         if (playerID && roomId) {
             socket.emit('joinSession', { playerID, gameCode: roomId });
         }
-        
+
 
     }, [playerID, roomId, socket])
 
@@ -126,25 +147,24 @@ const Room = () => {
                 </ul>
                 <h2>Competency Cards</h2>
                 <ul className='api-list'>
-                    {cards.competencyCard.map((card, index) => (
-                        <li className='api-item' key={index}>
-                            <h3>{card.category}</h3>
-                            <p>Subcategory: {card.subcategory}</p>
-                            <p>Options ({language}): {card.options[language] || 'Not available'}</p>
+                    {categories.map((category, index) => (
+                        <li 
+                            key={index}
+                            onClick={() => handleCategoryClick(category.category)} // Set category on click
+                            className={`category-item ${selectedCategory === category.category ? 'selected' : ''}`} // Highlight selected category
+                        >
+                            {category.category}
                         </li>
                     ))}
                 </ul>
 
-                <h2>Other Cards</h2>
-                <ul className='api-list'>
-                    {cards.otherCard.map((card, index) => (
-                        <li className='api-item' key={index}>
-                            <h3>{card.category}</h3>
-                            <p>Subcategory: {card.subcategory}</p>
-                            <p>Options ({language}): {card.options[language] || 'Not available'}</p>
-                        </li>
-                    ))}
-                </ul>
+                {selectedCategory && (
+                    <div>
+                        <h3>Selected Category: {selectedCategory}</h3>
+                        {/* Display more information based on the selected category */}
+                    </div>
+                )}
+                
                 <Rounds />
             </div>
             <div className="role-based-layout">

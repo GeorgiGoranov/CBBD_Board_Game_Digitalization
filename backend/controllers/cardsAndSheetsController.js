@@ -55,7 +55,29 @@ const getOneCardPerCategory = (CardModel) => {
     };
 };
 
+const getAllCategories = (models) => {
+    return async (req, res) => {
+        try {
+            // Use Promise.all to fetch categories from all models concurrently
+            const categoryResults = await Promise.all(
+                models.map(model => model.distinct('category'))
+            );
+
+            // Flatten and remove duplicates
+            const uniqueCategories = [...new Set(categoryResults.flat())].map(category => ({ category }));
+
+            // Send the combined list of categories in the response
+            res.status(200).json(uniqueCategories);
+        } catch (error) {
+            res.status(500).json({ message: 'Error fetching categories', error: error.message });
+        }
+    };
+};
+
+
+
 module.exports = {
     createCards,
-    getOneCardPerCategory
+    getOneCardPerCategory,
+    getAllCategories
 };
