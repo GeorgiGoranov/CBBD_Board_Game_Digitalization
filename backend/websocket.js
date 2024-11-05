@@ -49,7 +49,7 @@ function setupWebSocket(server) {
       io.to(gameCode).emit('playerJoined', { playerID });
       // Notify everyone in this specific room with the updated player list
       io.to(gameCode).emit('updatePlayerList', rooms[gameCode].map(player => player.playerID));
-    });
+    });~
 
     socket.on('disconnect', () => {
       let roomCode = null;

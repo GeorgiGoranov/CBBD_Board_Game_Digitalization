@@ -9,7 +9,7 @@ const userSchema = new Schema({
     },
     username: {
         type: String,
-        required: false // if not picked the user name will become their name
+        required: true // if not picked the user name will become their name
     },
     email:{
         type: String,

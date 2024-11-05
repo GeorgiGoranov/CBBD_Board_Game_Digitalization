@@ -1,14 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import initSocket from '../context/socket';
 import ModeratorRoomLayout from '../components/ModeratorRoomLayout';
 import { useLanguage } from '../context/LanguageContext';
-import "../SCSS/room.scss"
-import "../SCSS/moderatorContainerLayout.scss"
 import ParticipantRoomLayout from '../components/ParticipantRoomLayout';
 import Rounds from '../components/Rounds';
+import initSocket from '../context/socket';
+import "../SCSS/room.scss"
+import "../SCSS/moderatorContainerLayout.scss"
 
 let hasJoined = false // Ref to track if the user has already joined
+
 
 const Room = () => {
     const { roomId } = useParams(); // Fetch roomId from the URL
@@ -17,71 +18,61 @@ const Room = () => {
     const [playerID, setPlayerID] = useState('');
     const [role, setRole] = useState(null); // Role state to determine layout
     const [loading, setLoading] = useState(true);
-    const socket = initSocket();
+    const socketRef = useRef();
     const navigate = useNavigate()
     const { language } = useLanguage(); // Access selected language
-    const [randomCardsC, setRandomCardsC] = useState([]);
+    const [cards, setCards] = useState({ competencyCard: [], otherCard: [] });
 
+    if (!socketRef.current) {
+        socketRef.current = initSocket();
+    }
+
+    const socket = socketRef.current;
+
+    const fetchUserRole = async () => {
+        try {
+            const response = await fetch('/api/routes/user-role', {
+                method: 'GET',
+                credentials: 'include', // Include JWT cookies
+            });
+            const data = await response.json();
+
+            if (response.ok) {
+                setRole(data.role); // Set the role (e.g. "admin" or "user")
+                setPlayerID(data.id);
+                console.warn(data)
+            }
+        } catch (error) {
+            console.error('Error fetching role:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const fetchAllCards = async () => {
+        const [competencyCard, otherCard] = await Promise.all([
+            fetch('/api/cards/competency/random').then(res => res.json()),
+            fetch('/api/cards/other/random').then(res => res.json())
+        ]);
+
+        setCards({ competencyCard, otherCard });
+    };
 
     useEffect(() => {
+        fetchUserRole()
+        fetchAllCards()
+    }, [])
 
-        const fetchUserRole = async () => {
-            try {
-                const response = await fetch('/api/routes/user-role', {
-                    method: 'GET',
-                    credentials: 'include', // Include JWT cookies
-                });
-                const data = await response.json();
-
-                if (response.ok) {
-                    setRole(data.role); // Set the role (e.g. "admin" or "user")
-                    console.log(data.role)
-                    console.log(data.name)
-
-                }
-            } catch (error) {
-                console.error('Error fetching role:', error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        const storedPlayerID = localStorage.getItem('playerID');
-        fetchUserRole();
-        // Retrieve playerID from localStorage
-        setPlayerID(storedPlayerID);
-
-
+    useEffect(() => {
         // Connect the socket if it's not already connected
         if (!socket.connected) {
             socket.connect();
-        }
-
-        /* when the page is ran for the first time the boolean is false, 
-        we check the stored value in the localStorage and if we have 
-        we also check if we have roomID and if so we go in the if statement
-        after it has ran once it will try again but because now the value
-        of hasJoined is set to true it does not go inside.
-
-        it can be done with useRef react hook but it is almost the same context as the boolean
-        */
-        if (!hasJoined && storedPlayerID && roomId) {
-            hasJoined = true;
-            // Automatically reconnect the user to the room
-            socket.connect()
-            socket.emit('joinSession', { playerID: storedPlayerID, gameCode: roomId });
-            fetchRandomCards();
-        
-        } else if (!storedPlayerID) {
-            //if user is unknow navigate him to dafault page
-            navigate('/duser')
         }
 
         // Listen for new players joining the session
         socket.on('playerJoined', (data) => {
             // setPlayers(players);  // Update the players state with the updated list
             setMessage(`${data.playerID} joined the game!`);
-
         });
 
         // Listen for updates to the player list
@@ -97,20 +88,17 @@ const Room = () => {
         return () => {
             socket.off('playerJoined'); // Remove the listener when the component unmounts
             socket.off('updatePlayerList');
+            socket.off('playerLeftRoom')
         };
-    }, [roomId, socket, navigate]);
+    }, [socket]);
 
-    const fetchRandomCards = async () => {
-        try {
-            const response = await fetch('/api/cards/competency/random'); // Adjust endpoint path
-            if (!response.ok) throw new Error('Error fetching cards');
-            const data = await response.json();
-            setRandomCardsC(data);
-            
-        } catch (error) {
-            console.log(error)
+    useEffect(() => {
+        if (playerID && roomId) {
+            socket.emit('joinSession', { playerID, gameCode: roomId });
         }
-    };
+
+    }, [playerID, roomId, socket])
+
 
 
     if (loading) return <div>Loading...</div>;
@@ -127,8 +115,20 @@ const Room = () => {
                         <li key={index}>{player}</li>
                     ))}
                 </ul>
+                <h2>Competency Cards</h2>
                 <ul className='api-list'>
-                    {randomCardsC.map((card, index) => (
+                    {cards.competencyCard.map((card, index) => (
+                        <li className='api-item' key={index}>
+                            <h3>{card.category}</h3>
+                            <p>Subcategory: {card.subcategory}</p>
+                            <p>Options ({language}): {card.options[language] || 'Not available'}</p>
+                        </li>
+                    ))}
+                </ul>
+
+                <h2>Other Cards</h2>
+                <ul className='api-list'>
+                    {cards.otherCard.map((card, index) => (
                         <li className='api-item' key={index}>
                             <h3>{card.category}</h3>
                             <p>Subcategory: {card.subcategory}</p>

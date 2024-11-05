@@ -106,7 +106,7 @@ const getUserLogin = async (req, res) => {
             return res.status(401).json({ error: "Invalid credentials" });
         }
 
-        const token = createToken(user._id, user.role, user.name);
+        const token = createToken(user._id, user.role, user.username);
 
         res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 }); // cookie operates in milisecond and not in minutes
 
@@ -156,7 +156,7 @@ const createSession = async (req, res) => {
 
 const joinSession = async (req, res) => {
     try {
-        const { code, playerID } = req.body
+        const { code, playerUsername } = req.body
 
         const session = await SessionModel.findOne({ code });
 
@@ -168,12 +168,12 @@ const joinSession = async (req, res) => {
         }
         // Add the player to the session's players array if not already present
 
-        if (!session.players.includes(playerID)) {
-            session.players.push(playerID)
+        if (!session.players.includes(playerUsername)) {
+            session.players.push(playerUsername)
             await session.save() // Save the updated session
         }
 
-        const token = createToken(playerID, 'user');
+        const token = createToken(playerUsername, 'user', playerUsername);
         
         res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 }); // cookie operates in milisecond and not in minutes
 
@@ -186,7 +186,7 @@ const joinSession = async (req, res) => {
 }
 
 const maxAge = 1 * 24 * 60 * 60 // time lenght 5 min
-const createToken = (id, role,name) => {
+const createToken = (id, role, name) => {
     return jwt.sign({ id, role, name }, process.env.SECRET_KEY, {
         expiresIn: maxAge
     })
@@ -288,8 +288,8 @@ const deleteSession = async (req, res) => {
 };
 
 const userRole = async (req,res) =>{
-    const { role, name } = req.user; // Decoded JWT should have role
-    res.status(200).json({ role, name });
+    const {id,role,name } = req.user;
+    res.status(200).json({ id,role,name});
 }
 
 const toggleActivity = async (req,res) =>{
