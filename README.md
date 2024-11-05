@@ -8,8 +8,7 @@ Here I provide the different artefacts developed during the starting phase of th
 - [Project charter] Upcoming 
 ---
  ## Team Roles
-- **Scrum Master:** Georgi Goranov
-- **Product Owner:** Georgi Goranov
+- **Product Owner:** Niklas N. Meisel
 - **Developer:** Georgi Goranov
 
 ---
