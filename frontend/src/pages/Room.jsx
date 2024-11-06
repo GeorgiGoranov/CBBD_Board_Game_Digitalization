@@ -24,6 +24,13 @@ const Room = () => {
     const [cards, setCards] = useState({ competencyCard: [], otherCard: [] });
     const [userSessionCode, setUserSessionCode] = useState(null);
     const [categories, setCategories] = useState([]); // State for categories
+    const [dropZones, setDropZones] = useState({
+        box1: [],
+        box2: [],
+        box3: [],
+        box4: [],
+    });
+
 
 
     if (!socketRef.current) {
@@ -135,7 +142,7 @@ const Room = () => {
         if (source.droppableId === destination.droppableId
             && source.index === destination.index) return
 
-        if (type === 'group') {
+        if (type === 'category') {
             const reorderedStores = [...categories]
 
             const sourceIndex = source.index
@@ -165,55 +172,92 @@ const Room = () => {
                 </ul>
 
                 <h2>Competency Cards</h2>
-                <div className="boxx">
-                    <div className="wraper">
 
-                        <DragDropContext onDragEnd={handleDragDrop}>
-                            <ul className='api-list'>
-                                <Droppable droppableId='ROOT' type='group'>
+                <div className="wraper">
+                    <DragDropContext onDragEnd={handleDragDrop}>
+                        <ul className='api-list'>
+                            <Droppable droppableId='ROOT' type='category'>
+                                {(provided) => (
+                                    <div className='try'
+                                        {...provided.droppableProps}
+                                        ref={provided.innerRef}
+                                    >
+                                        {categories.map((category, index) => {
+                                            // Safely create a unique ID 
+                                            const uniqueId = `${category.category}-${index}`;
+                                            // console.log("Draggable ID:", category.category);
+                                            return (
+                                                <Draggable
+                                                    draggableId={uniqueId} // Use unique string id
+                                                    key={uniqueId} // Use the same unique id for key
+                                                    index={index}
+                                                >
+                                                    {(provided) => (
+                                                        <div
+                                                            {...provided.dragHandleProps}
+                                                            {...provided.draggableProps}
+                                                            ref={provided.innerRef}
+                                                        >
+                                                            <li className="category-item">
+                                                                {category.category}
+                                                            </li>
+                                                        </div>
+                                                    )}
+                                                </Draggable>
+                                            );
+                                        })}
+                                        {provided.placeholder}
+                                    </div>
+                                )}
+                            </Droppable>
+                        </ul>
+                        <div className="droppable-box-b">
+                            {/* Render the four drop zones (boxes) */}
+                            {['box1', 'box2', 'box3', 'box4'].map((box, index) => (
+                                <Droppable droppableId={box} key={box} type="box">
                                     {(provided) => (
-                                        <div {...provided.droppableProps} ref={provided.innerRef}>
-                                            {categories.map((category, index) => {
-                                                // Safely create a unique ID 
-                                                const uniqueId = `${category.category}-${index}`;
-                                                console.log("Draggable ID:", category.category);
-                                                return (
-                                                    <Draggable
-                                                        draggableId={uniqueId} // Use unique string id
-                                                        key={uniqueId} // Use the same unique id for key
-                                                        index={index}
-                                                    >
-                                                        {(provided) => (
-                                                            <div
-                                                                {...provided.dragHandleProps}
-                                                                {...provided.draggableProps}
-                                                                ref={provided.innerRef}
-                                                            >
-                                                                <li className="category-item">
-                                                                    {category.category}
-                                                                </li>
+                                        <div
+                                            className="droppable-box"
+                                            ref={provided.innerRef}
+                                            {...provided.droppableProps}
+                                        >
+                                            <h2>Box {index + 1}</h2>
+                                            {dropZones[box].map((item, itemIndex) => (
+                                                <Draggable
+                                                    draggableId={item.category}
+                                                    key={item.category}
+                                                    index={itemIndex}>
+                                                    <p>{console.log(item.category)}</p>
+                                                    {(provided) => (
 
-
-                                                            </div>
-                                                        )}
-                                                    </Draggable>
-                                                );
-                                            })}
+                                                        <div
+                                                            ref={provided.innerRef}
+                                                            {...provided.draggableProps}
+                                                            {...provided.dragHandleProps}
+                                                            className="draggable-item"
+                                                        >
+                                                            {item.category}
+                                                        </div>
+                                                    )}
+                                                </Draggable>
+                                            ))}
                                             {provided.placeholder}
+
                                         </div>
                                     )}
                                 </Droppable>
-                            </ul>
+                            ))}
+                        </div>
 
 
-                        </DragDropContext>
+                    </DragDropContext>
 
-                    </div>
                 </div>
+
 
                 <Rounds />
             </div>
-            <div className="role-based-layout">
+            {/* <div className="role-based-layout">
                 {role === 'admin' ? (
                     <div className='moderator-container-layout'>Moderator Layout for Room {roomId}
 
@@ -227,13 +271,12 @@ const Room = () => {
                     </div>
                 )}
 
-            </div>
+            </div> */}
 
 
         </div>
     )
 }
-
 
 
 export default Room
