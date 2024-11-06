@@ -8,6 +8,8 @@ import initSocket from '../context/socket';
 import "../SCSS/room.scss"
 import "../SCSS/moderatorContainerLayout.scss"
 
+import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd'
+
 
 const Room = () => {
     const { roomId } = useParams(); // Fetch roomId from the URL
@@ -22,7 +24,6 @@ const Room = () => {
     const [cards, setCards] = useState({ competencyCard: [], otherCard: [] });
     const [userSessionCode, setUserSessionCode] = useState(null);
     const [categories, setCategories] = useState([]); // State for categories
-    const [selectedCategory, setSelectedCategory] = useState(null); // New state for selected category
 
 
     if (!socketRef.current) {
@@ -43,7 +44,7 @@ const Room = () => {
                 setUserSessionCode(data.sessionCode);
                 setRole(data.role); // Set the role (e.g. "admin" or "user")
                 setPlayerID(data.name);
-                console.log(data.id)
+                // console.log(data.id)
             } else {
                 navigate('/duser')
             }
@@ -78,9 +79,6 @@ const Room = () => {
         }
     }
 
-    const handleCategoryClick = (category) => {
-        setSelectedCategory(category);
-    };
 
     useEffect(() => {
         if (userSessionCode != null && userSessionCode !== roomId) {
@@ -130,7 +128,26 @@ const Room = () => {
 
     }, [playerID, roomId, socket])
 
+    const handleDragDrop = (results) => {
+        const { source, destination, type } = results
+        if (!destination) return
 
+        if (source.droppableId === destination.droppableId
+            && source.index === destination.index) return
+
+        if (type === 'group') {
+            const reorderedStores = [...categories]
+
+            const sourceIndex = source.index
+            const destinationIndex = destination.index
+
+            const [removedStore] = reorderedStores.splice(sourceIndex, 1)
+            reorderedStores.splice(destinationIndex, 0, removedStore)
+
+            return setCategories(reorderedStores)
+        }
+
+    }
 
     if (loading) return <div>Loading...</div>;
 
@@ -146,26 +163,54 @@ const Room = () => {
                         <li key={index}>{player}</li>
                     ))}
                 </ul>
-                <h2>Competency Cards</h2>
-                <ul className='api-list'>
-                    {categories.map((category, index) => (
-                        <li 
-                            key={index}
-                            onClick={() => handleCategoryClick(category.category)} // Set category on click
-                            className={`category-item ${selectedCategory === category.category ? 'selected' : ''}`} // Highlight selected category
-                        >
-                            {category.category}
-                        </li>
-                    ))}
-                </ul>
 
-                {selectedCategory && (
-                    <div>
-                        <h3>Selected Category: {selectedCategory}</h3>
-                        {/* Display more information based on the selected category */}
+                <h2>Competency Cards</h2>
+                <div className="boxx">
+                    <div className="wraper">
+
+                        <DragDropContext onDragEnd={handleDragDrop}>
+                            <ul className='api-list'>
+                                <Droppable droppableId='ROOT' type='group'>
+                                    {(provided) => (
+                                        <div {...provided.droppableProps} ref={provided.innerRef}>
+                                            {categories.map((category, index) => {
+                                                // Safely create a unique ID 
+                                                const uniqueId = `${category.category}-${index}`;
+                                                console.log("Draggable ID:", category.category);
+                                                return (
+                                                    <Draggable
+                                                        draggableId={uniqueId} // Use unique string id
+                                                        key={uniqueId} // Use the same unique id for key
+                                                        index={index}
+                                                    >
+                                                        {(provided) => (
+                                                            <div
+                                                                {...provided.dragHandleProps}
+                                                                {...provided.draggableProps}
+                                                                ref={provided.innerRef}
+                                                            >
+                                                                <li className="category-item">
+                                                                    {category.category}
+                                                                </li>
+
+
+                                                            </div>
+                                                        )}
+                                                    </Draggable>
+                                                );
+                                            })}
+                                            {provided.placeholder}
+                                        </div>
+                                    )}
+                                </Droppable>
+                            </ul>
+
+
+                        </DragDropContext>
+
                     </div>
-                )}
-                
+                </div>
+
                 <Rounds />
             </div>
             <div className="role-based-layout">
@@ -188,6 +233,7 @@ const Room = () => {
         </div>
     )
 }
+
 
 
 export default Room

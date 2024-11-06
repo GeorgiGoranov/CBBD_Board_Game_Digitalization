@@ -38,3 +38,19 @@
 }
 
 
+.box-container {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.droppable-box {
+  flex: 1;
+  padding: 20px;
+  background-color: #f0f0f0;
+  border: 2px dashed #ccc;
+  min-height: 100px;
+  text-align: center;
+}
+
+
