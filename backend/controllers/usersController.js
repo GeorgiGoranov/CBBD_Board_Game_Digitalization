@@ -173,7 +173,7 @@ const joinSession = async (req, res) => {
             await session.save() // Save the updated session
         }
 
-        const token = createToken(playerUsername, 'user', playerUsername, code);
+        const token = createToken(generateObjectIdForParticipants(), 'user', playerUsername, code);
         
         res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 }); // cookie operates in milisecond and not in minutes
 
@@ -185,11 +185,24 @@ const joinSession = async (req, res) => {
     }
 }
 
-const maxAge = 1 * 24 * 60 * 60 // time lenght 5 min
+const maxAge = 1 * 60 * 60 // time lenght 5 min
 const createToken = (id, role, name, sessionCode) => {
     return jwt.sign({ id, role, name,sessionCode }, process.env.SECRET_KEY, {
         expiresIn: maxAge
     })
+}
+
+const generateObjectIdForParticipants= () => {
+
+    const hexChars = "abcdef0123456789";
+    let objectId = "";
+    
+    for (let i = 0; i < 24; i++) {
+        objectId += hexChars[Math.floor(Math.random() * hexChars.length)];
+    }
+    
+    return objectId;
+
 }
 
 
@@ -207,7 +220,7 @@ const isAuth = (req, res, next) => {
 
         // Validate the decodedToken.id to ensure it's a valid ObjectId
         if (!mongoose.Types.ObjectId.isValid(decodedToken.id)) {
-            console.warn("Invalid object name!");
+            console.warn("Invalid object name!", decodedToken.id);
             return res.status(200).json({ authenticated: false, error: "Invalid user ID" });
         }
 
@@ -338,5 +351,6 @@ module.exports = {
     fetchPlayers,
     deleteSession,
     userRole,
-    toggleActivity
+    toggleActivity,
+    generateObjectIdForParticipants
 }
