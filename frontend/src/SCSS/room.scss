@@ -44,20 +44,22 @@
   gap: 10px;
 }
 
-.droppable-box {
-  flex: 1;
-  padding: 20px;
-  background-color: #f0f0f0;
-  border: 2px dashed #ccc;
-  min-height: 100px;
-  text-align: center;
-}
+
 
 .droppable-box-b {
   display: flex;
   flex-direction: row;
   padding: 20px;
-  background-color: #f0f0f0;
+  background-color: #ffffff;
+  border: 2px dashed #ff0404;
+  min-height: 100px;
+  text-align: center;
+}
+
+.droppable-box {
+  flex: 1;
+  padding: 20px;
+  background-color: #e5ff00;
   border: 2px dashed #ccc;
   min-height: 100px;
   text-align: center;
@@ -68,3 +70,12 @@
   border: 1px solid red;
 }
 
+.dragdrop-container {
+  border: 2px solid rgb(0, 153, 255);
+  padding: 10px; /* Optional for better spacing */
+  border-radius: 5px; /* Optional for rounded corners */
+}
+
+.draggable-item{
+  background-color: #ff0404;
+}

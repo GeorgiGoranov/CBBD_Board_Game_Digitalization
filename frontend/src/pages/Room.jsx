@@ -29,6 +29,7 @@ const Room = () => {
         box2: [],
         box3: [],
         box4: [],
+        unassigned: categories // or [] if you want it empty initially
     });
 
 
@@ -136,25 +137,74 @@ const Room = () => {
     }, [playerID, roomId, socket])
 
     const handleDragDrop = (results) => {
-        const { source, destination, type } = results
-        if (!destination) return
+        const { source, destination } = results;
+        if (!destination) return console.log(`destination not fould! + ${source} + ${destination} `);
 
-        if (source.droppableId === destination.droppableId
-            && source.index === destination.index) return
+        if (source.droppableId === destination.droppableId && source.index === destination.index)
+            return console.log("same place");
 
-        if (type === 'category') {
-            const reorderedStores = [...categories]
+        // Moving within the same list
+        if (source.droppableId === destination.droppableId) {
+            console.log(source.droppableId + " + " + destination.droppableId)
+            if (source.droppableId === 'ROOT') {
+                // Reordering categories
+                const reorderedCategories = Array.from(categories);
+                const [movedItem] = reorderedCategories.splice(source.index, 1);
+                reorderedCategories.splice(destination.index, 0, movedItem);
+                setCategories(reorderedCategories);
+                console.log("tranfer")
+                console.log(results)
 
-            const sourceIndex = source.index
-            const destinationIndex = destination.index
+            } else {
+                // Reordering within a drop zone
+                const zoneItems = Array.from(dropZones[source.droppableId]);
+                const [movedItem] = zoneItems.splice(source.index, 1);
+                zoneItems.splice(destination.index, 0, movedItem);
+                setDropZones((prev) => ({
+                    ...prev,
+                    [source.droppableId]: zoneItems,
+                }));
+                console.log("tranfer zone")
+            }
+        } else {
+            console.log("tranfer array")
+            // Moving between different lists
+            let sourceItems, destinationItems;
+            if (source.droppableId === 'ROOT') {
+                sourceItems = Array.from(categories);
+            } else {
+                sourceItems = Array.from(dropZones[source.droppableId]);
+            }
 
-            const [removedStore] = reorderedStores.splice(sourceIndex, 1)
-            reorderedStores.splice(destinationIndex, 0, removedStore)
+            if (destination.droppableId === 'ROOT') {
+                destinationItems = Array.from(categories);
+            } else {
+                destinationItems = Array.from(dropZones[destination.droppableId]);
+            }
 
-            return setCategories(reorderedStores)
+            const [movedItem] = sourceItems.splice(source.index, 1);
+            destinationItems.splice(destination.index, 0, movedItem);
+
+            if (source.droppableId === 'ROOT') {
+                setCategories(sourceItems);
+            } else {
+                setDropZones((prev) => ({
+                    ...prev,
+                    [source.droppableId]: sourceItems,
+                }));
+            }
+
+            if (destination.droppableId === 'ROOT') {
+                setCategories(destinationItems);
+            } else {
+                setDropZones((prev) => ({
+                    ...prev,
+                    [destination.droppableId]: destinationItems,
+                }));
+            }
         }
+    };
 
-    }
 
     if (loading) return <div>Loading...</div>;
 
@@ -173,23 +223,24 @@ const Room = () => {
 
                 <h2>Competency Cards</h2>
 
-                <div className="wraper">
-                    <DragDropContext onDragEnd={handleDragDrop}>
+                <div className='dragdrop-container' >
+
+
+                    <DragDropContext onDragEnd={handleDragDrop}   >
                         <ul className='api-list'>
-                            <Droppable droppableId='ROOT' type='category'>
+                            <Droppable droppableId='ROOT' >
                                 {(provided) => (
                                     <div className='try'
                                         {...provided.droppableProps}
                                         ref={provided.innerRef}
                                     >
                                         {categories.map((category, index) => {
-                                            // Safely create a unique ID 
                                             const uniqueId = `${category.category}-${index}`;
-                                            // console.log("Draggable ID:", category.category);
+
                                             return (
                                                 <Draggable
-                                                    draggableId={uniqueId} // Use unique string id
-                                                    key={uniqueId} // Use the same unique id for key
+                                                    draggableId={uniqueId}
+                                                    key={uniqueId}
                                                     index={index}
                                                 >
                                                     {(provided) => (
@@ -214,7 +265,7 @@ const Room = () => {
                         <div className="droppable-box-b">
                             {/* Render the four drop zones (boxes) */}
                             {['box1', 'box2', 'box3', 'box4'].map((box, index) => (
-                                <Droppable droppableId={box} key={box} type="box">
+                                <Droppable droppableId={box} key={box} >
                                     {(provided) => (
                                         <div
                                             className="droppable-box"
@@ -222,25 +273,28 @@ const Room = () => {
                                             {...provided.droppableProps}
                                         >
                                             <h2>Box {index + 1}</h2>
-                                            {dropZones[box].map((item, itemIndex) => (
-                                                <Draggable
-                                                    draggableId={item.category}
-                                                    key={item.category}
-                                                    index={itemIndex}>
-                                                    <p>{console.log(item.category)}</p>
-                                                    {(provided) => (
+                                            {dropZones[box].map((item, itemIndex) => {
+                                                const uniqueId = `${item.category}-${itemIndex}`;
+                                                return (
+                                                    <Draggable
+                                                        draggableId={uniqueId}
+                                                        key={uniqueId}
+                                                        index={itemIndex}
+                                                    >
+                                                        {(provided) => (
+                                                            <div
+                                                                ref={provided.innerRef}
+                                                                {...provided.draggableProps}
+                                                                {...provided.dragHandleProps}
+                                                                className="draggable-item"
+                                                            >
+                                                                {item.category}
+                                                            </div>
+                                                        )}
+                                                    </Draggable>
+                                                );
+                                            })}
 
-                                                        <div
-                                                            ref={provided.innerRef}
-                                                            {...provided.draggableProps}
-                                                            {...provided.dragHandleProps}
-                                                            className="draggable-item"
-                                                        >
-                                                            {item.category}
-                                                        </div>
-                                                    )}
-                                                </Draggable>
-                                            ))}
                                             {provided.placeholder}
 
                                         </div>
@@ -252,7 +306,7 @@ const Room = () => {
 
                     </DragDropContext>
 
-                </div>
+                </div >
 
 
                 <Rounds />
