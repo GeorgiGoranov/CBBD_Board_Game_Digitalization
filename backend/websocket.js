@@ -49,7 +49,21 @@ function setupWebSocket(server) {
       io.to(gameCode).emit('playerJoined', { playerID });
       // Notify everyone in this specific room with the updated player list
       io.to(gameCode).emit('updatePlayerList', rooms[gameCode].map(player => player.playerID));
-    });~
+    });
+
+    socket.on('dragDropUpdate', (data) => {
+      const { gameCode } = data;
+      // Broadcast the dragDropUpdate event to all clients in the same room
+      socket.to(gameCode).emit('dragDropUpdate', data);
+  });
+  
+
+    // Capture and broadcast cursor position
+    socket.on('cursorMove', (data) => {
+      const { x, y, playerID, gameCode } = data;
+      // Broadcast the cursor position to all players in the room except the sender
+      socket.to(gameCode).emit('cursorUpdate', { x, y, playerID });
+    });
 
     socket.on('disconnect', () => {
       let roomCode = null;
@@ -72,7 +86,7 @@ function setupWebSocket(server) {
         // Emit the updated player list to everyone in the room
         io.to(roomCode).emit('updatePlayerList', rooms[roomCode].map(player => player.playerID));
         io.to(roomCode).emit('playerLeftRoom', playerID);
-        
+
 
         console.log(`${playerID} left room: ${roomCode}`);
       }

@@ -31,8 +31,7 @@ const Room = () => {
         box4: [],
         unassigned: categories // or [] if you want it empty initially
     });
-
-
+    const [cursorPositions, setCursorPositions] = useState({}); // State to track cursor positions
 
     if (!socketRef.current) {
         socketRef.current = initSocket();
@@ -87,6 +86,22 @@ const Room = () => {
         }
     }
 
+    // Function to update cursor positions
+    const updateCursorDisplay = (data) => {
+        const container = document.querySelector('.room-container');
+        if (container) {
+
+            setCursorPositions((prevPositions) => ({
+                ...prevPositions,
+                [data.playerID]: {
+                    x: data.x,
+                    y: data.y
+                },
+            }));
+        }
+    };
+
+
 
     useEffect(() => {
         if (userSessionCode != null && userSessionCode !== roomId) {
@@ -120,11 +135,23 @@ const Room = () => {
             setMessage(`${playerList} left the game!`);
         });
 
+        socket.on('cursorUpdate', (data) => {
+            // Handle cursor updates from other players
+            updateCursorDisplay(data);
+        });
+
+        // socket.on('dragDropUpdate', (data) => {
+        //     const { source, destination, movedItem } = data;
+        //     handleExternalDragDrop(source, destination, movedItem);
+        // });
+
         // Cleanup listener when the component unmounts
         return () => {
             socket.off('playerJoined'); // Remove the listener when the component unmounts
             socket.off('updatePlayerList');
-            socket.off('playerLeftRoom')
+            socket.off('playerLeftRoom');
+            socket.off('cursorUpdate');
+            // socket.off('updateDragDrop');
         };
     }, [socket]);
 
@@ -133,6 +160,21 @@ const Room = () => {
             socket.emit('joinSession', { playerID, gameCode: roomId });
         }
 
+        const handleMouseMove = (event) => {
+            const position = {
+                x: event.clientX,
+                y: event.clientY,
+                playerID,
+                gameCode: roomId,
+            };
+            socket.emit('cursorMove', position);
+        };
+
+        document.addEventListener('mousemove', handleMouseMove);
+
+        return () => {
+            document.removeEventListener('mousemove', handleMouseMove);
+        };
 
     }, [playerID, roomId, socket])
 
@@ -142,7 +184,7 @@ const Room = () => {
 
         if (source.droppableId === destination.droppableId && source.index === destination.index)
             return console.log("same place");
-
+        
         // Moving within the same list
         if (source.droppableId === destination.droppableId) {
             console.log(source.droppableId + " + " + destination.droppableId)
@@ -203,23 +245,28 @@ const Room = () => {
                 }));
             }
         }
+
     };
+
 
 
     if (loading) return <div>Loading...</div>;
 
     return (
         <div className='room-container'>
-            <div className="information-pannel">
-                <h1>Room ID: {roomId}</h1>
-                {message && <p>{message}</p>}
 
-                <h2>Players in the Room:</h2>
-                <ul>
-                    {players.map((player, index) => (
-                        <li key={index}>{player}</li>
-                    ))}
-                </ul>
+            <div className="information-pannel">
+                <div className='test-layout'>
+                    <h1>Room ID: {roomId}</h1>
+                    {message && <p>{message}</p>}
+
+                    <h2>Players in the Room:</h2>
+                    <ul>
+                        {players.map((player, index) => (
+                            <li key={index}>{player}</li>
+                        ))}
+                    </ul>
+                </div>
 
                 <h2>Competency Cards</h2>
 
@@ -306,12 +353,33 @@ const Room = () => {
 
                     </DragDropContext>
 
+                    {Object.entries(cursorPositions).map(([playerID, position]) => (
+                        <div className='playerCursorID'
+                            key={playerID}
+                            style={{
+                                position: 'absolute',
+                                top: position.y,
+                                left: position.x,
+                                pointerEvents: 'none', // Make sure it doesn't interfere with interactions
+                                transform: 'translate(-50%, -50%)',
+                                backgroundColor: 'rgba(0, 0, 255, 0.5)', // Customize as needed
+                                width: '10px',
+                                height: '10px',
+                                borderRadius: '50%',
+                                zIndex: 1000,
+                            }}
+                        >
+                            {/* Optional: display player ID */}
+                            <span style={{ fontSize: '10px', color: 'red' }}>{playerID}</span>
+                        </div>
+                    ))}
+
                 </div >
 
 
                 <Rounds />
             </div>
-            {/* <div className="role-based-layout">
+            <div className="role-based-layout">
                 {role === 'admin' ? (
                     <div className='moderator-container-layout'>Moderator Layout for Room {roomId}
 
@@ -325,7 +393,7 @@ const Room = () => {
                     </div>
                 )}
 
-            </div> */}
+            </div>
 
 
         </div>
