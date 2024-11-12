@@ -2,10 +2,13 @@ require('dotenv').config()
 const express = require('express')
 const userRoutes = require('./routes/users')
 const cardsAndSheetsRoutes = require('./routes/cardsAndSheets')
+const rounds = require('./routes/rounds')
+
 const mongoose = require('mongoose')
 const cors = require('cors');
 const cookieParser = require('cookie-parser')
 const http = require('http')
+
 
 
 // Import WebSocket setup
@@ -31,6 +34,8 @@ app.use(cors());
 //route
 app.use('/api/routes', userRoutes)
 app.use('/api/cards', cardsAndSheetsRoutes)
+app.use('/api/rounds', rounds)
+
 
 
 //db

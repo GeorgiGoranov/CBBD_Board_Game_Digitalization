@@ -29,9 +29,10 @@ const Room = () => {
         box2: [],
         box3: [],
         box4: [],
-        unassigned: categories // or [] if you want it empty initially
     });
     const [cursorPositions, setCursorPositions] = useState({}); // State to track cursor positions
+    const [userActionOccurred, setUserActionOccurred] = useState(false);
+
 
     if (!socketRef.current) {
         socketRef.current = initSocket();
@@ -101,7 +102,123 @@ const Room = () => {
         }
     };
 
+    const handleDragDrop = (results) => {
+        const { source, destination } = results;
+        if (!destination) return;
 
+        // If the item is moved within the same list and position, do nothing
+        if (source.droppableId === destination.droppableId && source.index === destination.index) {
+            return;
+        }
+
+        let movedItem;
+
+        // Remove the item from the source list
+        if (source.droppableId === 'ROOT') {
+            // Moving from categories list
+            const updatedCategories = Array.from(categories);
+            [movedItem] = updatedCategories.splice(source.index, 1); // Remove item from categories
+            setCategories(updatedCategories); // Update categories without the moved item
+        } else {
+            // Moving from a drop zone
+            const updatedSourceItems = Array.from(dropZones[source.droppableId]);
+            [movedItem] = updatedSourceItems.splice(source.index, 1); // Remove item from source drop zone
+            setDropZones((prev) => ({
+                ...prev,
+                [source.droppableId]: updatedSourceItems, // Update the specific drop zone without the moved item
+            }));
+        }
+
+        // Add the item to the destination list
+        if (destination.droppableId === 'ROOT') {
+            setCategories((prev) => {
+                const updatedCategories = Array.from(prev);
+                updatedCategories.splice(destination.index, 0, movedItem); // Insert item into categories
+                return updatedCategories;
+            });
+        } else {
+            setDropZones((prev) => {
+                const updatedDestinationItems = Array.from(prev[destination.droppableId]);
+                updatedDestinationItems.splice(destination.index, 0, movedItem); // Insert item into destination drop zone
+                return {
+                    ...prev,
+                    [destination.droppableId]: updatedDestinationItems,
+                };
+            });
+        }
+
+        // Emit the drag-drop event to the server with relevant data
+        socket.emit('dragDropUpdate', { gameCode: roomId, source, destination, movedItem });
+        // Indicate that a user action has occurred
+        setUserActionOccurred(true);
+        
+    };
+
+    const handleExternalDragDrop = (source, destination, movedItem) => {
+        if (source.droppableId === 'ROOT') {
+            setCategories((prev) => {
+                const updatedCategories = Array.from(prev);
+                updatedCategories.splice(source.index, 1);
+                return updatedCategories;
+            });
+        } else {
+            setDropZones((prev) => {
+                const updatedSourceItems = Array.from(prev[source.droppableId]);
+                updatedSourceItems.splice(source.index, 1);
+                return { ...prev, [source.droppableId]: updatedSourceItems };
+            });
+        }
+
+        if (destination.droppableId === 'ROOT') {
+            setCategories((prev) => {
+                const updatedCategories = Array.from(prev);
+                updatedCategories.splice(destination.index, 0, movedItem);
+                return updatedCategories;
+            });
+        } else {
+            setDropZones((prev) => {
+                const updatedDestinationItems = Array.from(prev[destination.droppableId]);
+                updatedDestinationItems.splice(destination.index, 0, movedItem);
+                return { ...prev, [destination.droppableId]: updatedDestinationItems };
+            });
+        }
+    };
+    
+    const saveState = async () => {
+        try {
+            const response = await fetch('/api/rounds/save-state', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    roomId, // Pass the current room ID
+                    categories,
+                    dropZones,
+                }),
+            });
+            if (response.ok) {
+
+                console.log('State saved successfully');
+            }
+        } catch (error) {
+            console.error('Error saving state:', error);
+        }
+    }
+
+    const fetchSavedRoomState = async () => {
+        try {
+            const response = await fetch(`/api/rounds/get-state/${roomId}`);
+            if (response.ok) {
+                const data = await response.json();
+                setCategories(data.categories || []);
+                setDropZones(data.dropZones || { box1: [], box2: [], box3: [], box4: [] });
+                console.log('Room state loaded successfully');
+            } else {
+                console.log('Room state not found');
+            }
+        } catch (error) {
+            console.error('Error fetching room state:', error);
+        }
+    };
 
     useEffect(() => {
         if (userSessionCode != null && userSessionCode !== roomId) {
@@ -111,6 +228,7 @@ const Room = () => {
             fetchCategories()
             fetchUserRole()
             // fetchAllCards() 
+            fetchSavedRoomState(); // Load the saved state
         }
     }, [userSessionCode, navigate, roomId])
 
@@ -177,90 +295,15 @@ const Room = () => {
         };
 
     }, [playerID, roomId, socket])
-    const handleDragDrop = (results) => {
-        const { source, destination } = results;
-        if (!destination) return;
-    
-        // If the item is moved within the same list and position, do nothing
-        if (source.droppableId === destination.droppableId && source.index === destination.index) {
-            return;
-        }
-    
-        let movedItem;
-    
-        // Remove the item from the source list
-        if (source.droppableId === 'ROOT') {
-            // Moving from categories list
-            const updatedCategories = Array.from(categories);
-            [movedItem] = updatedCategories.splice(source.index, 1); // Remove item from categories
-            setCategories(updatedCategories); // Update categories without the moved item
-        } else {
-            // Moving from a drop zone
-            const updatedSourceItems = Array.from(dropZones[source.droppableId]);
-            [movedItem] = updatedSourceItems.splice(source.index, 1); // Remove item from source drop zone
-            setDropZones((prev) => ({
-                ...prev,
-                [source.droppableId]: updatedSourceItems, // Update the specific drop zone without the moved item
-            }));
-        }
-    
-        // Add the item to the destination list
-        if (destination.droppableId === 'ROOT') {
-            setCategories((prev) => {
-                const updatedCategories = Array.from(prev);
-                updatedCategories.splice(destination.index, 0, movedItem); // Insert item into categories
-                return updatedCategories;
-            });
-        } else {
-            setDropZones((prev) => {
-                const updatedDestinationItems = Array.from(prev[destination.droppableId]);
-                updatedDestinationItems.splice(destination.index, 0, movedItem); // Insert item into destination drop zone
-                return {
-                    ...prev,
-                    [destination.droppableId]: updatedDestinationItems,
-                };
-            });
-        }
-    
-        // Emit the drag-drop event to the server with relevant data
-        socket.emit('dragDropUpdate', { gameCode: roomId, source, destination, movedItem });
-    };
-    
 
-    const handleExternalDragDrop = (source, destination, movedItem) => {
-        if (source.droppableId === 'ROOT') {
-            setCategories((prev) => {
-                const updatedCategories = Array.from(prev);
-                updatedCategories.splice(source.index, 1);
-                return updatedCategories;
-            });
-        } else {
-            setDropZones((prev) => {
-                const updatedSourceItems = Array.from(prev[source.droppableId]);
-                updatedSourceItems.splice(source.index, 1);
-                return { ...prev, [source.droppableId]: updatedSourceItems };
-            });
+    useEffect(() => {
+        if (userActionOccurred) {
+            saveState();
+            setUserActionOccurred(false);
         }
-    
-        if (destination.droppableId === 'ROOT') {
-            setCategories((prev) => {
-                const updatedCategories = Array.from(prev);
-                updatedCategories.splice(destination.index, 0, movedItem);
-                return updatedCategories;
-            });
-        } else {
-            setDropZones((prev) => {
-                const updatedDestinationItems = Array.from(prev[destination.droppableId]);
-                updatedDestinationItems.splice(destination.index, 0, movedItem);
-                return { ...prev, [destination.droppableId]: updatedDestinationItems };
-            });
-        }
-    };
-    
-    
+    }, [userActionOccurred]);
 
-
-
+   
     if (loading) return <div>Loading...</div>;
 
     return (
