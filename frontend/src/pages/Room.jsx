@@ -1,7 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef,useCallback  } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import ModeratorRoomLayout from '../components/ModeratorRoomLayout';
-import { useLanguage } from '../context/LanguageContext';
 import ParticipantRoomLayout from '../components/ParticipantRoomLayout';
 import Rounds from '../components/Rounds';
 import initSocket from '../context/socket';
@@ -20,8 +19,6 @@ const Room = () => {
     const [loading, setLoading] = useState(true);
     const socketRef = useRef();
     const navigate = useNavigate()
-    const { language } = useLanguage(); // Access selected language
-    const [cards, setCards] = useState({ competencyCard: [], otherCard: [] });
     const [userSessionCode, setUserSessionCode] = useState(null);
     const [categories, setCategories] = useState([]); // State for categories
     const [dropZones, setDropZones] = useState({
@@ -40,52 +37,18 @@ const Room = () => {
 
     const socket = socketRef.current;
 
-    const fetchUserRole = async () => {
-        try {
-            const response = await fetch('/api/routes/user-role', {
-                method: 'GET',
-                credentials: 'include', // Include JWT cookies
-            });
-            const data = await response.json();
+    
 
-            if (response.ok) {
-                setUserSessionCode(data.sessionCode);
-                setRole(data.role); // Set the role (e.g. "admin" or "user")
-                setPlayerID(data.name);
-                // console.log(data.id)
-            } else {
-                navigate('/duser')
-            }
-        } catch (error) {
-            console.error('Error fetching role:', error);
-            navigate('/duser');
-        } finally {
-            setLoading(false);
-        }
-    };
+    // const fetchAllCards = async () => {
+    //     const [competencyCard, otherCard] = await Promise.all([
+    //         fetch('/api/cards/competency/random').then(res => res.json()),
+    //         fetch('/api/cards/other/random').then(res => res.json())
+    //     ]);
 
-    const fetchAllCards = async () => {
-        const [competencyCard, otherCard] = await Promise.all([
-            fetch('/api/cards/competency/random').then(res => res.json()),
-            fetch('/api/cards/other/random').then(res => res.json())
-        ]);
+    //     setCards({ competencyCard, otherCard });
+    // };
 
-        setCards({ competencyCard, otherCard });
-    };
-
-    const fetchCategories = async () => {
-        try {
-            const response = await fetch('/api/cards/get-all'); // Adjust endpoint if necessary
-            if (response.ok) {
-                const data = await response.json();
-                setCategories(data); // Update categories state
-            } else {
-                console.error('Error fetching categories');
-            }
-        } catch (error) {
-            console.error('Error fetching categories:', error);
-        }
-    }
+   
 
     // Function to update cursor positions
     const updateCursorDisplay = (data) => {
@@ -184,7 +147,7 @@ const Room = () => {
         }
     };
     
-    const saveState = async () => {
+    const saveState = useCallback(async () => {
         try {
             const response = await fetch('/api/rounds/save-state', {
                 method: 'POST',
@@ -202,25 +165,65 @@ const Room = () => {
         } catch (error) {
             console.error('Error saving state:', error);
         }
-    }
+    },[roomId, categories, dropZones])
 
-    const fetchSavedRoomState = async () => {
-        try {
-            const response = await fetch(`/api/rounds/get-state/${roomId}`);
-            if (response.ok) {
-                const data = await response.json();
-                setCategories(data.categories || []);
-                setDropZones(data.dropZones || { box1: [], box2: [], box3: [], box4: [] });
-                console.log('Room state loaded successfully');
-            } else {
-                console.log('Room state not found');
-            }
-        } catch (error) {
-            console.error('Error fetching room state:', error);
-        }
-    };
+  
 
     useEffect(() => {
+        const fetchUserRole = async () => {
+            try {
+                const response = await fetch('/api/routes/user-role', {
+                    method: 'GET',
+                    credentials: 'include', // Include JWT cookies
+                });
+                const data = await response.json();
+    
+                if (response.ok) {
+                    setUserSessionCode(data.sessionCode);
+                    setRole(data.role); // Set the role (e.g. "admin" or "user")
+                    setPlayerID(data.name);
+                    // console.log(data.id)
+                } else {
+                    navigate('/duser')
+                }
+            } catch (error) {
+                console.error('Error fetching role:', error);
+                navigate('/duser');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        const fetchCategories = async () => {
+            try {
+                const response = await fetch('/api/cards/get-all'); // Adjust endpoint if necessary
+                if (response.ok) {
+                    const data = await response.json();
+                    setCategories(data); // Update categories state
+                } else {
+                    console.error('Error fetching categories');
+                }
+            } catch (error) {
+                console.error('Error fetching categories:', error);
+            }
+        }
+
+        const fetchSavedRoomState = async () => {
+            try {
+                const response = await fetch(`/api/rounds/get-state/${roomId}`);
+                if (response.ok) {
+                    const data = await response.json();
+                    setCategories(data.categories || []);
+                    setDropZones(data.dropZones || { box1: [], box2: [], box3: [], box4: [] });
+                    console.log('Room state loaded successfully');
+                } else {
+                    console.log('Room state not found');
+                }
+            } catch (error) {
+                console.error('Error fetching room state:', error);
+            }
+        };
+        
         if (userSessionCode != null && userSessionCode !== roomId) {
             // User is trying to access a room they haven't joined
             navigate('/duser'); // Redirect to home or show an error
@@ -301,7 +304,7 @@ const Room = () => {
             saveState();
             setUserActionOccurred(false);
         }
-    }, [userActionOccurred]);
+    }, [userActionOccurred, saveState]);
 
    
     if (loading) return <div>Loading...</div>;
