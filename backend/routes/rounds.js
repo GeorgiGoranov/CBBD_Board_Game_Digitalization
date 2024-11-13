@@ -1,13 +1,14 @@
 const express = require('express')
 
-const {saveRoomState,getRoomState} = require('../controllers/roundsController')
+const {saveRoomState,getRoomState,saveMessage,getMessage} = require('../controllers/roundsController')
 
-const { requireAuth } = require('../middleware/authMiddleware')
 const router = express.Router()
 
 router.post('/save-state', saveRoomState)
 router.get('/get-state/:roomId', getRoomState); 
+router.post('/save-message', saveMessage) 
+router.get('/get-message/:roomId', getMessage)
 
-
+ 
 
 module.exports = router

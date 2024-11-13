@@ -1,5 +1,8 @@
 const { Server } = require('socket.io');
 
+const { saveMessage } = require('./controllers/roundsController');
+
+
 // In-memory store to keep track of players and their rooms
 const rooms = {};
 
@@ -55,8 +58,7 @@ function setupWebSocket(server) {
       const { gameCode } = data;
       // Broadcast the dragDropUpdate event to all clients in the same room
       socket.to(gameCode).emit('dragDropUpdate', data);
-  });
-  
+    });
 
     // Capture and broadcast cursor position
     socket.on('cursorMove', (data) => {
@@ -91,6 +93,20 @@ function setupWebSocket(server) {
         console.log(`${playerID} left room: ${roomCode}`);
       }
     });
+
+    socket.on('sendMessage', async (data) => {
+      const { message } = data;
+
+      const result = await saveMessage(message);
+
+      if (result.success) {
+        socket.to(message.roomId).emit('receiveMessage', { message: result.message });
+      } else {
+        socket.emit('errorMessage', { error: 'Could not save message' });
+      }
+    });
+
+
 
 
   });

@@ -13,6 +13,7 @@ import Sheets from "./components/Sheets"
 import Additions from './pages/Additions';
 import ModeratorRoomLayout from './components/ModeratorRoomLayout';
 import { LanguageProvider } from './context/LanguageContext';
+import Chat from './components/Chat';
 
 
 
@@ -39,6 +40,8 @@ function App() {
                 <Route path="/cards" element={<ProtectedRoute allowedRoles={['admin']} ><Cards /></ProtectedRoute>} />
                 <Route path="/sheets" element={<ProtectedRoute allowedRoles={['admin']} ><Sheets /></ProtectedRoute>} />
                 <Route path="/mlayout" element={<ProtectedRoute allowedRoles={['admin']} ><ModeratorRoomLayout /></ProtectedRoute>} />
+                <Route path="/chat/:roomId" element={<ProtectedRoute allowedRoles={['admin']} ><Chat /></ProtectedRoute>} />
+
 
               </Routes>
             </div>

@@ -1,8 +1,9 @@
-import React, { useState, useEffect, useRef,useCallback  } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import ModeratorRoomLayout from '../components/ModeratorRoomLayout';
 import ParticipantRoomLayout from '../components/ParticipantRoomLayout';
 import Rounds from '../components/Rounds';
+import Chat from '../components/Chat';
 import initSocket from '../context/socket';
 import "../SCSS/room.scss"
 import "../SCSS/moderatorContainerLayout.scss"
@@ -29,6 +30,7 @@ const Room = () => {
     });
     const [cursorPositions, setCursorPositions] = useState({}); // State to track cursor positions
     const [userActionOccurred, setUserActionOccurred] = useState(false);
+    
 
 
     if (!socketRef.current) {
@@ -37,18 +39,6 @@ const Room = () => {
 
     const socket = socketRef.current;
 
-    
-
-    // const fetchAllCards = async () => {
-    //     const [competencyCard, otherCard] = await Promise.all([
-    //         fetch('/api/cards/competency/random').then(res => res.json()),
-    //         fetch('/api/cards/other/random').then(res => res.json())
-    //     ]);
-
-    //     setCards({ competencyCard, otherCard });
-    // };
-
-   
 
     // Function to update cursor positions
     const updateCursorDisplay = (data) => {
@@ -114,7 +104,7 @@ const Room = () => {
         socket.emit('dragDropUpdate', { gameCode: roomId, source, destination, movedItem });
         // Indicate that a user action has occurred
         setUserActionOccurred(true);
-        
+
     };
 
     const handleExternalDragDrop = (source, destination, movedItem) => {
@@ -146,7 +136,7 @@ const Room = () => {
             });
         }
     };
-    
+
     const saveState = useCallback(async () => {
         try {
             const response = await fetch('/api/rounds/save-state', {
@@ -165,9 +155,9 @@ const Room = () => {
         } catch (error) {
             console.error('Error saving state:', error);
         }
-    },[roomId, categories, dropZones])
+    }, [roomId, categories, dropZones])
 
-  
+
 
     useEffect(() => {
         const fetchUserRole = async () => {
@@ -177,7 +167,7 @@ const Room = () => {
                     credentials: 'include', // Include JWT cookies
                 });
                 const data = await response.json();
-    
+
                 if (response.ok) {
                     setUserSessionCode(data.sessionCode);
                     setRole(data.role); // Set the role (e.g. "admin" or "user")
@@ -223,7 +213,8 @@ const Room = () => {
                 console.error('Error fetching room state:', error);
             }
         };
-        
+
+    
         if (userSessionCode != null && userSessionCode !== roomId) {
             // User is trying to access a room they haven't joined
             navigate('/duser'); // Redirect to home or show an error
@@ -232,6 +223,8 @@ const Room = () => {
             fetchUserRole()
             // fetchAllCards() 
             fetchSavedRoomState(); // Load the saved state
+
+         
         }
     }, [userSessionCode, navigate, roomId])
 
@@ -306,26 +299,26 @@ const Room = () => {
         }
     }, [userActionOccurred, saveState]);
 
-   
+
     if (loading) return <div>Loading...</div>;
 
     return (
         <div className='room-container'>
 
+            <div className='test-layout'>
+                <h1>Room ID: {roomId}</h1>
+                {message && <p>{message}</p>}
+
+                <h2>Players in the Room:</h2>
+                <ul>
+                    {players.map((player, index) => (
+                        <li key={index}>{player}</li>
+                    ))}
+                </ul>
+            </div>
+
+            <h2>Competency Cards</h2>
             <div className="information-pannel">
-                <div className='test-layout'>
-                    <h1>Room ID: {roomId}</h1>
-                    {message && <p>{message}</p>}
-
-                    <h2>Players in the Room:</h2>
-                    <ul>
-                        {players.map((player, index) => (
-                            <li key={index}>{player}</li>
-                        ))}
-                    </ul>
-                </div>
-
-                <h2>Competency Cards</h2>
 
                 <div className='dragdrop-container' >
 
@@ -433,9 +426,10 @@ const Room = () => {
 
                 </div >
 
-
+                <Chat playerID={playerID} socket={socket}/>
                 <Rounds />
             </div>
+
             <div className="role-based-layout">
                 {role === 'admin' ? (
                     <div className='moderator-container-layout'>Moderator Layout for Room {roomId}
