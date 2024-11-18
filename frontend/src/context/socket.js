@@ -5,7 +5,7 @@ let socket;
 const initSocket = () => {
   if (!socket) {
     // Initialize the WebSocket connection with autoConnect disabled
-    socket = io('http://145.93.182.229:4000', {
+    socket = io('http://localhost:4000', {
       autoConnect: false, 
       transports: ['websocket'], // Prevents auto connection when imported
     });

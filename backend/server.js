@@ -28,11 +28,7 @@ const io = setupWebSocket(server)
 //middleware
 app.use(cookieParser())
 app.use(express.json()) //looks if there is an audit to the request/ if data was sent in to the server
-app.use(cors({
-  origin: '*', // Allow all origins
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  credentials: true,
-}));
+app.use(cors());
 
 
 
@@ -47,7 +43,7 @@ app.use('/api/rounds', rounds)
 mongoose.connect(process.env.MONG_URL_CBBD)
   .then(() => {
     //listener for requests
-    server.listen(4000, '0.0.0.0', () => {
+    server.listen(4000, () => {
       console.log('SERVER IS RUNNING & connected to db & listening on port', process.env.PORT)
     })
 
