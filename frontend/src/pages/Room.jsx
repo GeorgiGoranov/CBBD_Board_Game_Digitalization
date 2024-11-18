@@ -1,12 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import ModeratorRoomLayout from '../components/ModeratorRoomLayout';
-import { useLanguage } from '../context/LanguageContext';
 import ParticipantRoomLayout from '../components/ParticipantRoomLayout';
-import Rounds from '../components/Rounds';
+
+import Chat from '../components/Chat';
 import initSocket from '../context/socket';
 import "../SCSS/room.scss"
 import "../SCSS/moderatorContainerLayout.scss"
+import RoundOne from '../components/RoundOne';
+import RoundTwo from '../components/RoundTwo';
+
 
 
 const Room = () => {
@@ -18,11 +21,8 @@ const Room = () => {
     const [loading, setLoading] = useState(true);
     const socketRef = useRef();
     const navigate = useNavigate()
-    const { language } = useLanguage(); // Access selected language
-    const [cards, setCards] = useState({ competencyCard: [], otherCard: [] });
     const [userSessionCode, setUserSessionCode] = useState(null);
-    const [categories, setCategories] = useState([]); // State for categories
-    const [selectedCategory, setSelectedCategory] = useState(null); // New state for selected category
+    const [currentRound, setCurrentRound] = useState(0); // Start at round 0
 
 
     if (!socketRef.current) {
@@ -31,65 +31,38 @@ const Room = () => {
 
     const socket = socketRef.current;
 
-    const fetchUserRole = async () => {
-        try {
-            const response = await fetch('/api/routes/user-role', {
-                method: 'GET',
-                credentials: 'include', // Include JWT cookies
-            });
-            const data = await response.json();
-
-            if (response.ok) {
-                setUserSessionCode(data.sessionCode);
-                setRole(data.role); // Set the role (e.g. "admin" or "user")
-                setPlayerID(data.name);
-                console.log(data.id)
-            } else {
-                navigate('/duser')
-            }
-        } catch (error) {
-            console.error('Error fetching role:', error);
-            navigate('/duser');
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const fetchAllCards = async () => {
-        const [competencyCard, otherCard] = await Promise.all([
-            fetch('/api/cards/competency/random').then(res => res.json()),
-            fetch('/api/cards/other/random').then(res => res.json())
-        ]);
-
-        setCards({ competencyCard, otherCard });
-    };
-
-    const fetchCategories = async () => {
-        try {
-            const response = await fetch('/api/cards/get-all'); // Adjust endpoint if necessary
-            if (response.ok) {
-                const data = await response.json();
-                setCategories(data); // Update categories state
-            } else {
-                console.error('Error fetching categories');
-            }
-        } catch (error) {
-            console.error('Error fetching categories:', error);
-        }
-    }
-
-    const handleCategoryClick = (category) => {
-        setSelectedCategory(category);
-    };
-
     useEffect(() => {
+        const fetchUserRole = async () => {
+            try {
+                const response = await fetch('/api/routes/user-role', {
+                    method: 'GET',
+                    credentials: 'include', // Include JWT cookies
+                });
+                const data = await response.json();
+
+                if (response.ok) {
+                    setUserSessionCode(data.sessionCode);
+                    setRole(data.role);
+                    setPlayerID(data.name);
+
+                } else {
+                    navigate('/duser')
+                }
+            } catch (error) {
+                console.error('Error fetching role:', error);
+                navigate('/duser');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+
         if (userSessionCode != null && userSessionCode !== roomId) {
             // User is trying to access a room they haven't joined
             navigate('/duser'); // Redirect to home or show an error
         } else {
-            fetchCategories()
+
             fetchUserRole()
-            // fetchAllCards() 
         }
     }, [userSessionCode, navigate, roomId])
 
@@ -114,11 +87,17 @@ const Room = () => {
             setMessage(`${playerList} left the game!`);
         });
 
+        socket.on('roundChanged', ({ roundNumber }) => {
+            setCurrentRound(roundNumber);
+            console.log(`Round changed to ${roundNumber}`);
+        });
+
         // Cleanup listener when the component unmounts
         return () => {
             socket.off('playerJoined'); // Remove the listener when the component unmounts
             socket.off('updatePlayerList');
-            socket.off('playerLeftRoom')
+            socket.off('playerLeftRoom');
+            socket.off('roundChanged');
         };
     }, [socket]);
 
@@ -127,16 +106,15 @@ const Room = () => {
             socket.emit('joinSession', { playerID, gameCode: roomId });
         }
 
-
     }, [playerID, roomId, socket])
-
 
 
     if (loading) return <div>Loading...</div>;
 
     return (
+
         <div className='room-container'>
-            <div className="information-pannel">
+            <div className='test-layout'>
                 <h1>Room ID: {roomId}</h1>
                 {message && <p>{message}</p>}
 
@@ -146,45 +124,34 @@ const Room = () => {
                         <li key={index}>{player}</li>
                     ))}
                 </ul>
-                <h2>Competency Cards</h2>
-                <ul className='api-list'>
-                    {categories.map((category, index) => (
-                        <li 
-                            key={index}
-                            onClick={() => handleCategoryClick(category.category)} // Set category on click
-                            className={`category-item ${selectedCategory === category.category ? 'selected' : ''}`} // Highlight selected category
-                        >
-                            {category.category}
-                        </li>
-                    ))}
-                </ul>
-
-                {selectedCategory && (
-                    <div>
-                        <h3>Selected Category: {selectedCategory}</h3>
-                        {/* Display more information based on the selected category */}
-                    </div>
-                )}
-                
-                <Rounds />
             </div>
-            <div className="role-based-layout">
+
+            <div className='information-pannel'>
+                {/* Render RoundOne component */}
+                {currentRound === 1 && (
+                    <RoundOne roomId={roomId} playerID={playerID} socket={socket} />
+                )}
+                {currentRound === 2 && (
+                    <RoundTwo roomId={roomId} playerID={playerID} socket={socket} />
+                )}
+                {/* Chat Component */}
+                <Chat playerID={playerID} socket={socket} />
+            </div>
+
+            {/* Role-based layout */}
+            <div className='role-based-layout'>
                 {role === 'admin' ? (
-                    <div className='moderator-container-layout'>Moderator Layout for Room {roomId}
-
-                        <ModeratorRoomLayout />
-
+                    <div className='moderator-container-layout'> Moderator Layout for Room {roomId}
+                        <ModeratorRoomLayout roomId={roomId}/>
                     </div>
-
                 ) : (
-                    <div>Player Layout for Room {roomId}
-                        <ParticipantRoomLayout />
+                    <div>
+                        <div>Player Layout for Room {roomId}
+                            <ParticipantRoomLayout />
+                        </div>
                     </div>
                 )}
-
             </div>
-
-
         </div>
     )
 }

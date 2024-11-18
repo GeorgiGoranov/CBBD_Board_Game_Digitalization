@@ -14,11 +14,14 @@ body {
 header {
   background: #fff;
 }
+header .container h1{
+ font-size: 1.5rem;
+}
 header .container {
   max-width: 1400px;
   margin: 0 auto;
-  padding: 10px 20px;
 }
+
 header a {
   color: #333;
   text-decoration: none;
@@ -43,9 +46,9 @@ header .input{
 
 
 .pages{
-  max-width: 1400px;
-  padding: 20px;
-  margin: 0 auto;
+  display: block;
+  margin: 0 auto; 
+  width: 1400px;
 }
 
 .home {

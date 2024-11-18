@@ -1,5 +1,16 @@
-.login_container{
+.login_container {
     display: flex;
     justify-content: center;
     text-align: center;
+}
+
+.input-login {
+    padding: 10px;
+    margin-top: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
+    width: 400px;
+    max-width: 400px;
 }
