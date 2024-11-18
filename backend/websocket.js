@@ -11,7 +11,7 @@ const roomRounds = {};  // To keep track of current round per room
 function setupWebSocket(server) {
   const io = new Server(server, {
     cors: {
-      origin: 'http://145.93.60.219:3000',
+      origin: 'http://localhost:3000',
       methods: ["GET", "POST"],
       credentials: true, // Enable credentials (cookies, authorization headers)
     }

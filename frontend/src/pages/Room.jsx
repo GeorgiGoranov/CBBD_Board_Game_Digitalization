@@ -129,10 +129,18 @@ const Room = () => {
             <div className='information-pannel'>
                 {/* Render RoundOne component */}
                 {currentRound === 1 && (
-                    <RoundOne roomId={roomId} playerID={playerID} socket={socket} />
+                    <div>
+                        Round 1
+                        <RoundOne roomId={roomId} playerID={playerID} socket={socket} />
+
+                    </div>
                 )}
                 {currentRound === 2 && (
-                    <RoundTwo roomId={roomId} playerID={playerID} socket={socket} />
+                    <div>
+                        Round 2
+                        <RoundTwo roomId={roomId} playerID={playerID} socket={socket} />
+
+                    </div>
                 )}
                 {/* Chat Component */}
                 <Chat playerID={playerID} socket={socket} />
