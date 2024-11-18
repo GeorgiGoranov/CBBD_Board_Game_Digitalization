@@ -185,7 +185,7 @@ const joinSession = async (req, res) => {
     }
 }
 
-const maxAge = 1 * 60 * 60 // time lenght 5 min
+const maxAge = 5 * 60 // time lenght 5 min
 const createToken = (id, role, name, sessionCode) => {
     return jwt.sign({ id, role, name,sessionCode }, process.env.SECRET_KEY, {
         expiresIn: maxAge
