@@ -42,7 +42,6 @@ function App() {
                 <Route path="/mlayout" element={<ProtectedRoute allowedRoles={['admin']} ><ModeratorRoomLayout /></ProtectedRoute>} />
                 <Route path="/chat/:roomId" element={<ProtectedRoute allowedRoles={['admin']} ><Chat /></ProtectedRoute>} />
 
-
               </Routes>
             </div>
           </LanguageProvider>

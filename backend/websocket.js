@@ -3,8 +3,9 @@ const { Server } = require('socket.io');
 const { saveMessage } = require('./controllers/roundsController');
 
 
-// In-memory store to keep track of players and their rooms
-const rooms = {};
+// In-memory stores
+const rooms = {};       // To keep track of players in rooms
+const roomRounds = {};  // To keep track of current round per room
 
 // WebSocket setup
 function setupWebSocket(server) {
@@ -16,8 +17,6 @@ function setupWebSocket(server) {
     }
   });
 
-  // Save io in app locals so that it can be accessed from controllers
-  // You can choose to return io instead if you don't need to access it from app.locals
   io.on('connection', (socket) => {
     console.log(`User back-end initial connection: ${socket.id}`);
 
@@ -33,6 +32,7 @@ function setupWebSocket(server) {
       // Add the player to the room's player list
       if (!rooms[gameCode]) {
         rooms[gameCode] = [];  // Create room if it doesn't exist
+        roomRounds[gameCode] = 1; // Initialize round to 0 for new room
       }
       // Find if the player already exists (reconnecting with new socket.id)
       const existingPlayer = rooms[gameCode].find((player) => player.playerID === playerID);
@@ -47,6 +47,9 @@ function setupWebSocket(server) {
 
       // Add the player to the specific room associated with the gameCode
       socket.join(gameCode);
+
+      // Send the current round to the newly connected client
+      socket.emit('roundChanged', { roundNumber: roomRounds[gameCode] });
 
       // Notify everyone in this specific room about the new player
       io.to(gameCode).emit('playerJoined', { playerID });
@@ -105,6 +108,18 @@ function setupWebSocket(server) {
         socket.emit('errorMessage', { error: 'Could not save message' });
       }
     });
+
+    socket.on('changeRound', (data) => {
+      const { roomId, roundNumber } = data;
+        // Update the current round for the room
+        roomRounds[roomId] = roundNumber;
+
+        // Broadcast 'roundChanged' event to all clients in the room
+        io.in(roomId).emit('roundChanged', { roundNumber });
+
+        console.log(`Round changed to ${roundNumber} in room ${roomId}`);
+    });
+
 
 
 
