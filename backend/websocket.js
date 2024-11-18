@@ -14,7 +14,6 @@ function setupWebSocket(server) {
       origin: 'http://145.93.60.219:3000',
       methods: ["GET", "POST"],
       credentials: true, // Enable credentials (cookies, authorization headers)
-      transports: ['websocket']
     }
   });
 
