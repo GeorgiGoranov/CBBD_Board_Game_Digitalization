@@ -24,4 +24,4 @@ const RoomSchema = new Schema({
   },
 }, { timestamps: true });
 
-module.exports = mongoose.model('first-round', RoomSchema);
+module.exports = mongoose.model('second-round', RoomSchema);

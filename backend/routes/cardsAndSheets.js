@@ -6,7 +6,7 @@ const CardModelD = require('../models/CardModelDilemma');
 const CardModelOT = require('../models/CardModelOther');
 
 const { requireAuth } = require('../middleware/authMiddleware');
-const { createCards, getOneCardPerCategory,getAllCategories } = require('../controllers/cardsAndSheetsController');
+const { createCards, getOneCardPerCategory,getAllCategories,getAllCards} = require('../controllers/cardsAndSheetsController');
 
 // Use the updated functions
 router.post('/competency', requireAuth, createCards(CardModelC));
@@ -18,6 +18,9 @@ router.get('/dilemma/random', getOneCardPerCategory(CardModelD));
 router.post('/other', requireAuth, createCards(CardModelOT));
 router.get('/other/random', getOneCardPerCategory(CardModelOT));
 
-router.get('/get-all',getAllCategories([CardModelC, CardModelOT]))
+router.get('/get-all-categories',getAllCategories([CardModelC, CardModelOT]))
+
+router.get('/get-all-cards', getAllCards([CardModelC, CardModelOT]))
+
 
 module.exports = router;

@@ -116,7 +116,7 @@ const RoundOne = ({ roomId, playerID, socket }) => {
 
     const saveState = useCallback(async () => {
         try {
-            const response = await fetch('/api/rounds/save-state', {
+            const response = await fetch('/api/rounds/save-state-first-round', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -137,7 +137,7 @@ const RoundOne = ({ roomId, playerID, socket }) => {
     useEffect(() => {
         const fetchCategories = async () => {
             try {
-                const response = await fetch('/api/cards/get-all'); // Adjust endpoint if necessary
+                const response = await fetch('/api/cards/get-all-categories'); // Adjust endpoint if necessary
                 if (response.ok) {
                     const data = await response.json();
                     setCategories(data); // Update categories state
@@ -151,7 +151,7 @@ const RoundOne = ({ roomId, playerID, socket }) => {
 
         const fetchSavedRoomState = async () => {
             try {
-                const response = await fetch(`/api/rounds/get-state/${roomId}`);
+                const response = await fetch(`/api/rounds/get-state-first-round/${roomId}`);
                 if (response.ok) {
                     const data = await response.json();
                     setCategories(data.categories || []);
