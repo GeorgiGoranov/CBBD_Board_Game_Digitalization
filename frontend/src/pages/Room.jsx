@@ -9,6 +9,7 @@ import "../SCSS/room.scss"
 import "../SCSS/moderatorContainerLayout.scss"
 import RoundOne from '../components/RoundOne';
 import RoundTwo from '../components/RoundTwo';
+import RoundThree from '../components/RoundThree';
 
 
 
@@ -139,6 +140,13 @@ const Room = () => {
                     <div>
                         Round 2
                         <RoundTwo roomId={roomId} playerID={playerID} socket={socket} />
+
+                    </div>
+                )}
+                {currentRound === 3 && (
+                    <div>
+                        Round 3
+                        <RoundThree roomId={roomId} playerID={playerID} socket={socket} />
 
                     </div>
                 )}

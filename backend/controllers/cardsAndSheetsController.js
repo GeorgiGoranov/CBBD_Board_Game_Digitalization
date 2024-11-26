@@ -74,10 +74,29 @@ const getAllCategories = (models) => {
     };
 };
 
+const getAllCards = (models) => {
+    return async (req, res) => {
+        try {
+            // Fetch categories and subcategories
+            const categoryResults = await Promise.all(
+                models.map(model => model.find({}, { _id: 0, category: 1, subcategories: 1 }))
+            );
+
+            // Combine results from all models
+            const combinedCategories = categoryResults.flat();
+
+            // Send the structured categories and subcategories in the response
+            res.status(200).json(combinedCategories);
+        } catch (error) {
+            res.status(500).json({ message: 'Error fetching cards', error: error.message });
+        }
+    };
+};
 
 
 module.exports = {
     createCards,
     getOneCardPerCategory,
-    getAllCategories
+    getAllCategories,
+    getAllCards
 };

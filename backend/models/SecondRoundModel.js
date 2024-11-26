@@ -8,10 +8,6 @@ const RoomSchema = new Schema({
     required: true,
     unique: true,
   },
-  categories: {
-    type: Array,
-    default: [],
-  },
   dropZones: {
     type: Map,
     of: Array,
@@ -20,8 +16,9 @@ const RoomSchema = new Schema({
       box2: [],
       box3: [],
       box4: [],
+      box5: [],
     },
   },
 }, { timestamps: true });
 
-module.exports = mongoose.model('first-round', RoomSchema);
+module.exports = mongoose.model('second-round', RoomSchema);
