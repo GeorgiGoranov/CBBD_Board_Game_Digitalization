@@ -1,0 +1,103 @@
+/* File: RoundThree.css */
+
+.round-three-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    max-width: 600px;
+    margin: 20px auto;
+}
+
+.round-three-container h1 {
+    font-size: 24px;
+    color: #343a40;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.round-three-container h2 {
+    font-size: 20px;
+    color: #495057;
+    margin: 5px 0;
+    text-align: center;
+}
+
+.round-three-container p {
+    font-size: 16px;
+    color: #6c757d;
+    margin: 5px 0;
+    text-align: center;
+}
+
+.round-three-container .card-options {
+    margin-top: 15px;
+    padding: 10px;
+    background-color: #ffffff;
+    border: 1px solid #dee2e6;
+    border-radius: 5px;
+    text-align: left;
+    font-size: 14px;
+    color: #495057;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.round-three-container .card-options span {
+    font-weight: bold;
+    color: #007bff;
+}
+
+.round-three-container button {
+    margin-top: 20px;
+    padding: 10px 15px;
+    background-color: #007bff;
+    color: #ffffff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.round-three-container button:hover {
+    background-color: #0056b3;
+}
+
+.round-three-container .error-message {
+    font-size: 16px;
+    color: #dc3545;
+    margin-top: 10px;
+}
+
+
+.vote-container {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.vote-btn {
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.vote-btn:hover {
+    background-color: #0056b3;
+}
+
+.vote-results {
+    margin-top: 20px;
+    font-size: 16px;
+    color: #495057;
+    text-align: center;
+}

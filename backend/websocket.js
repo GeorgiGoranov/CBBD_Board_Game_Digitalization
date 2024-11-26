@@ -6,6 +6,7 @@ const { saveMessage } = require('./controllers/roundsController');
 // In-memory stores
 const rooms = {};       // To keep track of players in rooms
 const roomRounds = {};  // To keep track of current round per room
+let votes = { one: 0, two: 0 }; // Store votes for buttons
 
 // WebSocket setup
 function setupWebSocket(server) {
@@ -50,6 +51,12 @@ function setupWebSocket(server) {
 
       // Send the current round to the newly connected client
       socket.emit('roundChanged', { roundNumber: roomRounds[gameCode] });
+
+      // Send the current round to the newly connected client
+      socket.emit('changeDilemmaCard', { click: true });
+
+      // Send the current vote counts to the newly connected client
+      socket.emit('updateVotes', votes);
 
       // Notify everyone in this specific room about the new player
       io.to(gameCode).emit('playerJoined', { playerID });
@@ -111,14 +118,45 @@ function setupWebSocket(server) {
 
     socket.on('changeRound', (data) => {
       const { roomId, roundNumber } = data;
-        // Update the current round for the room
-        roomRounds[roomId] = roundNumber;
+      // Update the current round for the room
+      roomRounds[roomId] = roundNumber;
 
-        // Broadcast 'roundChanged' event to all clients in the room
-        io.in(roomId).emit('roundChanged', { roundNumber });
+      // Broadcast 'roundChanged' event to all clients in the room
+      io.in(roomId).emit('roundChanged', { roundNumber });
 
-        console.log(`Round changed to ${roundNumber} in room ${roomId}`);
+      console.log(`Round changed to ${roundNumber} in room ${roomId}`);
     });
+
+    socket.on('changeDilemmaCard', (data) => {
+      const { roomId, click } = data;
+
+      if (click) {
+        // Broadcast to all users in the room to fetch a new card
+        io.to(roomId).emit('newDilemmaCard');
+        console.log(`Broadcasted new dilemma card event for room: ${roomId}`);
+      }
+    });
+
+    // Handle votes from participants
+    socket.on('vote', (data) => {
+      const { vote } = data;
+
+      if (vote === 'one') {
+        votes.one += 1;
+      } else if (vote === 'two') {
+        votes.two += 1;
+      }
+
+      // Broadcast updated vote counts to all clients
+      io.emit('updateVotes', votes);
+    });
+
+    // Handle resetting votes when a new dilemma card is selected
+    socket.on('resetVotes', () => {
+      votes = { one: 0, two: 0 }; // Reset vote counts
+      io.emit('updateVotes', votes); // Notify all clients to reset their vote counts
+    });
+
 
 
 

@@ -32,25 +32,34 @@ const createCards = (CardModel) => {
 const getOneCardPerCategory = (CardModel) => {
     return async (req, res) => {
         try {
+            // Fetch all distinct categories
             const categories = await CardModel.distinct('category');
-            const cards = await Promise.all(
-                categories.map(async (category) => {
-                    const card = await CardModel.findOne({ category }).select('category subcategories').lean();
-                    if (!card || !card.subcategories || card.subcategories.length === 0) return null;
-                    const randomIndex = Math.floor(Math.random() * card.subcategories.length);
-                    const selectedSubcategory = card.subcategories[randomIndex];
-                    return {
-                        category: card.category,
-                        subcategory: selectedSubcategory.name,
-                        options: selectedSubcategory.options,
-                    };
-                })
-            );
+            if (!categories || categories.length === 0) {
+                return res.status(404).json({ message: 'No categories found' });
+            }
 
-            const filteredCards = cards.filter(Boolean);
-            res.status(200).json(filteredCards);
+            // Randomly pick one category
+            const randomCategory = categories[Math.floor(Math.random() * categories.length)];
+
+            // Find one random card within the selected category
+            const card = await CardModel.findOne({ category: randomCategory }).select('category subcategories').lean();
+
+            if (!card || !card.subcategories || card.subcategories.length === 0) {
+                return res.status(404).json({ message: 'No subcategories found for this category' });
+            }
+
+            // Randomly pick one subcategory
+            const randomIndex = Math.floor(Math.random() * card.subcategories.length);
+            const selectedSubcategory = card.subcategories[randomIndex];
+
+            // Send the selected subcategory as the response
+            res.status(200).json({
+                category: card.category,
+                subcategory: selectedSubcategory.name,
+                options: selectedSubcategory.options,
+            });
         } catch (error) {
-            res.status(500).json({ message: 'Error fetching cards', error: error.message });
+            res.status(500).json({ message: 'Error fetching random card', error: error.message });
         }
     };
 };

@@ -1,7 +1,7 @@
 import initSocket from '../context/socket';
 import React, { useState, useRef } from 'react';
 
-const ModeratorRoomLayout = ({roomId}) => {
+const ModeratorRoomLayout = ({ roomId }) => {
     const socketRef = useRef();
 
     if (!socketRef.current) {
@@ -53,6 +53,12 @@ const ModeratorRoomLayout = ({roomId}) => {
         }
     }
 
+    const handleNextDilemma = () => {
+        // Notify the backend to reset votes
+        socket.emit('resetVotes');
+        socket.emit('changeDilemmaCard', { roomId, click: true });
+    };
+
 
 
 
@@ -66,6 +72,9 @@ const ModeratorRoomLayout = ({roomId}) => {
             </button>
             <button className="next-btn" onClick={handleNextRound3}>
                 Start Round 3
+            </button>
+            <button className="another-btn" onClick={handleNextDilemma}>
+                Next Dilemma Card
             </button>
         </div>
 
