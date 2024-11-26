@@ -40,6 +40,19 @@ const ModeratorRoomLayout = ({roomId}) => {
         }
     }
 
+    const handleNextRound3 = () => {
+        if (!checkBeforeNext) {
+            const confirmed = window.confirm('You are about to go to the NEXT game! Are you sure?');
+            if (confirmed) {
+                setCheckBeforeNext(true);
+                // Start Round 2
+                socket.emit('changeRound', { roomId, roundNumber: 3 });
+            }
+        } else {
+            console.log('Already moved to the next round');
+        }
+    }
+
 
 
 
@@ -50,6 +63,9 @@ const ModeratorRoomLayout = ({roomId}) => {
             </button>
             <button className="next-btn" onClick={handleNextRound}>
                 Start Round 2
+            </button>
+            <button className="next-btn" onClick={handleNextRound3}>
+                Start Round 3
             </button>
         </div>
 

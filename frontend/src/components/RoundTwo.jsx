@@ -17,6 +17,7 @@ const RoundTwo = ({ roomId, playerID, socket }) => {
         box2: [],
         box3: [],
         box4: [],
+        box5: [],
     });
     const [cursorPositions, setCursorPositions] = useState({});
     const [userActionOccurred, setUserActionOccurred] = useState(false);
@@ -39,58 +40,20 @@ const RoundTwo = ({ roomId, playerID, socket }) => {
         const sourceIsCategory = sourceDroppableId.startsWith('category-');
         const destinationIsCategory = destinationDroppableId.startsWith('category-');
 
-        const sourceIsDropZone = sourceDroppableId.startsWith('box');
-        const destinationIsDropZone = destinationDroppableId.startsWith('box');
-
-        // Prevent moving items within the same category
+        // Prevent any drag-and-drop within categories or between categories
         if (
             sourceIsCategory &&
-            destinationIsCategory &&
-            sourceDroppableId === destinationDroppableId
-        ) {
-            // The item is being dragged within the same category
-            // Do nothing
-            return;
-        }
-        // Prevent moving items between different categories
-        if (
-            sourceIsCategory &&
-            destinationIsCategory &&
-            sourceDroppableId !== destinationDroppableId
-        ) {
-            return;
-        }
-
-        // Prevent moving items from drop zone to different category than original
-        if (
-            sourceIsDropZone &&
             destinationIsCategory
         ) {
-            // Get the moved item
-            let movedItem = dropZones[sourceDroppableId][source.index];
-            // Check if the item's category matches the destination category
-            const itemOriginalCategoryId = `category-${movedItem.category}`;
-            if (destinationDroppableId !== itemOriginalCategoryId) {
-                // Prevent moving item back to a different category
-                return;
-            }
+            return;
         }
-
-        // Prevent moving items between drop zones
-        // if (
-        //     sourceIsDropZone &&
-        //     destinationIsDropZone &&
-        //     sourceDroppableId !== destinationDroppableId
-        // ) {
-        //     return;
-        // }
 
         let movedItem;
 
         // Remove the item from the source list
         if (sourceIsCategory) {
-            // Remove from the category's options
-            const updatedCategories = categoriesData.map((category) => {
+             // Remove from the category's options
+             const updatedCategories = categoriesData.map((category) => {
                 if (`category-${category.category}` === sourceDroppableId) {
                     const updatedOptions = Array.from(category.options);
                     [movedItem] = updatedOptions.splice(source.index, 1);
@@ -111,16 +74,7 @@ const RoundTwo = ({ roomId, playerID, socket }) => {
 
         // Add the item to the destination list
         if (destinationIsCategory) {
-            // Add back to the category's options
-            const updatedCategories = categoriesData.map((category) => {
-                if (`category-${category.category}` === destinationDroppableId) {
-                    const updatedOptions = Array.from(category.options);
-                    updatedOptions.splice(destination.index, 0, movedItem);
-                    return { ...category, options: updatedOptions };
-                }
-                return category;
-            });
-            setCategoriesData(updatedCategories);
+           
         } else {
             // Add to drop zone
             const updatedDestinationItems = Array.from(dropZones[destinationDroppableId]);
@@ -148,22 +102,12 @@ const RoundTwo = ({ roomId, playerID, socket }) => {
         const sourceIsCategory = sourceDroppableId.startsWith('category-');
         const destinationIsCategory = destinationDroppableId.startsWith('category-');
 
-        const sourceIsDropZone = sourceDroppableId.startsWith('box');
-        const destinationIsDropZone = destinationDroppableId.startsWith('box');
+        // const sourceIsDropZone = sourceDroppableId.startsWith('box');
+        // const destinationIsDropZone = destinationDroppableId.startsWith('box');
 
         // Remove the item from the source list
         if (sourceIsCategory) {
-            // Remove from the category's options
-            setCategoriesData((prevCategories) =>
-                prevCategories.map((category) => {
-                    if (`category-${category.category}` === sourceDroppableId) {
-                        const updatedOptions = Array.from(category.options);
-                        updatedOptions.splice(source.index, 1);
-                        return { ...category, options: updatedOptions };
-                    }
-                    return category;
-                })
-            );
+            return;
         } else {
             // Remove from drop zone
             setDropZones((prevDropZones) => {
@@ -175,17 +119,7 @@ const RoundTwo = ({ roomId, playerID, socket }) => {
 
         // Add the item to the destination list
         if (destinationIsCategory) {
-            // Add back to the category's options
-            setCategoriesData((prevCategories) =>
-                prevCategories.map((category) => {
-                    if (`category-${category.category}` === destinationDroppableId) {
-                        const updatedOptions = Array.from(category.options);
-                        updatedOptions.splice(destination.index, 0, movedItem);
-                        return { ...category, options: updatedOptions };
-                    }
-                    return category;
-                })
-            );
+            return;
         } else {
             // Add to drop zone
             setDropZones((prevDropZones) => {
@@ -218,7 +152,6 @@ const RoundTwo = ({ roomId, playerID, socket }) => {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     roomId, // Pass the current room ID
-                    categoriesData,
                     dropZones,
                 }),
             });
@@ -228,7 +161,7 @@ const RoundTwo = ({ roomId, playerID, socket }) => {
         } catch (error) {
             console.error('Error saving state:', error);
         }
-    }, [roomId, categoriesData, dropZones])
+    }, [roomId, dropZones])
 
     useEffect(() => {
         const fetchCategories = async () => {
@@ -258,9 +191,6 @@ const RoundTwo = ({ roomId, playerID, socket }) => {
                             };
                         }),
                     }));
-
-                
-
                     setCategoriesData(processedData);
 
                     // Initialize collapsedCategories state
@@ -282,8 +212,7 @@ const RoundTwo = ({ roomId, playerID, socket }) => {
                 const response = await fetch(`/api/rounds/get-state-second-round/${roomId}`);
                 if (response.ok) {
                     const data = await response.json();
-                    setCategoriesData(data.categories || []);
-                    setDropZones(data.dropZones || { box1: [], box2: [], box3: [], box4: [] });
+                    setDropZones(data.dropZones || { box1: [], box2: [], box3: [], box4: [], box5: [] });
                     console.log('Room state loaded successfully');
                 } else {
                     console.log('Room state not found');
@@ -334,10 +263,6 @@ const RoundTwo = ({ roomId, playerID, socket }) => {
 
     }, [playerID, roomId, socket])
 
-
-
-
-
     useEffect(() => {
         if (userActionOccurred) {
             saveState();
@@ -351,7 +276,7 @@ const RoundTwo = ({ roomId, playerID, socket }) => {
         <div>
             <DragDropContext onDragEnd={handleDragDrop}>
                 <ul className="api-list categories-grid">
-                    {/* Iterate over categories */console.log(categoriesData)}
+                    {/* Iterate over categories */}
                     {categoriesData.map((category, categoryIndex) => (
                         <div key={`category-${categoryIndex}`} className="category-container">
                             <h2
@@ -396,7 +321,7 @@ const RoundTwo = ({ roomId, playerID, socket }) => {
                 </ul>
 
                 <div className="droppable-box-b">
-                    {['box1', 'box2', 'box3', 'box4'].map((box, index) => (
+                    {['box1', 'box2', 'box3', 'box4', 'box5'].map((box, index) => (
                         <Droppable droppableId={box} key={box}>
                             {(provided) => (
                                 <div

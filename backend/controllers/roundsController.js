@@ -2,52 +2,24 @@
 const sanitizeHtml = require('sanitize-html');
 const ChatRoom = require('../models/ChatModel')
 
-// const saveRoomState = async (req, res) => {
-
-//     const { roomId, categoriesData, dropZones } = req.body;
-//     try {
-//         // Check if the room already exists
-//         let round = await FirstRound.findOne({ roomId });
-
-//         if (round) {
-//             // If the room exists, update its state
-//             round.categoriesData = categoriesData;
-//             round.dropZones = dropZones;
-//         } else {
-//             // If the room doesn't exist, create a new one
-//             round = new FirstRound({
-//                 roomId,
-//                 categoriesData,
-//                 dropZones,
-//             });
-//         }
-
-//         // Save the updated or new room state to the database
-//         await round.save();
-//         res.status(200).json({ message: 'Room state saved successfully' });
-//     } catch (error) {
-//         console.error('Error saving room state:', error);
-//         res.status(500).json({ message: 'Error saving room state', error: error.message });
-//     }
-// };
-
-
 const saveRoomStateMode = (RoundModel) => {
     return async (req, res) => {
-        const { roomId, categoriesData, dropZones } = req.body;
+        const { roomId, categories, dropZones } = req.body;
         try {
             // Check if the room already exists
             let round = await RoundModel.findOne({ roomId });
 
             if (round) {
                 // If the room exists, update its state
-                round.categories = categoriesData;
+                round.categories = categories;
                 round.dropZones = dropZones;
+                console.log(categories)
+               
             } else {
                 // If the room doesn't exist, create a new one
                 round = new RoundModel({
                     roomId,
-                    categoriesData,
+                    categories,
                     dropZones,
                 });
             }
@@ -67,10 +39,11 @@ const getRoomStateMode = (RoundModel) => {
     return async (req,res) =>{
         const { roomId } = req.params;
         try {
-            // Find the room by roomId
+            // Find the room by roomId`
             const room = await RoundModel.findOne({ roomId });
 
             if (room) { 
+                
                 res.status(200).json(room); // Send the room state if found
             } else { 
                 res.status(404).json({ message: 'Room state not found' });
