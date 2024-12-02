@@ -1,5 +1,6 @@
 import initSocket from '../context/socket';
 import React, { useState, useRef } from 'react';
+import "../SCSS/moderatorLayout.scss"
 
 const ModeratorRoomLayout = ({ roomId }) => {
     const socketRef = useRef();

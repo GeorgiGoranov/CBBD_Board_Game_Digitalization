@@ -101,3 +101,25 @@
     color: #495057;
     text-align: center;
 }
+
+
+.options-container-dilemma {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.option-item-dilemma {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.option-item-dilemma:hover {
+    background-color: #1890ff;
+    color: white;
+    transform: translateY(-2px);
+}

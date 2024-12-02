@@ -2,7 +2,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-const RoomSchema = new Schema({
+const FirstRoomSchema = new Schema({
   roomId: {
     type: String,
     required: true,
@@ -24,4 +24,4 @@ const RoomSchema = new Schema({
   },
 }, { timestamps: true });
 
-module.exports = mongoose.model('first-round', RoomSchema);
+module.exports = mongoose.model('first-round', FirstRoomSchema);

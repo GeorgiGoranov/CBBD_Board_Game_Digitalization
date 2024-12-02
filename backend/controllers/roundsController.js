@@ -13,8 +13,7 @@ const saveRoomStateMode = (RoundModel) => {
                 // If the room exists, update its state
                 round.categories = categories;
                 round.dropZones = dropZones;
-                console.log(categories)
-               
+
             } else {
                 // If the room doesn't exist, create a new one
                 round = new RoundModel({
@@ -35,17 +34,73 @@ const saveRoomStateMode = (RoundModel) => {
 
 };
 
+const saveThirdRoomStateMode = (RoundModel) => {
+    return async (req, res) => {
+        const { roomId, card, vote, playerID } = req.body;
+
+        try {
+            // Find the room by roomId
+            let round = await RoundModel.findOne({ roomId });
+
+            if (!round) {
+                // If room doesn't exist, create it
+                round = new RoundModel({ roomId, cards: [] });
+            }
+
+            if (card) {
+
+                // Add the new card with initial votes
+                const newCard = {
+                    card: card,
+                    votes: {
+                        agree: { count: 0, playerID: [] },
+                        disagree: { count: 0, playerID: [] },
+                    },
+                };
+                round.cards.push(newCard);
+
+            }
+
+            if (vote === 'agree' || vote === 'disagree') {
+                // Ensure there is at least one card to vote on
+                if (round.cards.length === 0) {
+                    return res.status(400).json({ message: 'No card available to vote on' });
+                }
+
+                // Get the latest card
+                const lastCard = round.cards[round.cards.length - 1];
+
+                // Update the vote counts and player IDs
+                lastCard.votes[vote].count += 1;
+                lastCard.votes[vote].playerID.push(playerID);
+            } else if (vote) {
+                // Invalid vote option provided
+                return res.status(400).json({ message: 'Invalid vote option' });
+            }
+
+
+            // Save the updated room state to the database
+            await round.save();
+            res.status(200).json({ message: 'Room state saved successfully' });
+        } catch (error) {
+            console.error('Error saving room state:', error);
+            res.status(500).json({ message: 'Error saving room state', error: error.message });
+        }
+    };
+};
+
+
 const getRoomStateMode = (RoundModel) => {
-    return async (req,res) =>{
+    return async (req, res) => {
         const { roomId } = req.params;
         try {
             // Find the room by roomId`
             const room = await RoundModel.findOne({ roomId });
 
-            if (room) { 
-                
+            if (room) {
+
                 res.status(200).json(room); // Send the room state if found
-            } else { 
+            } else {
                 res.status(404).json({ message: 'Room state not found' });
             }
         } catch (error) {
@@ -53,7 +108,7 @@ const getRoomStateMode = (RoundModel) => {
             res.status(500).json({ message: 'Error fetching room state', error: error.message });
         }
     }
-    
+
 };
 
 const saveMessage = async (messagesData) => {
@@ -116,6 +171,7 @@ module.exports = {
     getRoomStateMode,
     saveMessage,
     getMessage,
-    saveRoomStateMode
+    saveRoomStateMode,
+    saveThirdRoomStateMode
 
 }

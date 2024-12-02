@@ -126,7 +126,6 @@ const RoundOne = ({ roomId, playerID, socket }) => {
                 }),
             });
             if (response.ok) {
-                console.log(categories)
 
                 console.log('State saved successfully');
             }

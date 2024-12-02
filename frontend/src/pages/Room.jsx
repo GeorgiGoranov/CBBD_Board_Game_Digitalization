@@ -6,7 +6,7 @@ import ParticipantRoomLayout from '../components/ParticipantRoomLayout';
 import Chat from '../components/Chat';
 import initSocket from '../context/socket';
 import "../SCSS/room.scss"
-import "../SCSS/moderatorContainerLayout.scss"
+
 import RoundOne from '../components/RoundOne';
 import RoundTwo from '../components/RoundTwo';
 import RoundThree from '../components/RoundThree';
