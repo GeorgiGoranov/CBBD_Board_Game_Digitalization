@@ -1,5 +1,4 @@
 const { Server } = require('socket.io');
-
 const { saveMessage } = require('./controllers/roundsController');
 
 
@@ -7,6 +6,8 @@ const { saveMessage } = require('./controllers/roundsController');
 const rooms = {};       // To keep track of players in rooms
 const roomRounds = {};  // To keep track of current round per room
 const roomVotes = {}; // Store votes per room: { [roomId]: { agree: number, disagree: number } }
+
+
 
 // WebSocket setup
 function setupWebSocket(server) {
@@ -20,10 +21,6 @@ function setupWebSocket(server) {
 
   io.on('connection', (socket) => {
     console.log(`User back-end initial connection: ${socket.id}`);
-
-    socket.on('disconnect', () => {
-      console.log(`User back-end disconnected: ${socket.id}`);
-    });
 
     // Handle when a player joins a session
     socket.on('joinSession', (data) => {
@@ -80,33 +77,6 @@ function setupWebSocket(server) {
       socket.to(gameCode).emit('cursorUpdate', { x, y, playerID });
     });
 
-    socket.on('disconnect', () => {
-      let roomCode = null;
-      let playerID = null;
-
-      // Find the player in each room by matching the socketId
-      for (const room in rooms) {
-        const playerIndex = rooms[room].findIndex((p) => p.socketId === socket.id);
-
-        if (playerIndex !== -1) {
-          // Get the playerID of the player being removed
-          playerID = rooms[room][playerIndex].playerID;
-          rooms[room].splice(playerIndex, 1);  // Remove player from the room
-          roomCode = room;
-          break;  // Exit the loop once the player is found
-        }
-      }
-
-      if (roomCode) {
-        // Emit the updated player list to everyone in the room
-        io.to(roomCode).emit('updatePlayerList', rooms[roomCode].map(player => player.playerID));
-        io.to(roomCode).emit('playerLeftRoom', playerID);
-
-
-        console.log(`${playerID} left room: ${roomCode}`);
-      }
-    });
-
     socket.on('sendMessage', async (data) => {
       const { message } = data;
 
@@ -130,7 +100,7 @@ function setupWebSocket(server) {
       console.log(`Round changed to ${roundNumber} in room ${roomId}`);
     });
 
-    socket.on('changeDilemmaCard', (data) => {
+    socket.on('newDilemmaCard', (data) => {
       const { roomId, click } = data;
 
       if (click) {
@@ -172,10 +142,34 @@ function setupWebSocket(server) {
       io.emit('updateVotes', votes); // Notify all clients to reset their vote counts
     });
 
+    socket.on('disconnect', () => {
+      console.log(`User back-end disconnected: ${socket.id}`);
+      
+      let roomCode = null;
+      let playerID = null;
+
+      // Find the player in each room by matching the socketId
+      for (const room in rooms) {
+        const playerIndex = rooms[room].findIndex((p) => p.socketId === socket.id);
+
+        if (playerIndex !== -1) {
+          // Get the playerID of the player being removed
+          playerID = rooms[room][playerIndex].playerID;
+          rooms[room].splice(playerIndex, 1);  // Remove player from the room
+          roomCode = room;
+          break;  // Exit the loop once the player is found
+        }
+      }
+
+      if (roomCode) {
+        // Emit the updated player list to everyone in the room
+        io.to(roomCode).emit('updatePlayerList', rooms[roomCode].map(player => player.playerID));
+        io.to(roomCode).emit('playerLeftRoom', playerID);
 
 
-
-
+        console.log(`${playerID} left room: ${roomCode}`);
+      }
+    });
 
   });
 

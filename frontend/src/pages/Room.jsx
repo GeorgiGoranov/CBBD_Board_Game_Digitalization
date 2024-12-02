@@ -146,7 +146,7 @@ const Room = () => {
                 {currentRound === 3 && (
                     <div>
                         Round 3
-                        <RoundThree roomId={roomId} playerID={playerID} socket={socket} />
+                        <RoundThree roomId={roomId} playerID={playerID} socket={socket} role={role} />
 
                     </div>
                 )}

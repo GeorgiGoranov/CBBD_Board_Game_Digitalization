@@ -166,12 +166,34 @@ const getMessage = async (req, res) => {
     }
 }
 
+const getThirdRoomStateMode = (RoundModel) => {
+    return async (req, res) => {
+        const { roomId } = req.params;
+
+        try {
+            // Find the room by roomId
+            const round = await RoundModel.findOne({ roomId });
+
+            if (!round) {
+                return res.status(404).json({ message: 'Room not found' });
+            }
+
+            res.status(200).json(round);
+        } catch (error) {
+            console.error('Error fetching room state:', error);
+            res.status(500).json({ message: 'Error fetching room state', error: error.message });
+        }
+    }
+
+};
+
 
 module.exports = {
     getRoomStateMode,
     saveMessage,
     getMessage,
     saveRoomStateMode,
-    saveThirdRoomStateMode
+    saveThirdRoomStateMode,
+    getThirdRoomStateMode
 
 }

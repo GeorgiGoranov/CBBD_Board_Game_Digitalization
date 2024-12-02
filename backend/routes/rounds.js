@@ -6,7 +6,7 @@ const ThirdRound = require('../models/ThirdRoundModel')
 
 
 const {saveRoomStateMode,getRoomStateMode,
-    saveMessage,getMessage,saveThirdRoomStateMode} = require('../controllers/roundsController')
+    saveMessage,getMessage,saveThirdRoomStateMode, getThirdRoomStateMode} = require('../controllers/roundsController')
 
 const router = express.Router()
 
@@ -17,6 +17,8 @@ router.post('/save-state-third-round', saveThirdRoomStateMode(ThirdRound))
 
 router.get('/get-state-first-round/:roomId', getRoomStateMode(FirstRound)); 
 router.get('/get-state-second-round/:roomId', getRoomStateMode(SecondRound)); 
+router.get('/get-state-third-round/:roomId', getThirdRoomStateMode(ThirdRound)); 
+
 
 
 router.post('/save-message', saveMessage) 

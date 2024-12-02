@@ -3,13 +3,14 @@ import { useLanguage } from '../context/LanguageContext';
 import "../SCSS/roundThree.scss"
     ;
 
-const RoundThree = ({ roomId, playerID, socket }) => {
+const RoundThree = ({ roomId, playerID, socket, role }) => {
     const [card, setCard] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const { language } = useLanguage();
     const [votes, setVotes] = useState({ agree: 0, disagree: 0 });
     const [userVote, setUserVote] = useState('');
+
 
 
     const saveState = useCallback(async (currentCard, currentVote) => {
@@ -42,6 +43,10 @@ const RoundThree = ({ roomId, playerID, socket }) => {
     }, [roomId, playerID]);
 
 
+
+
+
+
     const fetchRandomCard = async () => {
         try {
             const response = await fetch('/api/cards/dilemma/random');
@@ -53,10 +58,6 @@ const RoundThree = ({ roomId, playerID, socket }) => {
 
             setCard(data);
 
-            // Reset user's vote when a new card is fetched
-            setUserVote('');
-            setVotes({ agree: 0, disagree: 0 });
-
             // Save the new card to the backend
             await saveState(data, null);
         } catch (err) {
@@ -67,6 +68,7 @@ const RoundThree = ({ roomId, playerID, socket }) => {
     };
 
 
+
     const handleVote = (vote) => {
         socket.emit('vote', { vote, roomId });
         setUserVote(vote); // Store the user's vote
@@ -74,10 +76,47 @@ const RoundThree = ({ roomId, playerID, socket }) => {
         saveState(null, vote);
     };
 
+    const fetchRoomState = async () => {
+        try {
+            const response = await fetch(`/api/rounds/get-state-third-round/${roomId}`);
+            if (!response.ok) {
+                throw new Error("Failed to fetch room state");
+            }
+            const data = await response.json();
+    
+            // Check if cards array exists and has at least one card
+            if (data.cards && data.cards.length > 0) {
+                const lastCard = data.cards[data.cards.length - 1]; // Get the last card
+                setCard(lastCard.card); // Set the card state
+                if (lastCard.votes) {
+                    setVotes({
+                        agree: lastCard.votes.agree.count,
+                        disagree: lastCard.votes.disagree.count,
+                    });
+                }
+            } else {
+                console.warn("No cards found in the fetched room state.");
+            }
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
+    };
+    
+
+
 
 
     useEffect(() => {
-        fetchRandomCard(); // Fetch card initially
+
+        fetchRoomState(); // Fetch initial room state on component mount
+        if (role === 'admin') {
+            fetchRandomCard()
+
+        }
+
+
 
         // Listen for WebSocket event
         socket.on('newDilemmaCard', fetchRandomCard);
@@ -94,24 +133,23 @@ const RoundThree = ({ roomId, playerID, socket }) => {
         };
     }, [socket, saveState]);
 
-
-
     if (loading) return <div>Loading...</div>;
     if (error) return <div>Error: {error}</div>;
 
-    const options = card?.options?.[language]; // Extract the options for the selected language
+    const options = card?.options?.[language]; // Extract options for the selected language
 
-    if (!options) {
-        return <div>No options available for the selected language</div>;
+    if (!card || !options) {
+        return <div>No card or options available for the selected language</div>;
     }
+
 
 
     return (
         <div className="round-three-container">
             <div>
-                <h1>Random Dilemma Card</h1>
-                <h2>Category: {card.category}</h2>
-                <p>Subcategory: {card.subcategory}</p>
+                <h1>Dilemma Card</h1>
+                <h2>Category: {card.category || "Unknown"}</h2>
+                <p>Subcategory: {card.subcategory || "Unknown"}</p>
 
                 <div className="options-container-dilemma">
                     {options.map((option, index) => (
@@ -143,6 +181,7 @@ const RoundThree = ({ roomId, playerID, socket }) => {
             </div>
         </div>
     );
+
 };
 
 export default RoundThree;
