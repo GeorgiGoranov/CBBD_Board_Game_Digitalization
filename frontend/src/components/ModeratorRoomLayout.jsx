@@ -57,7 +57,7 @@ const ModeratorRoomLayout = ({ roomId }) => {
     const handleNextDilemma = () => {
         // Notify the backend to reset votes
         socket.emit('resetVotes');
-        socket.emit('newDilemmaCard', { roomId, click: true });
+        socket.emit('nextDilemmaCard', { roomId }); 
     };
 
 

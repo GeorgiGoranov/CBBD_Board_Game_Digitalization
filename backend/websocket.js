@@ -99,23 +99,24 @@ function setupWebSocket(server) {
 
       console.log(`Round changed to ${roundNumber} in room ${roomId}`);
     });
+    socket.on('nextDilemmaCard', (data) => {
+      const { roomId } = data;
 
-    socket.on('newDilemmaCard', (data) => {
-      const { roomId, click } = data;
+      // Broadcast the event to all players in the room
+      io.to(roomId).emit('nextDilemmaCard');
 
-      if (click) {
-        // Reset votes for the room
-        roomVotes[roomId] = { agree: 0, disagree: 0 };
-
-        // Broadcast to all users in the room to fetch a new card
-        io.to(roomId).emit('newDilemmaCard');
-
-        // Also, send updated votes (which will be reset)
-        io.to(roomId).emit('updateVotes', roomVotes[roomId]);
-
-        console.log(`Broadcasted new dilemma card event for room: ${roomId}`);
-      }
+      console.log(`Moderator requested a new dilemma card in room: ${roomId}`);
     });
+
+    socket.on('newDilemmaCardData', (data) => {
+      const { roomId, card } = data;
+
+      // Broadcast the new card data to all users in the room
+      io.to(roomId).emit('updateDilemmaCardData', card);
+
+      console.log(`Broadcasted new dilemma card data for room: ${roomId}`);
+    });
+
 
 
     socket.on('vote', (data) => {
@@ -144,7 +145,7 @@ function setupWebSocket(server) {
 
     socket.on('disconnect', () => {
       console.log(`User back-end disconnected: ${socket.id}`);
-      
+
       let roomCode = null;
       let playerID = null;
 

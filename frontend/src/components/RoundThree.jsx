@@ -60,6 +60,10 @@ const RoundThree = ({ roomId, playerID, socket, role }) => {
 
             // Save the new card to the backend
             await saveState(data, null);
+
+            // Emit the card to all players in the room
+            socket.emit('newDilemmaCardData', { roomId, card: data });
+
         } catch (err) {
             setError(err.message);
         } finally {
@@ -76,50 +80,50 @@ const RoundThree = ({ roomId, playerID, socket, role }) => {
         saveState(null, vote);
     };
 
-    const fetchRoomState = async () => {
-        try {
-            const response = await fetch(`/api/rounds/get-state-third-round/${roomId}`);
-            if (!response.ok) {
-                throw new Error("Failed to fetch room state");
-            }
-            const data = await response.json();
-    
-            // Check if cards array exists and has at least one card
-            if (data.cards && data.cards.length > 0) {
-                const lastCard = data.cards[data.cards.length - 1]; // Get the last card
-                setCard(lastCard.card); // Set the card state
-                if (lastCard.votes) {
-                    setVotes({
-                        agree: lastCard.votes.agree.count,
-                        disagree: lastCard.votes.disagree.count,
-                    });
-                }
-            } else {
-                console.warn("No cards found in the fetched room state.");
-            }
-        } catch (err) {
-            setError(err.message);
-        } finally {
-            setLoading(false);
-        }
-    };
-    
+    // const fetchRoomState = async () => {
+    //     try {
+    //         const response = await fetch(`/api/rounds/get-state-third-round/${roomId}`);
+    //         if (!response.ok) {
+    //             throw new Error("Failed to fetch room state");
+    //         }
+    //         const data = await response.json();
 
+    //         // Check if cards array exists and has at least one card
+    //         if (data.cards && data.cards.length > 0) {
+    //             const lastCard = data.cards[data.cards.length - 1]; // Get the last card
+    //             setCard(lastCard.card); // Set the card state
+    //             if (lastCard.votes) {
+    //                 setVotes({
+    //                     agree: lastCard.votes.agree.count,
+    //                     disagree: lastCard.votes.disagree.count,
+    //                 });
+    //             }
+    //         } else {
+    //             console.warn("No cards found in the fetched room state.");
+    //         }
+    //     } catch (err) {
+    //         setError(err.message);
+    //     } finally {
+    //         setLoading(false);
+    //     }
+    // };
 
+    //on start fetch
+    
+    useEffect(() => {
+        fetchRandomCard()
+    }, [])
 
 
     useEffect(() => {
 
-        fetchRoomState(); // Fetch initial room state on component mount
-        if (role === 'admin') {
-            fetchRandomCard()
-
-        }
-
-
 
         // Listen for WebSocket event
-        socket.on('newDilemmaCard', fetchRandomCard);
+        socket.on('nextDilemmaCard', fetchRandomCard);
+
+        socket.on('updateDilemmaCardData', (cardData) => {
+            setCard(cardData);
+        });
 
         socket.on('updateVotes', (updatedVotes) => {
             setVotes(updatedVotes);
@@ -128,10 +132,11 @@ const RoundThree = ({ roomId, playerID, socket, role }) => {
 
         // Cleanup listener on component unmount
         return () => {
-            socket.off('newDilemmaCard', fetchRandomCard);
+            socket.off('nextDilemmaCard');
+            socket.off('updateDilemmaCardData');
             socket.off('updateVotes');
         };
-    }, [socket, saveState]);
+    }, [socket]);
 
     if (loading) return <div>Loading...</div>;
     if (error) return <div>Error: {error}</div>;
