@@ -4,8 +4,8 @@ import {
     Draggable,
 } from 'react-beautiful-dnd';
 import React, { useState, useEffect, useCallback } from 'react';
-import { useLanguage } from '../context/LanguageContext';
-import '../SCSS/roundTwo.scss';
+import { useLanguage } from '../../context/LanguageContext';
+import '../../SCSS/roundTwo.scss';
 
 
 const RoundTwo = ({ roomId, playerID, socket }) => {

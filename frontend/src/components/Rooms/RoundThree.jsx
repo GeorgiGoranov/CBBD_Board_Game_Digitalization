@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
-import { useLanguage } from '../context/LanguageContext';
-import "../SCSS/roundThree.scss"
+import { useLanguage } from '../../context/LanguageContext';
+import "../../SCSS/roundThree.scss"
     ;
 
 const RoundThree = ({ roomId, playerID, socket, role }) => {
@@ -109,7 +109,7 @@ const RoundThree = ({ roomId, playerID, socket, role }) => {
     // };
 
     //on start fetch
-    
+
     useEffect(() => {
         fetchRandomCard()
     }, [])
@@ -119,7 +119,7 @@ const RoundThree = ({ roomId, playerID, socket, role }) => {
 
 
         // Listen for WebSocket event
-        socket.on('nextDilemmaCard', fetchRandomCard);
+        socket.on('nextDilemmaCardR', fetchRandomCard);
 
         socket.on('updateDilemmaCardData', (cardData) => {
             setCard(cardData);
@@ -146,6 +146,10 @@ const RoundThree = ({ roomId, playerID, socket, role }) => {
     if (!card || !options) {
         return <div>No card or options available for the selected language</div>;
     }
+
+    const handleNextDilemma = () => {
+        fetchRandomCard()
+    };
 
 
 
@@ -183,8 +187,18 @@ const RoundThree = ({ roomId, playerID, socket, role }) => {
             <div className="vote-results">
                 <p>Votes for: {votes.agree}</p>
                 <p>Votes against: {votes.disagree}</p>
+
+                {role === 'admin' && (
+                    <div className='moderator-container-layout'>
+                        <i class="bi bi-arrow-right-circle" onClick={handleNextDilemma}></i>
+                    </div>
+                )}
+
             </div>
+
         </div>
+
+
     );
 
 };

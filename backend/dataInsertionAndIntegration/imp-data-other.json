@@ -261,5 +261,39 @@
                 }
             }
         ]
+    },
+    {
+        "category": "languages-taal",
+        "subcategories":[
+            {
+                "name": "en",
+                "options": {
+                    "nl": "ENGELS",
+                    "de": "ENGLISCH"
+                }
+            },
+            {
+                "name": "de",
+                "options": {
+                    "nl": "DUITS",
+                    "de": "DEUTSCH"
+                }
+            },
+            {
+                "name": "fr",
+                "options": {
+                    "nl": "FRANS",
+                    "de": "FRANZÖSISCH"
+                }
+            },
+            {
+                "name": "es",
+                "options": {
+                    "nl": "SPAANS",
+                    "de": "SPANISCH"
+                }
+            }
+        ]
     }
+
 ]

@@ -103,7 +103,7 @@ function setupWebSocket(server) {
       const { roomId } = data;
 
       // Broadcast the event to all players in the room
-      io.to(roomId).emit('nextDilemmaCard');
+      io.to(roomId).emit('nextDilemmaCardR');
 
       console.log(`Moderator requested a new dilemma card in room: ${roomId}`);
     });

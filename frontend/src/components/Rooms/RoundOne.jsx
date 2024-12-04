@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 
-import '../SCSS/roundOne.scss';
+import '../../SCSS/roundOne.scss';
 
 const RoundOne = ({ roomId, playerID, socket }) => {
     const [categories, setCategories] = useState([]);

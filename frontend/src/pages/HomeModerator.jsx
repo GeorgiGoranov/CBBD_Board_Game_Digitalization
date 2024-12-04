@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from "react-router-dom";
-import AvailableSessions from '../components/AvailableSessions';
+import AvailableSessions from '../components/Moderator/AvailableSessions';
 import { useSessionsContext } from '../hooks/useSessionContext';
 import "../SCSS/homeModerator.scss"
 import initSocket from '../context/socket';
@@ -8,7 +8,7 @@ import initSocket from '../context/socket';
 const Home = () => {
 
   const [sessionCode, setSessionCode] = useState('');
-  // const [players, setPlayers] = useState([]);
+ 
   const { dispatch } = useSessionsContext()
   const navigate = useNavigate()
   const socket = initSocket();
