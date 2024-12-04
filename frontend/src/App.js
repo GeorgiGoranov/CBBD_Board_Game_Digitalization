@@ -7,13 +7,13 @@ import HomeDefautUser from './pages/HomeDefautUser';
 import Room from './pages/Room';
 import ProtectedRoute from './components/ProtectedRoute';
 import { AuthProvider } from './auth/authContext';
-import AvailableSessions from "./components/AvailableSessions"
-import Cards from "./components/Cards"
-import Sheets from "./components/Sheets"
+import AvailableSessions from "./components/Moderator/AvailableSessions"
+import Cards from "./components/Moderator/Cards"
+import Sheets from "./components/Moderator/Sheets"
 import Additions from './pages/Additions';
-import ModeratorRoomLayout from './components/ModeratorRoomLayout';
+import ModeratorRoomLayout from './components/Moderator/ModeratorRoomLayout';
 import { LanguageProvider } from './context/LanguageContext';
-import Chat from './components/Chat';
+import Chat from './components/Rooms/Chat';
 
 
 

@@ -1,11 +1,13 @@
 const { Server } = require('socket.io');
-
 const { saveMessage } = require('./controllers/roundsController');
 
 
 // In-memory stores
 const rooms = {};       // To keep track of players in rooms
 const roomRounds = {};  // To keep track of current round per room
+const roomVotes = {}; // Store votes per room: { [roomId]: { agree: number, disagree: number } }
+
+
 
 // WebSocket setup
 function setupWebSocket(server) {
@@ -19,10 +21,6 @@ function setupWebSocket(server) {
 
   io.on('connection', (socket) => {
     console.log(`User back-end initial connection: ${socket.id}`);
-
-    socket.on('disconnect', () => {
-      console.log(`User back-end disconnected: ${socket.id}`);
-    });
 
     // Handle when a player joins a session
     socket.on('joinSession', (data) => {
@@ -51,6 +49,15 @@ function setupWebSocket(server) {
       // Send the current round to the newly connected client
       socket.emit('roundChanged', { roundNumber: roomRounds[gameCode] });
 
+      // Send the current round to the newly connected client
+      socket.emit('changeDilemmaCard', { click: true });
+
+      // Send the current vote counts to the newly connected client
+      if (!roomVotes[gameCode]) {
+        roomVotes[gameCode] = { agree: 0, disagree: 0 };
+      }
+      socket.emit('updateVotes', roomVotes[gameCode]);
+
       // Notify everyone in this specific room about the new player
       io.to(gameCode).emit('playerJoined', { playerID });
       // Notify everyone in this specific room with the updated player list
@@ -70,7 +77,75 @@ function setupWebSocket(server) {
       socket.to(gameCode).emit('cursorUpdate', { x, y, playerID });
     });
 
+    socket.on('sendMessage', async (data) => {
+      const { message } = data;
+
+      const result = await saveMessage(message);
+
+      if (result.success) {
+        socket.to(message.roomId).emit('receiveMessage', { message: result.message });
+      } else {
+        socket.emit('errorMessage', { error: 'Could not save message' });
+      }
+    });
+
+    socket.on('changeRound', (data) => {
+      const { roomId, roundNumber } = data;
+      // Update the current round for the room
+      roomRounds[roomId] = roundNumber;
+
+      // Broadcast 'roundChanged' event to all clients in the room
+      io.in(roomId).emit('roundChanged', { roundNumber });
+
+      console.log(`Round changed to ${roundNumber} in room ${roomId}`);
+    });
+    socket.on('nextDilemmaCard', (data) => {
+      const { roomId } = data;
+
+      // Broadcast the event to all players in the room
+      io.to(roomId).emit('nextDilemmaCardR');
+
+      console.log(`Moderator requested a new dilemma card in room: ${roomId}`);
+    });
+
+    socket.on('newDilemmaCardData', (data) => {
+      const { roomId, card } = data;
+
+      // Broadcast the new card data to all users in the room
+      io.to(roomId).emit('updateDilemmaCardData', card);
+
+      console.log(`Broadcasted new dilemma card data for room: ${roomId}`);
+    });
+
+
+
+    socket.on('vote', (data) => {
+      const { vote, roomId } = data;
+
+      if (!roomVotes[roomId]) {
+        roomVotes[roomId] = { agree: 0, disagree: 0 };
+      }
+
+      if (vote === 'agree') {
+        roomVotes[roomId].agree += 1;
+      } else if (vote === 'disagree') {
+        roomVotes[roomId].disagree += 1;
+      }
+
+      // Broadcast updated vote counts to all clients in the room
+      io.to(roomId).emit('updateVotes', roomVotes[roomId]);
+    });
+
+
+    // Handle resetting votes when a new dilemma card is selected
+    socket.on('resetVotes', () => {
+      votes = { agree: 0, disagree: 0 }; // Reset vote counts
+      io.emit('updateVotes', votes); // Notify all clients to reset their vote counts
+    });
+
     socket.on('disconnect', () => {
+      console.log(`User back-end disconnected: ${socket.id}`);
+
       let roomCode = null;
       let playerID = null;
 
@@ -96,33 +171,6 @@ function setupWebSocket(server) {
         console.log(`${playerID} left room: ${roomCode}`);
       }
     });
-
-    socket.on('sendMessage', async (data) => {
-      const { message } = data;
-
-      const result = await saveMessage(message);
-
-      if (result.success) {
-        socket.to(message.roomId).emit('receiveMessage', { message: result.message });
-      } else {
-        socket.emit('errorMessage', { error: 'Could not save message' });
-      }
-    });
-
-    socket.on('changeRound', (data) => {
-      const { roomId, roundNumber } = data;
-        // Update the current round for the room
-        roomRounds[roomId] = roundNumber;
-
-        // Broadcast 'roundChanged' event to all clients in the room
-        io.in(roomId).emit('roundChanged', { roundNumber });
-
-        console.log(`Round changed to ${roundNumber} in room ${roomId}`);
-    });
-
-
-
-
 
   });
 

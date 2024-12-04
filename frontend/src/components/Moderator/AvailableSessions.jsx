@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import "../SCSS/availableSessions.scss"
-import { useSessionsContext } from '../hooks/useSessionContext';
+import "../../SCSS/availableSessions.scss"
+import { useSessionsContext } from '../../hooks/useSessionContext';
 import { useNavigate } from 'react-router-dom';
 
 

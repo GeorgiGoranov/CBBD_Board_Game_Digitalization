@@ -1,7 +1,8 @@
-import initSocket from '../context/socket';
+import initSocket from '../../context/socket';
 import React, { useState, useRef } from 'react';
+import "../../SCSS/moderatorLayout.scss"
 
-const ModeratorRoomLayout = ({roomId}) => {
+const ModeratorRoomLayout = ({ roomId }) => {
     const socketRef = useRef();
 
     if (!socketRef.current) {
@@ -52,8 +53,6 @@ const ModeratorRoomLayout = ({roomId}) => {
             console.log('Already moved to the next round');
         }
     }
-
-
 
 
     return (

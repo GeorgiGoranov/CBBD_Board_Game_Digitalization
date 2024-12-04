@@ -1,15 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import ModeratorRoomLayout from '../components/ModeratorRoomLayout';
+import ModeratorRoomLayout from '../components/Moderator/ModeratorRoomLayout';
 import ParticipantRoomLayout from '../components/ParticipantRoomLayout';
 
-import Chat from '../components/Chat';
 import initSocket from '../context/socket';
 import "../SCSS/room.scss"
-import "../SCSS/moderatorContainerLayout.scss"
-import RoundOne from '../components/RoundOne';
-import RoundTwo from '../components/RoundTwo';
-import RoundThree from '../components/RoundThree';
+
+import Chat from '../components/Rooms/Chat';
+import RoundOne from '../components/Rooms/RoundOne';
+import RoundTwo from '../components/Rooms/RoundTwo';
+import RoundThree from '../components/Rooms/RoundThree';
 
 
 
@@ -146,7 +146,7 @@ const Room = () => {
                 {currentRound === 3 && (
                     <div>
                         Round 3
-                        <RoundThree roomId={roomId} playerID={playerID} socket={socket} />
+                        <RoundThree roomId={roomId} playerID={playerID} socket={socket} role={role} />
 
                     </div>
                 )}

@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import { useParams } from 'react-router-dom';
-import '../SCSS/chat.scss'
+import '../../SCSS/chat.scss'
 const Chat = ({ playerID, socket }) => {
 
     const [messages, setMessages] = useState([]);

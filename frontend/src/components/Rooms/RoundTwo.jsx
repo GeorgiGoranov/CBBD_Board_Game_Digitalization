@@ -4,8 +4,8 @@ import {
     Draggable,
 } from 'react-beautiful-dnd';
 import React, { useState, useEffect, useCallback } from 'react';
-import { useLanguage } from '../context/LanguageContext';
-import '../SCSS/roundTwo.scss';
+import { useLanguage } from '../../context/LanguageContext';
+import '../../SCSS/roundTwo.scss';
 
 
 const RoundTwo = ({ roomId, playerID, socket }) => {
@@ -30,6 +30,16 @@ const RoundTwo = ({ roomId, playerID, socket }) => {
         }));
     };
 
+    // Unique ID generator
+    const generateUniqueId = (() => {
+        let counter = 0;
+        return (playerID) => {
+            counter += 1;
+            return `${playerID}-${Date.now()}-${counter}`;
+        };
+    })();
+
+
     const handleDragDrop = (results) => {
         const { source, destination } = results;
         if (!destination) return;
@@ -40,30 +50,27 @@ const RoundTwo = ({ roomId, playerID, socket }) => {
         const sourceIsCategory = sourceDroppableId.startsWith('category-');
         const destinationIsCategory = destinationDroppableId.startsWith('category-');
 
-        // Prevent any drag-and-drop within categories or between categories
-        if (
-            sourceIsCategory &&
-            destinationIsCategory
-        ) {
+        if (sourceIsCategory && destinationIsCategory) {
             return;
         }
 
         let movedItem;
 
-        // Remove the item from the source list
         if (sourceIsCategory) {
-             // Remove from the category's options
-             const updatedCategories = categoriesData.map((category) => {
-                if (`category-${category.category}` === sourceDroppableId) {
-                    const updatedOptions = Array.from(category.options);
-                    [movedItem] = updatedOptions.splice(source.index, 1);
-                    return { ...category, options: updatedOptions };
-                }
-                return category;
-            });
-            setCategoriesData(updatedCategories);
+            // Get the item from categories
+            const category = categoriesData.find(
+                (cat) => `category-${cat.category}` === sourceDroppableId
+            );
+            if (category) {
+                const originalItem = category.options[source.index];
+                // Create a new item with a unique ID
+                movedItem = {
+                    ...originalItem,
+                    id: generateUniqueId(playerID),
+                };
+            }
         } else {
-            // Remove from drop zone
+            // Remove the item from the drop zone
             const updatedSourceItems = Array.from(dropZones[sourceDroppableId]);
             [movedItem] = updatedSourceItems.splice(source.index, 1);
             setDropZones((prev) => ({
@@ -72,17 +79,14 @@ const RoundTwo = ({ roomId, playerID, socket }) => {
             }));
         }
 
-        // Add the item to the destination list
         if (destinationIsCategory) {
-           
+            // Item is being removed from drop zone; no action needed
         } else {
-            // Add to drop zone
-            const updatedDestinationItems = Array.from(dropZones[destinationDroppableId]);
-            updatedDestinationItems.splice(destination.index, 0, movedItem);
-            setDropZones((prev) => ({
-                ...prev,
-                [destinationDroppableId]: updatedDestinationItems,
-            }));
+            setDropZones((prev) => {
+                const updatedDestinationItems = Array.from(prev[destinationDroppableId]);
+                updatedDestinationItems.splice(destination.index, 0, movedItem);
+                return { ...prev, [destinationDroppableId]: updatedDestinationItems };
+            });
         }
 
         // Emit the drag-drop event to the server with relevant data
@@ -102,30 +106,28 @@ const RoundTwo = ({ roomId, playerID, socket }) => {
         const sourceIsCategory = sourceDroppableId.startsWith('category-');
         const destinationIsCategory = destinationDroppableId.startsWith('category-');
 
-        // const sourceIsDropZone = sourceDroppableId.startsWith('box');
-        // const destinationIsDropZone = destinationDroppableId.startsWith('box');
-
-        // Remove the item from the source list
         if (sourceIsCategory) {
-            return;
+            // Do nothing since items aren't removed from categories
         } else {
-            // Remove from drop zone
-            setDropZones((prevDropZones) => {
-                const updatedSourceItems = Array.from(prevDropZones[sourceDroppableId]);
-                updatedSourceItems.splice(source.index, 1);
-                return { ...prevDropZones, [sourceDroppableId]: updatedSourceItems };
+            // Remove the item from the drop zone
+            setDropZones((prev) => {
+                const updatedSourceItems = Array.from(prev[sourceDroppableId]);
+                const itemIndex = updatedSourceItems.findIndex((item) => item.id === movedItem.id);
+                if (itemIndex !== -1) {
+                    updatedSourceItems.splice(itemIndex, 1);
+                    return { ...prev, [sourceDroppableId]: updatedSourceItems };
+                }
+                return prev;
             });
         }
 
-        // Add the item to the destination list
         if (destinationIsCategory) {
-            return;
+            // Item dragged back to categories; no action needed
         } else {
-            // Add to drop zone
-            setDropZones((prevDropZones) => {
-                const updatedDestinationItems = Array.from(prevDropZones[destinationDroppableId]);
+            setDropZones((prev) => {
+                const updatedDestinationItems = Array.from(prev[destinationDroppableId]);
                 updatedDestinationItems.splice(destination.index, 0, movedItem);
-                return { ...prevDropZones, [destinationDroppableId]: updatedDestinationItems };
+                return { ...prev, [destinationDroppableId]: updatedDestinationItems };
             });
         }
     };
@@ -295,8 +297,8 @@ const RoundTwo = ({ roomId, playerID, socket }) => {
                                         >
                                             {category.options.map((option, index) => (
                                                 <Draggable
-                                                    draggableId={option.id}
-                                                    key={option.id}
+                                                    draggableId={`category-${option.id}`}
+                                                    key={`category-${option.id}`}
                                                     index={index}
                                                 >
                                                     {(provided) => (
@@ -362,16 +364,15 @@ const RoundTwo = ({ roomId, playerID, socket }) => {
                         position: 'absolute',
                         top: position.y,
                         left: position.x,
-                        pointerEvents: 'none', // Make sure it doesn't interfere with interactions
+                        pointerEvents: 'none',
                         transform: 'translate(-50%, -50%)',
-                        backgroundColor: 'rgba(0, 0, 255, 0.5)', // Customize as needed
+                        backgroundColor: 'rgba(0, 0, 255, 0.5)',
                         width: '10px',
                         height: '10px',
                         borderRadius: '50%',
                         zIndex: 1000,
                     }}
                 >
-                    {/* Optional: display player ID */}
                     <span style={{ fontSize: '10px', color: 'red' }}>{playerID}</span>
                 </div>
             ))}

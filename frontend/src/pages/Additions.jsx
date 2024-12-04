@@ -1,5 +1,5 @@
-import Cards from "../components/Cards"
-import Sheets from "../components/Sheets"
+import Cards from "../components/Moderator/Cards"
+import Sheets from "../components/Moderator/Sheets"
 import "../SCSS/additions.scss"
 
 const  Additions = () =>{
