@@ -14,6 +14,8 @@ import Additions from './pages/Additions';
 import ModeratorRoomLayout from './components/Moderator/ModeratorRoomLayout';
 import { LanguageProvider } from './context/LanguageContext';
 import Chat from './components/Rooms/Chat';
+import Results from './pages/Results'
+import Lobby from './pages/Lobby'
 
 
 
@@ -31,10 +33,13 @@ function App() {
               <Routes>
                 <Route path="/" element={<Login />} />
                 <Route path="/register" element={<Register />} />
-                <Route path="/duser" element={<HomeDefautUser />} />
+                <Route path="/lobby" element={<Lobby/>} />
+                <Route path="/duser" element={<ParticipantHomeLayout/>} />
                 <Route path="/room/:roomId" element={<Room />} />
                 <Route path="/muser" element={<ProtectedRoute allowedRoles={['admin']}><Home /></ProtectedRoute>} />
                 <Route path="/additions" element={<ProtectedRoute allowedRoles={['admin']} ><Additions /></ProtectedRoute>} />
+                <Route path="/results" element={<ProtectedRoute allowedRoles={['admin']} ><Results /></ProtectedRoute>} />
+                
                 {/* component routes below*/}
                 <Route path="/av" element={<ProtectedRoute allowedRoles={['admin']} ><AvailableSessions /></ProtectedRoute>} />
                 <Route path="/cards" element={<ProtectedRoute allowedRoles={['admin']} ><Cards /></ProtectedRoute>} />

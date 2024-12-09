@@ -36,7 +36,9 @@ const HomeDefautUser = () => {
         const data = await response.json();
         if (response.ok) {
             setMessage('Successfully joined the game session!');
-            navigate(`/room/${gameCode}`);
+            // navigate(`/room/${gameCode}`);
+            navigate('/lobby');
+
 
         } else {
             setMessage(data.message || 'Error joining the session');
