@@ -50,8 +50,8 @@ p span{
 }
 .bi.bi-sliders{
     font-size: 1.5em;
+    cursor: pointer;
     
-
 }
 
 .container-for-activity{
@@ -63,4 +63,9 @@ p span{
 p.p-activity {
     margin: 0;
     padding: 0;
+}
+
+.bi.bi-book-half{
+    font-size: 1.75rem;
+    cursor: pointer;
 }
