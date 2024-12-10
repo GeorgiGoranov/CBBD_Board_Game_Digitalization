@@ -2,6 +2,9 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import initSocket from '../context/socket';
 import "../SCSS/lobby.scss"
+import ModeratorLobbyLayout from '../components/Moderator/ModeratorLobbyLayout';
+import ParticipantRoomLayout from '../components/ParticipantRoomLayout';
+
 
 const Lobby = () => {
     const { roomId } = useParams(); // Fetch roomId from the URL
@@ -15,13 +18,20 @@ const Lobby = () => {
     const [playerID, setPlayerID] = useState('');
     const [nationality, setNationality] = useState('')
 
-
-
-
     if (!socketRef.current) {
         socketRef.current = initSocket();
     }
     const socket = socketRef.current;
+
+
+    // Split players into subgroups of three
+    const splitIntoGroups = (playersArray) => {
+        const groups = [];
+        for (let i = 0; i < playersArray.length; i += 3) {
+            groups.push(playersArray.slice(i, i + 3));
+        }
+        return groups;
+    };
 
 
     useEffect(() => {
@@ -101,6 +111,7 @@ const Lobby = () => {
     if (loading) return <div>Loading...</div>;
 
     return (
+
         <div className='lobby-container'>
             <div className='test-layout'>
                 <h1>Room ID: {roomId}</h1>
@@ -108,40 +119,100 @@ const Lobby = () => {
 
                 <h2>Players in the Room:</h2>
                 <div className="player-columns">
-                    {/* German players */}
-                    <div className="german-players">
-                        <h3>German Players</h3>
-                        <ul>
-                            {players
-                                .filter(player => player.nationality === 'german')
-                                .map((player, index) => (
-                                    <li key={index}>{player.playerID}</li>
-                                ))}
-                        </ul>
-                    </div>
-                    {/* Dutch players */}
-                    <div className="dutch-players">
-                        <h3>Dutch Players</h3>
-                        <ul>
-                            {players
-                                .filter(player => player.nationality === 'dutch')
-                                .map((player, index) => (
-                                    <li key={index}>{player.playerID}</li>
-                                ))}
-                        </ul>
-                    </div>
-                    {/* International players */}
-                    <div className="international-players">
-                        <h3>International Players</h3>
-                        <ul>
-                            {players
-                                .filter(player => player.nationality === 'other')
-                                .map((player, index) => (
-                                    <li key={index}>{player.playerID}</li>
-                                ))}
-                        </ul>
-                    </div>
+                    {(() => {
+                        let globalGroupNumber = 1; // Start a global group counter
+
+                        return (
+                            <>
+                                {/* German players */}
+                                <div className="german-players">
+                                    <h3>German Players</h3>
+                                    {splitIntoGroups(players.filter(player => player.nationality === 'german')).map((group, groupIndex) => (
+                                        <div
+                                            key={`german-group-${groupIndex}`}
+                                            className="player-group"
+                                            style={{
+                                                border: '2px solid red',
+                                                padding: '10px',
+                                                margin: '10px 0',
+                                                borderRadius: '8px',
+                                            }}
+                                        >
+                                            <h3>Group {globalGroupNumber++}</h3>
+                                            <ul>
+                                                {group.map((player, index) => (
+                                                    <li key={index}>{player.playerID}</li>
+                                                ))}
+                                            </ul>
+                                        </div>
+                                    ))}
+                                </div>
+
+                                {/* Dutch players */}
+                                <div className="dutch-players">
+                                    <h3>Dutch Players</h3>
+                                    {splitIntoGroups(players.filter(player => player.nationality === 'dutch')).map((group, groupIndex) => (
+                                        <div
+                                            key={`dutch-group-${groupIndex}`}
+                                            className="player-group"
+                                            style={{
+                                                border: '2px solid red',
+                                                padding: '10px',
+                                                margin: '10px 0',
+                                                borderRadius: '8px',
+                                            }}
+                                        >
+                                            <h3>Group {globalGroupNumber++}</h3>
+                                            <ul>
+                                                {group.map((player, index) => (
+                                                    <li key={index}>{player.playerID}</li>
+                                                ))}
+                                            </ul>
+                                        </div>
+                                    ))}
+                                </div>
+
+                                {/* International players */}
+                                <div className="international-players">
+                                    <h3>International Players</h3>
+                                    {splitIntoGroups(players.filter(player => player.nationality === 'other')).map((group, groupIndex) => (
+                                        <div
+                                            key={`international-group-${groupIndex}`}
+                                            className="player-group"
+                                            style={{
+                                                border: '2px solid red',
+                                                padding: '10px',
+                                                margin: '10px 0',
+                                                borderRadius: '8px',
+                                            }}
+                                        >
+                                            <h3>Group {globalGroupNumber++}</h3>
+                                            <ul>
+                                                {group.map((player, index) => (
+                                                    <li key={index}>{player.playerID}</li>
+                                                ))}
+                                            </ul>
+                                        </div>
+                                    ))}
+                                </div>
+                            </>
+                        );
+                    })()}
                 </div>
+            </div>
+            {/* Role-based layout */}
+            <div className='role-based-layout'>
+                {role === 'admin' ? (
+                    <div className='moderator-container-layout'> Moderator Layout for Room {roomId}
+                        <ModeratorLobbyLayout lobbyId={roomId} playersList={players} />
+                    </div>
+                ) : (
+                    <div>
+                        <div>Player Layout for Room {roomId}
+                            <ParticipantRoomLayout />
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     )

@@ -18,7 +18,7 @@ const Room = () => {
     const [playerID, setPlayerID] = useState('');
     const [message, setMessage] = useState('');
     const socketRef = useRef();
-    
+
     const [players, setPlayers] = useState([]);
     const [role, setRole] = useState(null); // Role state to determine layout
     const [loading, setLoading] = useState(true);
@@ -119,13 +119,17 @@ const Room = () => {
             <div className='test-layout'>
                 <h1>Room ID: {roomId}</h1>
                 {message && <p>{message}</p>}
-
+                
                 <h2>Players in the Room:</h2>
                 <ul>
                     {players.map((player, index) => (
-                        <li key={index}>{player}</li>
+                        <li key={index}>
+                            {/* Check if the player is an object and render the playerID or other relevant property */}
+                            {typeof player === 'object' ? player.playerID : player}
+                        </li>
                     ))}
                 </ul>
+
             </div>
 
             <div className='information-pannel'>
@@ -159,7 +163,7 @@ const Room = () => {
             <div className='role-based-layout'>
                 {role === 'admin' ? (
                     <div className='moderator-container-layout'> Moderator Layout for Room {roomId}
-                        <ModeratorRoomLayout roomId={roomId}/>
+                        <ModeratorRoomLayout roomId={roomId} />
                     </div>
                 ) : (
                     <div>

@@ -166,7 +166,7 @@ const RoundOne = ({ roomId, playerID, socket }) => {
         };
 
         fetchCategories();
-        fetchSavedRoomState();
+        // fetchSavedRoomState();
     }, [roomId])
 
     useEffect(() => {

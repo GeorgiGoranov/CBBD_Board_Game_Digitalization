@@ -28,7 +28,7 @@ const Home = () => {
     if (response.ok) {
       dispatch({ type: 'CREATE_SESSIONS', payload: data })
       setSessionCode(data.code); // Show the generated 6-digit code to the moderator
-      socket.emit('joinSession', data.code); // Join the session room
+      socket.emit('joinSession', data.code); // Create the session room
     } else {
       alert('Error creating game session');
     }

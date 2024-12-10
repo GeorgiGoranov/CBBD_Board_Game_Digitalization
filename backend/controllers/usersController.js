@@ -169,7 +169,7 @@ const joinSession = async (req, res) => {
         // Add the player to the session's players array if not already present
 
         if (!session.players.includes(playerUsername)) {
-            session.players.push(playerUsername)
+            session.players.push({ name: playerUsername, nationality })
             await session.save() // Save the updated session
         }
 
