@@ -106,7 +106,7 @@ const getUserLogin = async (req, res) => {
             return res.status(401).json({ error: "Invalid credentials" });
         }
 
-        const token = createToken(user._id, user.role, user.username);
+        const token = createToken(user._id, user.role, user.username, user.nationality);
 
         res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 }); // cookie operates in milisecond and not in minutes
 
@@ -156,7 +156,7 @@ const createSession = async (req, res) => {
 
 const joinSession = async (req, res) => {
     try {
-        const { code, playerUsername } = req.body
+        const { code, playerUsername, nationality } = req.body
 
         const session = await SessionModel.findOne({ code });
 
@@ -173,7 +173,7 @@ const joinSession = async (req, res) => {
             await session.save() // Save the updated session
         }
 
-        const token = createToken(generateObjectIdForParticipants(), 'user', playerUsername, code);
+        const token = createToken(generateObjectIdForParticipants(), 'user', playerUsername, nationality, code);
         
         res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 }); // cookie operates in milisecond and not in minutes
 
@@ -186,8 +186,9 @@ const joinSession = async (req, res) => {
 }
 
 const maxAge = 3 * 60 * 60 // time lenght 5 min
-const createToken = (id, role, name, sessionCode) => {
-    return jwt.sign({ id, role, name,sessionCode }, process.env.SECRET_KEY, {
+const createToken = (id, role, name, nationality,sessionCode) => {
+
+    return jwt.sign({ id, role, name,nationality, sessionCode }, process.env.SECRET_KEY, {
         expiresIn: maxAge
     })
 }
@@ -319,8 +320,8 @@ const deleteSession = async (req, res) => {
 };
 
 const userRole = async (req,res) =>{
-    const { id, role, name, sessionCode } = req.user;
-    res.status(200).json({ id, role, name, sessionCode });
+    const { id, role, name, nationality, sessionCode } = req.user;
+    res.status(200).json({ id, role, name, nationality, sessionCode });
 }
 
 const toggleActivity = async (req,res) =>{

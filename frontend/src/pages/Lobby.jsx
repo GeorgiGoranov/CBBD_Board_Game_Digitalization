@@ -1,37 +1,28 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import ModeratorRoomLayout from '../components/Moderator/ModeratorRoomLayout';
-import ParticipantRoomLayout from '../components/ParticipantRoomLayout';
-
 import initSocket from '../context/socket';
-import "../SCSS/room.scss"
+import "../SCSS/lobby.scss"
 
-import Chat from '../components/Rooms/Chat';
-import RoundOne from '../components/Rooms/RoundOne';
-import RoundTwo from '../components/Rooms/RoundTwo';
-import RoundThree from '../components/Rooms/RoundThree';
-
-
-
-const Room = () => {
+const Lobby = () => {
     const { roomId } = useParams(); // Fetch roomId from the URL
-    const [playerID, setPlayerID] = useState('');
-    const [message, setMessage] = useState('');
-    const socketRef = useRef();
-    
     const [players, setPlayers] = useState([]);
-    const [role, setRole] = useState(null); // Role state to determine layout
+    const socketRef = useRef();
     const [loading, setLoading] = useState(true);
-    const navigate = useNavigate()
+    const [message, setMessage] = useState('');
     const [userSessionCode, setUserSessionCode] = useState(null);
-    const [currentRound, setCurrentRound] = useState(0); // Start at round 0
+    const [role, setRole] = useState(null); // Role state to determine layout
+    const navigate = useNavigate()
+    const [playerID, setPlayerID] = useState('');
+    const [nationality, setNationality] = useState('')
+
+
 
 
     if (!socketRef.current) {
         socketRef.current = initSocket();
     }
-
     const socket = socketRef.current;
+
 
     useEffect(() => {
         const fetchUserRole = async () => {
@@ -46,7 +37,7 @@ const Room = () => {
                     setUserSessionCode(data.sessionCode);
                     setRole(data.role);
                     setPlayerID(data.name);
-
+                    setNationality(data.nationality);
                 } else {
                     navigate('/duser')
                 }
@@ -89,89 +80,71 @@ const Room = () => {
             setMessage(`${playerList} left the game!`);
         });
 
-        socket.on('roundChanged', ({ roundNumber }) => {
-            setCurrentRound(roundNumber);
-            console.log(`Round changed to ${roundNumber}`);
-        });
+
 
         // Cleanup listener when the component unmounts
         return () => {
             socket.off('playerJoined'); // Remove the listener when the component unmounts
             socket.off('updatePlayerList');
             socket.off('playerLeftRoom');
-            socket.off('roundChanged');
+
         };
     }, [socket]);
 
     useEffect(() => {
         if (playerID && roomId) {
-            socket.emit('joinSession', { playerID, gameCode: roomId });
+            socket.emit('joinSession', { playerID, nationality, gameCode: roomId });
         }
 
     }, [playerID, roomId, socket])
 
-
     if (loading) return <div>Loading...</div>;
 
     return (
-
-        <div className='room-container'>
+        <div className='lobby-container'>
             <div className='test-layout'>
                 <h1>Room ID: {roomId}</h1>
                 {message && <p>{message}</p>}
 
                 <h2>Players in the Room:</h2>
-                <ul>
-                    {players.map((player, index) => (
-                        <li key={index}>{player}</li>
-                    ))}
-                </ul>
-            </div>
-
-            <div className='information-pannel'>
-                {/* Render RoundOne component */}
-                {currentRound === 1 && (
-                    <div>
-                        Round 1
-                        <RoundOne roomId={roomId} playerID={playerID} socket={socket} />
-
+                <div className="player-columns">
+                    {/* German players */}
+                    <div className="german-players">
+                        <h3>German Players</h3>
+                        <ul>
+                            {players
+                                .filter(player => player.nationality === 'german')
+                                .map((player, index) => (
+                                    <li key={index}>{player.playerID}</li>
+                                ))}
+                        </ul>
                     </div>
-                )}
-                {currentRound === 2 && (
-                    <div>
-                        Round 2
-                        <RoundTwo roomId={roomId} playerID={playerID} socket={socket} />
-
+                    {/* Dutch players */}
+                    <div className="dutch-players">
+                        <h3>Dutch Players</h3>
+                        <ul>
+                            {players
+                                .filter(player => player.nationality === 'dutch')
+                                .map((player, index) => (
+                                    <li key={index}>{player.playerID}</li>
+                                ))}
+                        </ul>
                     </div>
-                )}
-                {currentRound === 3 && (
-                    <div>
-                        Round 3
-                        <RoundThree roomId={roomId} playerID={playerID} socket={socket} role={role} />
-
+                    {/* International players */}
+                    <div className="international-players">
+                        <h3>International Players</h3>
+                        <ul>
+                            {players
+                                .filter(player => player.nationality === 'other')
+                                .map((player, index) => (
+                                    <li key={index}>{player.playerID}</li>
+                                ))}
+                        </ul>
                     </div>
-                )}
-                {/* Chat Component */}
-                <Chat playerID={playerID} socket={socket} />
-            </div>
-
-            {/* Role-based layout */}
-            <div className='role-based-layout'>
-                {role === 'admin' ? (
-                    <div className='moderator-container-layout'> Moderator Layout for Room {roomId}
-                        <ModeratorRoomLayout roomId={roomId}/>
-                    </div>
-                ) : (
-                    <div>
-                        <div>Player Layout for Room {roomId}
-                            <ParticipantRoomLayout />
-                        </div>
-                    </div>
-                )}
+                </div>
             </div>
         </div>
     )
 }
 
-
-export default Room
+export default Lobby

@@ -25,7 +25,7 @@ function setupWebSocket(server) {
     // Handle when a player joins a session
     socket.on('joinSession', (data) => {
 
-      const { playerID, gameCode } = data;
+      const { playerID, nationality, gameCode } = data;
 
       // Add the player to the room's player list
       if (!rooms[gameCode]) {
@@ -40,7 +40,7 @@ function setupWebSocket(server) {
         existingPlayer.socketId = socket.id;
       } else {
         // Add the new player to the room if not already present
-        rooms[gameCode].push({ playerID, socketId: socket.id });
+        rooms[gameCode].push({ playerID, socketId: socket.id, nationality });
       }
 
       // Add the player to the specific room associated with the gameCode
@@ -59,9 +59,15 @@ function setupWebSocket(server) {
       socket.emit('updateVotes', roomVotes[gameCode]);
 
       // Notify everyone in this specific room about the new player
-      io.to(gameCode).emit('playerJoined', { playerID });
+      io.to(gameCode).emit('playerJoined', { playerID, nationality });
       // Notify everyone in this specific room with the updated player list
-      io.to(gameCode).emit('updatePlayerList', rooms[gameCode].map(player => player.playerID));
+      io.to(gameCode).emit(
+        'updatePlayerList',
+        rooms[gameCode].map((player) => ({
+          playerID: player.playerID,
+          nationality: player.nationality
+        }))
+      );
     });
 
     socket.on('dragDropUpdate', (data) => {

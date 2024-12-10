@@ -77,7 +77,7 @@ const Register = () => {
                             placeholder="Select a Nationality">
                             <option value="" disabled>Select a Nationality</option>
                             <option value="german">German</option>
-                            <option value="netherland">Netherland</option>
+                            <option value="dutch">Dutch</option>
                         </select>
                         <h3>Password</h3>
                         <input className="input"
