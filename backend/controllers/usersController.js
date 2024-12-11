@@ -154,30 +154,67 @@ const createSession = async (req, res) => {
     }
 }
 
-const joinSession = async (req, res) => {
+const joinGameSession = async (req, res) => {
+    try {
+        const { roomId, groupedPlayers } = req.body;
+
+        // Find the game session by roomId
+        const session = await SessionModel.findOne({ code: roomId });
+
+        if (!session) {
+            return res.status(404).json({ message: 'Game session not found!' });
+        }
+
+        // Clear existing players
+        session.players = [];
+
+        // Add grouped players to the session
+        groupedPlayers.forEach((group) => {
+            group.players.forEach((player) => {
+                session.players.push({
+                    name: player.name,
+                    nationality: player.nationality,
+                    group: group.groupNumber, // Assign group number
+                });
+            });
+        });
+
+        await session.save(); // Save the updated session
+
+        return res.status(200).json({ message: 'Groups saved successfully!' });
+    } catch (error) {
+        console.error('Error saving groups:', error);
+        res.status(500).json({ message: 'Failed to save groups.' });
+    }
+}
+
+const joinLobbySession = async (req, res) => {
     try {
         const { code, playerUsername, nationality } = req.body
 
-        const session = await SessionModel.findOne({ code });
-
-        if (!session) {
-            return res.status(404).json({ message: 'Game session not found!' })
-        }
-        if (!session.isActive) {
-            return res.status(400).json({ message: 'Game session not longer active!' })
-        }
-        // Add the player to the session's players array if not already present
-
-        if (!session.players.includes(playerUsername)) {
-            session.players.push({ name: playerUsername, nationality })
-            await session.save() // Save the updated session
-        }
-
         const token = createToken(generateObjectIdForParticipants(), 'user', playerUsername, nationality, code);
-        
+
         res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 }); // cookie operates in milisecond and not in minutes
 
-        return res.status(200).json({ message: 'Player joined the session successfully!', session })
+        return res.status(200).json({ message: 'Player joined the session successfully!' })
+
+    } catch (error) {
+        console.error('Error joining session:', error);
+        res.status(500).json({ message: 'Error joining the sesion', session })
+    }
+}
+
+const updateTokenGroup = async (req, res) => {
+    try {
+        const { code, playerUsername, nationality, group } = req.body
+
+        console.log(code +"+"+playerUsername+"+"+ nationality+"+"+ group )
+
+        const token = updateeToken(generateObjectIdForParticipants(),'user', playerUsername, nationality, code, group);
+
+        res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 }); // cookie operates in milisecond and not in minutes
+
+        return res.status(200).json({ message: 'newToken' })
 
     } catch (error) {
         console.error('Error joining session:', error);
@@ -186,26 +223,32 @@ const joinSession = async (req, res) => {
 }
 
 const maxAge = 3 * 60 * 60 // time lenght 5 min
-const createToken = (id, role, name, nationality,sessionCode) => {
+const createToken = (id, role, name, nationality, sessionCode) => {
 
-    return jwt.sign({ id, role, name,nationality, sessionCode }, process.env.SECRET_KEY, {
+    return jwt.sign({ id, role, name, nationality, sessionCode }, process.env.SECRET_KEY, {
         expiresIn: maxAge
     })
 }
 
-const generateObjectIdForParticipants= () => {
+const updateeToken = (id, role, name, nationality, sessionCode, group) => {
+
+    return jwt.sign({ id, role, name, nationality, sessionCode, group }, process.env.SECRET_KEY, {
+        expiresIn: maxAge
+    })
+}
+
+const generateObjectIdForParticipants = () => {
 
     const hexChars = "abcdef0123456789";
     let objectId = "";
-    
+
     for (let i = 0; i < 24; i++) {
         objectId += hexChars[Math.floor(Math.random() * hexChars.length)];
     }
-    
+
     return objectId;
 
 }
-
 
 const isAuth = (req, res, next) => {
     const token = req.cookies.jwt;
@@ -254,7 +297,6 @@ const isAuth = (req, res, next) => {
         }
     });
 };
-
 
 const logOut = async (req, res) => {
     res.cookie("jwt", "", { maxAge: 1 });
@@ -319,16 +361,16 @@ const deleteSession = async (req, res) => {
     }
 };
 
-const userRole = async (req,res) =>{
+const userRole = async (req, res) => {
     const { id, role, name, nationality, sessionCode } = req.user;
     res.status(200).json({ id, role, name, nationality, sessionCode });
 }
 
-const toggleActivity = async (req,res) =>{
+const toggleActivity = async (req, res) => {
     try {
         const session = await SessionModel.findOne({ code: req.params.code });
         if (!session) return res.status(404).json({ message: 'Session not found' });
-        
+
         session.isActive = !session.isActive; // Toggle the isActive status
         await session.save();
 
@@ -346,12 +388,14 @@ module.exports = {
     updateUser,
     getUserLogin,
     createSession,
-    joinSession,
+    joinGameSession,
     logOut,
     isAuth,
     fetchPlayers,
     deleteSession,
     userRole,
     toggleActivity,
-    generateObjectIdForParticipants
+    generateObjectIdForParticipants,
+    joinLobbySession,
+    updateTokenGroup
 }

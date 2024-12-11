@@ -6,7 +6,7 @@ const { saveMessage } = require('./controllers/roundsController');
 const rooms = {};       // To keep track of players in rooms
 const roomRounds = {};  // To keep track of current round per room
 const roomVotes = {}; // Store votes per room: { [roomId]: { agree: number, disagree: number } }
- 
+
 
 
 // WebSocket setup
@@ -70,6 +70,14 @@ function setupWebSocket(server) {
       );
     });
 
+    socket.on('navigateToRoom', (data) => {
+      const { roomId } = data;
+      console.log(`Navigating all players in room ${roomId} to game room`);
+
+      // Broadcast the event to all players in the room
+      io.to(roomId).emit('navigateToRoom', { roomId });
+    });
+
     socket.on('dragDropUpdate', (data) => {
       const { gameCode } = data;
       // Broadcast the dragDropUpdate event to all clients in the same room
@@ -123,8 +131,6 @@ function setupWebSocket(server) {
       console.log(`Broadcasted new dilemma card data for room: ${roomId}`);
     });
 
-
-
     socket.on('vote', (data) => {
       const { vote, roomId } = data;
 
@@ -141,7 +147,6 @@ function setupWebSocket(server) {
       // Broadcast updated vote counts to all clients in the room
       io.to(roomId).emit('updateVotes', roomVotes[roomId]);
     });
-
 
     // Handle resetting votes when a new dilemma card is selected
     socket.on('resetVotes', () => {

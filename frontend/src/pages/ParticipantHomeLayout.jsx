@@ -25,10 +25,10 @@ const HomeDefautUser = () => {
         };
     }, [socket]);
 
-    const joinGameSession = async () => {
+    const joinLobbySession = async () => {
 
         // Make a POST request to the backend to join the session
-        const response = await fetch('/api/routes/join-session', {
+        const response = await fetch('/api/routes/join-lobby-session', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -39,14 +39,14 @@ const HomeDefautUser = () => {
         const data = await response.json();
         if (response.ok) {
             setMessage('Successfully joined the game session!');
-            // navigate(`/room/${gameCode}`);
+            
             navigate(`/lobby/${gameCode}`);
-
-
+            
         } else {
             setMessage(data.message || 'Error joining the session');
         }
     };
+
 
     return (
         <div >
@@ -78,7 +78,7 @@ const HomeDefautUser = () => {
                 </select>
 
             </div>
-            <button onClick={joinGameSession}>Join Session</button>
+            <button onClick={joinLobbySession}>Join Session</button>
             {message && <p>{message}</p>}
 
         </div>

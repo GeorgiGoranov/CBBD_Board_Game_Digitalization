@@ -217,8 +217,6 @@ const RoundOne = ({ roomId, playerID, socket }) => {
     return (
         <div className='round-one-container'>
             <div className='dragdrop-container' >
-
-
                 <DragDropContext onDragEnd={handleDragDrop}   >
                     <ul className='api-list'>
                         <Droppable droppableId='ROOT' >

@@ -75,6 +75,13 @@ const Lobby = () => {
             socket.connect();
         }
 
+        // Listen for navigation event
+        socket.on('navigateToRoom', (data) => {
+            if (data.roomId === roomId) {
+                navigate(`/room/${roomId}`);
+            }
+        });
+
         // Listen for new players joining the session
         socket.on('playerJoined', (data) => {
             // setPlayers(players);  // Update the players state with the updated list
@@ -106,51 +113,80 @@ const Lobby = () => {
             setMessage(`${playerList} left the game!`);
         });
 
-
-
         // Cleanup listener when the component unmounts
         return () => {
+            socket.off('navigateToRoom');
             socket.off('playerJoined'); // Remove the listener when the component unmounts
             socket.off('updatePlayerList');
             socket.off('playerLeftRoom');
 
         };
-    }, [socket]);
+    }, [socket, roomId, navigate]);
 
     const handleSaveGroups = async () => {
         const confirmed = window.confirm('You are about to save the groups! Are you sure?');
         if (confirmed) {
             try {
-                // Prepare player-group mapping
-                const playerGroupAssignments = groupedPlayers.flatMap((group) =>
-                    group.players.map((player) => ({
-                        playerID: player.playerID,
-                        groupNumber: group.groupNumber,
-                    }))
-                );
+                // Prepare the data to send to the backend
+                const groupedPlayersData = groupedPlayers.map((group) => ({
+                    groupNumber: group.groupNumber,
+                    players: group.players.map((player) => ({
+                        name: player.playerID,
+                        nationality: player.nationality,
+                    })),
+                }));
 
-                // Send the mapping to the backend
-                const response = await fetch('/api/players/update-groups', {
+                // Send the data to the backend
+                const response = await fetch('/api/routes/join-game-session', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ assignments: playerGroupAssignments }),
+                    body: JSON.stringify({ roomId, groupedPlayers: groupedPlayersData }),
                 });
 
                 if (response.ok) {
-                    console.log('Player groups updated successfully!');
-                    alert('Player groups have been saved.');
+                    console.log('Groups saved successfully!');
+                    alert('Groups have been saved.');
+
+                    // Send the data to the backend
+                    const updateResponse  = await fetch('/api/routes/update-token-group', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ 
+                            code: roomId, 
+                            playerUsername: playerID, 
+                            nationality, 
+                            group: groupedPlayers.find((group) =>
+                                group.players.some((player) => player.playerID === playerID)
+                            )?.groupNumber,  }),
+                    });
+                    if (updateResponse.ok) {
+                        const data = await updateResponse.json();
+                        console.log('Token updated successfully:', data);
+                        alert('Token updated successfully!');
+                    } else {
+                        const errorData = await updateResponse.json();
+                        console.error('Error updating token:', errorData.message);
+                        alert('Failed to update token.');
+                    }
+    
+                    // Navigate players to the room
+                    socket.emit('navigateToRoom', { roomId });
                 } else {
-                    console.error('Failed to update player groups.');
-                    alert('Failed to update player groups.');
+                    const errorData = await response.json();
+                    console.error('Error saving groups:', errorData.message);
+                    alert('Failed to save groups.');
                 }
             } catch (error) {
-                console.error('Error updating player groups:', error);
+                console.error('Error saving groups:', error);
                 alert('An error occurred while saving groups.');
             }
         }
     };
+
 
     useEffect(() => {
         if (playerID && roomId) {
@@ -209,40 +245,40 @@ const Lobby = () => {
             {/* Role-based layout */}
             <div className='moderator-layout'>
                 {role === 'admin' ? (
-                   <div className='lobby-container'>
-                   <div className='test-layout'>
-                       <h1>Room ID: {roomId}</h1>
-                       {message && <p>{message}</p>}
-       
-                       <h2>Players in the Room:</h2>
-                       <div className="player-columns">
-                           {groupedPlayers.map((group) => (
-                               <div
-                                   key={group.groupNumber}
-                                   className="player-group"
-                                   style={{
-                                       border: '2px solid red',
-                                       padding: '10px',
-                                       margin: '10px 0',
-                                       borderRadius: '8px',
-                                   }}
-                               >
-                                   <h3>Group {group.groupNumber}</h3>
-                                   <ul>
-                                       {group.players.map((player) => (
-                                           <li key={player.playerID}>{player.playerID}</li>
-                                       ))}
-                                   </ul>
-                               </div>
-                           ))}
-                       </div>
-                       {role === 'admin' && (
-                           <button className='btn' onClick={handleSaveGroups}>
-                               Save Groups
-                           </button>
-                       )}
-                   </div>
-               </div>
+                    <div className='lobby-container'>
+                        <div className='test-layout'>
+                            <h1>Room ID: {roomId}</h1>
+                            {message && <p>{message}</p>}
+
+                            <h2>Players in the Room:</h2>
+                            <div className="player-columns">
+                                {groupedPlayers.map((group) => (
+                                    <div
+                                        key={group.groupNumber}
+                                        className="player-group"
+                                        style={{
+                                            border: '2px solid red',
+                                            padding: '10px',
+                                            margin: '10px 0',
+                                            borderRadius: '8px',
+                                        }}
+                                    >
+                                        <h3>Group {group.groupNumber}</h3>
+                                        <ul>
+                                            {group.players.map((player) => (
+                                                <li key={player.playerID}>{player.playerID}</li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                ))}
+                            </div>
+                            {role === 'admin' && (
+                                <button className='btn' onClick={handleSaveGroups}>
+                                    Save Groups
+                                </button>
+                            )}
+                        </div>
+                    </div>
                 ) : (
                     <div>
                         <div>Player Layout for Room {roomId}

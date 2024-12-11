@@ -27,6 +27,7 @@ const Room = () => {
     const [currentRound, setCurrentRound] = useState(0); // Start at round 0
 
 
+
     if (!socketRef.current) {
         socketRef.current = initSocket();
     }
@@ -34,6 +35,9 @@ const Room = () => {
     const socket = socketRef.current;
 
     useEffect(() => {
+
+        
+
         const fetchUserRole = async () => {
             try {
                 const response = await fetch('/api/routes/user-role', {
@@ -116,22 +120,23 @@ const Room = () => {
     return (
 
         <div className='room-container'>
-            <div className='test-layout'>
+            {/* <div className='test-layout'>
                 <h1>Room ID: {roomId}</h1>
                 {message && <p>{message}</p>}
                 
                 <h2>Players in the Room:</h2>
                 <ul>
-                    {players.map((player, index) => (
-                        <li key={index}>
-                            {/* Check if the player is an object and render the playerID or other relevant property */}
-                            {typeof player === 'object' ? player.playerID : player}
-                        </li>
-                    ))}
-                </ul>
+                {players.map((player, index) => (
+                    <li key={index}>
+                    {/* Check if the player is an object and render the playerID or other relevant property */}
+            {/* {typeof player === 'object' ? player.playerID : player} */}
+            {/* </li> */}
+            {/* ))} */}
+            {/* </ul> */}
 
-            </div>
+            {/* </div>  */}
 
+            <h2>Group Number: {}</h2>
             <div className='information-pannel'>
                 {/* Render RoundOne component */}
                 {currentRound === 1 && (
