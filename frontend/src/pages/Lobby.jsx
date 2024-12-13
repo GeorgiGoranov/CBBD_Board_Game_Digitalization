@@ -123,6 +123,47 @@ const Lobby = () => {
         };
     }, [socket, roomId, navigate]);
 
+    useEffect(() => {
+        socket.on('updateTokens', async ({ groupedPlayers }) => {
+            try {
+                const playerGroup = groupedPlayers.find((group) =>
+                    group.players.some((player) => player.playerID === playerID)
+                );
+
+                if (playerGroup) {
+                    const groupNumber = playerGroup.groupNumber;
+
+                    // Update token for the current player
+                    const updateResponse = await fetch('/api/routes/update-token-group', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            code: roomId,
+                            playerUsername: playerID,
+                            nationality,
+                            group: groupNumber,
+                        }),
+                    });
+
+                    if (updateResponse.ok) {
+                        console.log(`Token updated successfully for ${playerID}`);
+                    } else {
+                        const errorData = await updateResponse.json();
+                        console.error(`Error updating token for ${playerID}:`, errorData.message);
+                    }
+                }
+            } catch (error) {
+                console.error(`Error updating token for ${playerID}:`, error);
+            }
+        });
+
+        return () => {
+            socket.off('updateTokens');
+        };
+    }, [socket, roomId, playerID, nationality]);
+
     const handleSaveGroups = async () => {
         const confirmed = window.confirm('You are about to save the groups! Are you sure?');
         if (confirmed) {
@@ -149,19 +190,26 @@ const Lobby = () => {
                     console.log('Groups saved successfully!');
                     alert('Groups have been saved.');
 
+                    // Emit an event to update all players' tokens
+                    socket.emit('updateTokens', {
+                        roomId,
+                        groupedPlayers,
+                    });
+
                     // Send the data to the backend
-                    const updateResponse  = await fetch('/api/routes/update-token-group', {
+                    const updateResponse = await fetch('/api/routes/update-token-group', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
                         },
-                        body: JSON.stringify({ 
-                            code: roomId, 
-                            playerUsername: playerID, 
-                            nationality, 
+                        body: JSON.stringify({
+                            code: roomId,
+                            playerUsername: playerID,
+                            nationality,
                             group: groupedPlayers.find((group) =>
                                 group.players.some((player) => player.playerID === playerID)
-                            )?.groupNumber,  }),
+                            )?.groupNumber,
+                        }),
                     });
                     if (updateResponse.ok) {
                         const data = await updateResponse.json();
@@ -172,7 +220,7 @@ const Lobby = () => {
                         console.error('Error updating token:', errorData.message);
                         alert('Failed to update token.');
                     }
-    
+
                     // Navigate players to the room
                     socket.emit('navigateToRoom', { roomId });
                 } else {

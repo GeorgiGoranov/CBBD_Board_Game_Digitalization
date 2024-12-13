@@ -25,7 +25,8 @@ const Room = () => {
     const navigate = useNavigate()
     const [userSessionCode, setUserSessionCode] = useState(null);
     const [currentRound, setCurrentRound] = useState(0); // Start at round 0
-
+    const [group, setGroup] = useState('');
+    
 
 
     if (!socketRef.current) {
@@ -40,7 +41,7 @@ const Room = () => {
 
         const fetchUserRole = async () => {
             try {
-                const response = await fetch('/api/routes/user-role', {
+                const response = await fetch('/api/routes/user-role-updated', {
                     method: 'GET',
                     credentials: 'include', // Include JWT cookies
                 });
@@ -50,6 +51,9 @@ const Room = () => {
                     setUserSessionCode(data.sessionCode);
                     setRole(data.role);
                     setPlayerID(data.name);
+                    setGroup(data.group)
+                    console.log(data.group)
+                
 
                 } else {
                     navigate('/duser')
@@ -136,7 +140,7 @@ const Room = () => {
 
             {/* </div>  */}
 
-            <h2>Group Number: {}</h2>
+            <h2>Group Number: {group}</h2>
             <div className='information-pannel'>
                 {/* Render RoundOne component */}
                 {currentRound === 1 && (

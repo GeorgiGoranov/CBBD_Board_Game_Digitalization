@@ -366,6 +366,11 @@ const userRole = async (req, res) => {
     res.status(200).json({ id, role, name, nationality, sessionCode });
 }
 
+const userRoleUpdated = async (req, res) => {
+    const { id, role, name, nationality, sessionCode,group } = req.user;
+    res.status(200).json({ id, role, name, nationality, sessionCode, group });
+}
+
 const toggleActivity = async (req, res) => {
     try {
         const session = await SessionModel.findOne({ code: req.params.code });
@@ -397,5 +402,6 @@ module.exports = {
     toggleActivity,
     generateObjectIdForParticipants,
     joinLobbySession,
-    updateTokenGroup
+    updateTokenGroup,
+    userRoleUpdated
 }

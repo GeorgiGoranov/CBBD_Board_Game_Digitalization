@@ -78,6 +78,11 @@ function setupWebSocket(server) {
       io.to(roomId).emit('navigateToRoom', { roomId });
     });
 
+    socket.on('updateTokens', ({ roomId, groupedPlayers }) => {
+      // Broadcast the groupedPlayers data to all players in the room
+      socket.to(roomId).emit('updateTokens', { groupedPlayers });
+  });
+
     socket.on('dragDropUpdate', (data) => {
       const { gameCode } = data;
       // Broadcast the dragDropUpdate event to all clients in the same room
