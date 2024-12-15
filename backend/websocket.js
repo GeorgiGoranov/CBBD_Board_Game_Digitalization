@@ -25,7 +25,7 @@ function setupWebSocket(server) {
     // Handle when a player joins a session
     socket.on('joinSession', (data) => {
 
-      const { playerID, nationality, gameCode } = data;
+      const { playerID, nationality, gameCode, group } = data;
 
       // Add the player to the room's player list
       if (!rooms[gameCode]) {
@@ -38,9 +38,10 @@ function setupWebSocket(server) {
       if (existingPlayer) {
         // Update the player's socketId to the new one (in case of reconnect)
         existingPlayer.socketId = socket.id;
+        existingPlayer.group = group; // Update group if needed
       } else {
         // Add the new player to the room if not already present
-        rooms[gameCode].push({ playerID, socketId: socket.id, nationality });
+        rooms[gameCode].push({ playerID, socketId: socket.id, nationality, group });
       }
 
       // Add the player to the specific room associated with the gameCode
@@ -65,7 +66,8 @@ function setupWebSocket(server) {
         'updatePlayerList',
         rooms[gameCode].map((player) => ({
           playerID: player.playerID,
-          nationality: player.nationality
+          nationality: player.nationality,
+          group: player.group
         }))
       );
     });
@@ -81,7 +83,25 @@ function setupWebSocket(server) {
     socket.on('updateTokens', ({ roomId, groupedPlayers }) => {
       // Broadcast the groupedPlayers data to all players in the room
       socket.to(roomId).emit('updateTokens', { groupedPlayers });
-  });
+    });
+
+    socket.on('sendGroupMessage', (data) => {
+      const { roomId, group, message } = data;
+
+      console.log(roomId + "+" + group + "+" + message)
+
+      if (!rooms[roomId]) return;
+
+      const targetPlayers = rooms[roomId].filter(player => String(player.group) === String(group));
+
+      console.log('Target players:', targetPlayers)
+
+      targetPlayers.forEach(player => {
+        io.to(player.socketId).emit('receiveGroupMessage', { message });
+      });
+    });
+
+
 
     socket.on('dragDropUpdate', (data) => {
       const { gameCode } = data;

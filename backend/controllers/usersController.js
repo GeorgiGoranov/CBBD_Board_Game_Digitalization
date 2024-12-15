@@ -206,11 +206,11 @@ const joinLobbySession = async (req, res) => {
 
 const updateTokenGroup = async (req, res) => {
     try {
-        const { code, playerUsername, nationality, group } = req.body
+        const { code, playerUsername, nationality, role, group } = req.body
 
-        console.log(code +"+"+playerUsername+"+"+ nationality+"+"+ group )
-
-        const token = updateeToken(generateObjectIdForParticipants(),'user', playerUsername, nationality, code, group);
+        console.log(code +"+"+playerUsername+"+"+ nationality+"+" + role + "+"+ group )
+        
+        const token = updateeToken(generateObjectIdForParticipants(),role, playerUsername, nationality, code, group);
 
         res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 }); // cookie operates in milisecond and not in minutes
 

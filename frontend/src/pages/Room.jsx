@@ -26,7 +26,11 @@ const Room = () => {
     const [userSessionCode, setUserSessionCode] = useState(null);
     const [currentRound, setCurrentRound] = useState(0); // Start at round 0
     const [group, setGroup] = useState('');
-    
+
+    const [adminMessage, setAdminMessage] = useState('');
+    const [targetGroup, setTargetGroup] = useState('');
+    const [socketMessage, setSocketMessage] = useState(''); // This can be used to display socket events
+
 
 
     if (!socketRef.current) {
@@ -37,7 +41,7 @@ const Room = () => {
 
     useEffect(() => {
 
-        
+
 
         const fetchUserRole = async () => {
             try {
@@ -52,8 +56,6 @@ const Room = () => {
                     setRole(data.role);
                     setPlayerID(data.name);
                     setGroup(data.group)
-                    console.log(data.group)
-                
 
                 } else {
                     navigate('/duser')
@@ -102,28 +104,80 @@ const Room = () => {
             console.log(`Round changed to ${roundNumber}`);
         });
 
+        // Listen for group messages
+        socket.on('receiveGroupMessage', ({ message }) => {
+            console.log(message)
+
+            // Only the targeted group members will get this
+            console.log("Group message received:", message);
+            // You can display it in the UI as needed
+            setSocketMessage(`Group Message: ${message}`);
+        });
+
+
+
         // Cleanup listener when the component unmounts
         return () => {
             socket.off('playerJoined'); // Remove the listener when the component unmounts
             socket.off('updatePlayerList');
             socket.off('playerLeftRoom');
             socket.off('roundChanged');
+            socket.off('receiveGroupMessage');
         };
     }, [socket]);
 
     useEffect(() => {
         if (playerID && roomId) {
-            socket.emit('joinSession', { playerID, gameCode: roomId });
+            socket.emit('joinSession', { playerID, gameCode: roomId, group: String(group) });
         }
 
-    }, [playerID, roomId, socket])
+    }, [playerID, roomId, socket, group])
 
 
     if (loading) return <div>Loading...</div>;
 
+    const handleAdminFormSubmit = (e) => {
+        e.preventDefault();
+        if (adminMessage.trim() && targetGroup) {
+            // Emit an event to the server to send a message to a specific group
+            socket.emit('sendGroupMessage', {
+                roomId,
+                group: targetGroup,
+                message: adminMessage
+            });
+            console.log(targetGroup + "+" + adminMessage)
+            setAdminMessage('');
+            setTargetGroup('');
+        }
+    };
+
     return (
 
         <div className='room-container'>
+            <div className='question-by-moderator'>
+                {role === "admin" && (
+                    <form onSubmit={handleAdminFormSubmit}>
+                        <input
+                            type="text"
+                            value={adminMessage}
+                            onChange={(e) => setAdminMessage(e.target.value)}
+                            placeholder="Enter your message"
+                        />
+                        <select
+                            value={targetGroup}
+                            onChange={(e) => setTargetGroup(e.target.value)}
+                        >
+                            <option value="">Select a Group</option>
+                            <option value="1">G1</option>
+                            <option value="2">G2</option>
+                            <option value="3">G3</option>
+                            <option value="4">G4</option>
+                        </select>
+                        <button type="submit">Submit</button>
+                    </form>
+                )}
+
+            </div>
             {/* <div className='test-layout'>
                 <h1>Room ID: {roomId}</h1>
                 {message && <p>{message}</p>}
@@ -141,6 +195,7 @@ const Room = () => {
             {/* </div>  */}
 
             <h2>Group Number: {group}</h2>
+            {socketMessage && <p>{socketMessage}</p>}
             <div className='information-pannel'>
                 {/* Render RoundOne component */}
                 {currentRound === 1 && (
@@ -182,6 +237,7 @@ const Room = () => {
                     </div>
                 )}
             </div>
+
         </div>
     )
 }

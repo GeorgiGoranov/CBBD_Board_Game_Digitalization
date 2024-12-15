@@ -78,7 +78,7 @@ const Lobby = () => {
         // Listen for navigation event
         socket.on('navigateToRoom', (data) => {
             if (data.roomId === roomId) {
-                navigate(`/room/${roomId}`);
+                navigate(`/room/${roomId}`, { state: { groupedPlayers } });
             }
         });
 
@@ -206,6 +206,7 @@ const Lobby = () => {
                             code: roomId,
                             playerUsername: playerID,
                             nationality,
+                            role,
                             group: groupedPlayers.find((group) =>
                                 group.players.some((player) => player.playerID === playerID)
                             )?.groupNumber,
