@@ -111,7 +111,7 @@ const Room = () => {
             // Only the targeted group members will get this
             console.log("Group message received:", message);
             // You can display it in the UI as needed
-            setSocketMessage(`Group Message: ${message}`);
+            setSocketMessage(`Recruitment Job: ${message}`);
         });
 
 
@@ -161,7 +161,7 @@ const Room = () => {
                             type="text"
                             value={adminMessage}
                             onChange={(e) => setAdminMessage(e.target.value)}
-                            placeholder="Enter your message"
+                            placeholder="Enter your Recruitment Job?"
                         />
                         <select
                             value={targetGroup}

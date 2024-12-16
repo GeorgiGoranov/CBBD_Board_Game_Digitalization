@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 
+
 import '../../SCSS/roundOne.scss';
 
 const RoundOne = ({ roomId, playerID, socket }) => {
@@ -11,9 +12,37 @@ const RoundOne = ({ roomId, playerID, socket }) => {
         box3: [],
         box4: [],
     });
+    const [group, setGroup] = useState('');
 
     const [cursorPositions, setCursorPositions] = useState({});
     const [userActionOccurred, setUserActionOccurred] = useState(false);
+    const [loading, setLoading] = useState(true);
+
+
+    useEffect(() => {
+
+        const fetchUserRole = async () => {
+            try {
+                const response = await fetch('/api/routes/user-role-updated', {
+                    method: 'GET',
+                    credentials: 'include', // Include JWT cookies
+                });
+                const data = await response.json();
+
+                if (response.ok) {
+                    setGroup(data.group)
+                }
+            } catch (error) {
+                console.error('Error fetching role:', error);
+
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchUserRole()
+
+    }, [roomId])
 
 
     const handleDragDrop = (results) => {
@@ -116,28 +145,34 @@ const RoundOne = ({ roomId, playerID, socket }) => {
 
     const saveState = useCallback(async () => {
         try {
+            const groups = [{
+                groupNumber: group, // If you know the group number from props or context
+                categories,
+                dropZones
+            }];
+
             const response = await fetch('/api/rounds/save-state-first-round', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     roomId, // Pass the current room ID
-                    categories,
-                    dropZones,
+                    groups
                 }),
             });
             if (response.ok) {
-
                 console.log('State saved successfully');
+            } else {
+                console.error('Failed to save state');
             }
         } catch (error) {
             console.error('Error saving state:', error);
         }
-    }, [roomId, categories, dropZones])
+    }, [roomId, categories, dropZones, group])
 
     useEffect(() => {
         const fetchCategories = async () => {
             try {
-                const response = await fetch('/api/cards/get-all-categories'); // Adjust endpoint if necessary
+                const response = await fetch('/api/cards/get-all-categories');
                 if (response.ok) {
                     const data = await response.json();
                     setCategories(data); // Update categories state
@@ -213,6 +248,8 @@ const RoundOne = ({ roomId, playerID, socket }) => {
             setUserActionOccurred(false);
         }
     }, [userActionOccurred, saveState]);
+
+    if (loading) return <div>Loading...</div>;
 
     return (
         <div className='round-one-container'>

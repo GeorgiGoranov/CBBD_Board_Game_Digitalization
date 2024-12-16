@@ -4,22 +4,37 @@ const ChatRoom = require('../models/ChatModel')
 
 const saveRoomStateMode = (RoundModel) => {
     return async (req, res) => {
-        const { roomId, categories, dropZones } = req.body;
+        const { roomId, groups } = req.body;
+
+        if (!Array.isArray(groups)) {
+            return res.status(400).json({ message: 'groups must be an array' });
+        }
+
         try {
             // Check if the room already exists
             let round = await RoundModel.findOne({ roomId });
 
             if (round) {
-                // If the room exists, update its state
-                round.categories = categories;
-                round.dropZones = dropZones;
+                // If the room exists, we merge or update groups
+                for (const newGroup of groups) {
+                    const existingGroupIndex = round.groups.findIndex(
+                        (g) => g.groupNumber === newGroup.groupNumber
+                    );
 
+                    if (existingGroupIndex !== -1) {
+                        // Update the existing group's details
+                        round.groups[existingGroupIndex].categories = newGroup.categories;
+                        round.groups[existingGroupIndex].dropZones = newGroup.dropZones;
+                    } else {
+                        // Add the new group if it doesn't exist
+                        round.groups.push(newGroup);
+                    }
+                }
             } else {
                 // If the room doesn't exist, create a new one
                 round = new RoundModel({
                     roomId,
-                    categories,
-                    dropZones,
+                    groups,
                 });
             }
 
