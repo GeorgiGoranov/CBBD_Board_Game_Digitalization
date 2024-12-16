@@ -114,8 +114,6 @@ const Room = () => {
             setSocketMessage(`Recruitment Job: ${message}`);
         });
 
-
-
         // Cleanup listener when the component unmounts
         return () => {
             socket.off('playerJoined'); // Remove the listener when the component unmounts

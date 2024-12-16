@@ -25,6 +25,18 @@ const saveRoomStateMode = (RoundModel) => {
                         // Update the existing group's details
                         round.groups[existingGroupIndex].categories = newGroup.categories;
                         round.groups[existingGroupIndex].dropZones = newGroup.dropZones;
+
+                        // For messages, you can either replace them or append:
+                        // Replace existing messages:
+                        // round.groups[existingGroupIndex].messages = newGroup.messages;
+
+                        // Or append new messages to existing:
+                        if (Array.isArray(newGroup.messages)) {
+                            round.groups[existingGroupIndex].messages = [
+                                ...round.groups[existingGroupIndex].messages,
+                                ...newGroup.messages
+                            ];
+                        }
                     } else {
                         // Add the new group if it doesn't exist
                         round.groups.push(newGroup);

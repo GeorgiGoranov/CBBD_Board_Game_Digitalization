@@ -17,6 +17,8 @@ const RoundOne = ({ roomId, playerID, socket }) => {
     const [cursorPositions, setCursorPositions] = useState({});
     const [userActionOccurred, setUserActionOccurred] = useState(false);
     const [loading, setLoading] = useState(true);
+    const [socketMessage, setSocketMessage] = useState(''); // This can be used to display socket events
+    
 
 
     useEffect(() => {
@@ -148,8 +150,11 @@ const RoundOne = ({ roomId, playerID, socket }) => {
             const groups = [{
                 groupNumber: group, // If you know the group number from props or context
                 categories,
-                dropZones
+                dropZones,
+                messages: socketMessage ? [socketMessage] : [] // put the message in the messages array
+         
             }];
+            console.log(socketMessage)
 
             const response = await fetch('/api/rounds/save-state-first-round', {
                 method: 'POST',
@@ -215,9 +220,19 @@ const RoundOne = ({ roomId, playerID, socket }) => {
             handleExternalDragDrop(source, destination, movedItem);
         });
 
+        // Listen for group messages
+        socket.on('receiveGroupMessage', ({ message }) => {
+
+            // Only the targeted group members will get this
+            console.log("Group message received:", message);
+            // You can display it in the UI as needed
+            setSocketMessage(`${message}`);
+        });
+
         return () => {
             socket.off('cursorUpdate');
             socket.off('dragDropUpdate');
+            socket.off('receiveGroupMessage');
         }
     }, [socket])
 

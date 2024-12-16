@@ -20,6 +20,10 @@ const GroupSchema = new Schema({
       box3: [],
       box4: [],
     }
+  },
+  messages: {
+    type: Array,
+    default: []
   }
 }, { _id: false });
 
