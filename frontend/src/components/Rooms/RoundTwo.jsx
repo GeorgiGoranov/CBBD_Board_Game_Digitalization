@@ -203,7 +203,7 @@ const RoundTwo = ({ roomId, playerID, socket }) => {
         }
     }, [roomId, dropZones])
 
-    
+
 
     useEffect(() => {
         const fetchCategories = async () => {
@@ -254,8 +254,31 @@ const RoundTwo = ({ roomId, playerID, socket }) => {
                 const response = await fetch(`/api/rounds/get-state-second-round/${roomId}`);
                 if (response.ok) {
                     const data = await response.json();
-                    setDropZones(data.dropZones || { box1: [], box2: [], box3: [], box4: [], box5: [] });
-                    console.log('Room state loaded successfully');
+                    console.log(data)
+                    // Convert group to a number if it's a string
+                    const groupNumber = Number(group);
+                    const currentGroup = data.groups?.find(g => g.groupNumber === groupNumber);
+
+                    if (currentGroup) {
+                        // Do NOT set categoriesData here since we have no categories in the saved state
+                        // setCategoriesData(currentGroup.categories || []);
+
+                        setDropZones(currentGroup.dropZones || {
+                            box1: [],
+                            box2: [],
+                            box3: [],
+                            box4: [],
+                            box5: []
+                        });
+
+                        if (currentGroup.messages && currentGroup.messages.length > 0) {
+                            setSocketMessage(currentGroup.messages[currentGroup.messages.length - 1]);
+                        }
+
+                        console.log('Room state loaded successfully');
+                    } else {
+                        console.log('No matching group found in room state');
+                    }
                 } else {
                     console.log('Room state not found');
                 }
@@ -264,9 +287,11 @@ const RoundTwo = ({ roomId, playerID, socket }) => {
             }
         };
 
-        fetchCategories();
-        fetchSavedRoomState();
-    }, [roomId, language]);
+        if (group) {
+            fetchCategories();
+            fetchSavedRoomState();
+        }
+    }, [roomId, language, group]);
 
     useEffect(() => {
         // Listen for drag-and-drop updates from other clients

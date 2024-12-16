@@ -12,14 +12,14 @@ const RoundOne = ({ roomId, playerID, socket }) => {
         box3: [],
         box4: [],
     });
-    
+
     const [cursorPositions, setCursorPositions] = useState({});
     const [userActionOccurred, setUserActionOccurred] = useState(false);
-    
+
     const [group, setGroup] = useState('');
     const [loading, setLoading] = useState(true);
     const [socketMessage, setSocketMessage] = useState(''); // This can be used to display socket events
-    
+
 
 
     useEffect(() => {
@@ -153,7 +153,7 @@ const RoundOne = ({ roomId, playerID, socket }) => {
                 categories,
                 dropZones,
                 messages: socketMessage ? [socketMessage] : [] // put the message in the messages array
-         
+
             }];
             console.log(socketMessage)
 
@@ -195,9 +195,22 @@ const RoundOne = ({ roomId, playerID, socket }) => {
                 const response = await fetch(`/api/rounds/get-state-first-round/${roomId}`);
                 if (response.ok) {
                     const data = await response.json();
-                    setCategories(data.categories || []);
-                    setDropZones(data.dropZones || { box1: [], box2: [], box3: [], box4: [] });
-                    console.log('Room state loaded successfully');
+                    console.log(data)
+                    // Convert group to a number if it's a string
+                    const groupNumber = Number(group);
+                    const currentGroup = data.groups?.find(g => g.groupNumber === groupNumber);
+
+                    if (currentGroup) {
+                        setCategories(currentGroup.categories || []);
+                        setDropZones(currentGroup.dropZones || { box1: [], box2: [], box3: [], box4: [] });
+                        // If you need to restore messages or socketMessage:
+                        if (currentGroup.messages && currentGroup.messages.length > 0) {
+                            setSocketMessage(currentGroup.messages[currentGroup.messages.length - 1]);
+                        }
+                        console.log('Room state loaded successfully');
+                    } else {
+                        console.log('No matching group found in room state');
+                    }
                 } else {
                     console.log('Room state not found');
                 }
@@ -206,9 +219,11 @@ const RoundOne = ({ roomId, playerID, socket }) => {
             }
         };
 
-        fetchCategories();
-        // fetchSavedRoomState();
-    }, [roomId])
+        if (group) {
+            fetchCategories();
+            fetchSavedRoomState();
+        }
+    }, [roomId, group])
 
     useEffect(() => {
         socket.on('cursorUpdate', (data) => {
