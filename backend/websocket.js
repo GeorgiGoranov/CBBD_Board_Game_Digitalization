@@ -104,14 +104,25 @@ function setupWebSocket(server) {
 
 
     socket.on('dragDropUpdate', (data) => {
-      const { gameCode } = data;
-      // Broadcast the dragDropUpdate event to all clients in the same room
-      socket.to(gameCode).emit('dragDropUpdate', data);
+      const { gameCode, playerID } = data;
+      
+      const roomPlayers = rooms[gameCode] || [];
+      const triggeringPlayer = roomPlayers.find(p => p.playerID === playerID);
+
+      if (triggeringPlayer) {
+        const playerGroup = triggeringPlayer.group;
+        const targetPlayers = roomPlayers.filter(p => p.group === playerGroup);
+
+        // Emit only to players in the same group
+        targetPlayers.forEach(p => {
+          io.to(p.socketId).emit('dragDropUpdate', data);
+        });
+      }
     });
 
     // Capture and broadcast cursor position
     socket.on('cursorMove', (data) => {
-      const { x, y, playerID, gameCode,group } = data;
+      const { x, y, playerID, gameCode, group } = data;
       // Broadcast the cursor position to all players in the room except the sender
       socket.to(gameCode).emit('cursorUpdate', { x, y, playerID, group });
     });

@@ -94,7 +94,7 @@ const RoundOne = ({ roomId, playerID, socket }) => {
         }
 
         // Emit the drag-drop event to the server with relevant data
-        socket.emit('dragDropUpdate', { gameCode: roomId, source, destination, movedItem });
+        socket.emit('dragDropUpdate', { gameCode: roomId, source, destination, movedItem, playerID });
         // Indicate that a user action has occurred
         setUserActionOccurred(true);
 
@@ -233,8 +233,11 @@ const RoundOne = ({ roomId, playerID, socket }) => {
         });
 
         // Listen for drag-and-drop updates from other clients
-        socket.on('dragDropUpdate', ({ source, destination, movedItem }) => {
-            handleExternalDragDrop(source, destination, movedItem);
+        socket.on('dragDropUpdate', ({ source, destination, movedItem, playerID: senderID }) => {
+            // Ignore the update if it came from the same player who performed the drag locally
+            if (senderID !== playerID) {
+                handleExternalDragDrop(source, destination, movedItem);
+            }
         });
 
         // Listen for group messages
@@ -368,27 +371,27 @@ const RoundOne = ({ roomId, playerID, socket }) => {
                 </DragDropContext>
 
                 {Object.entries(cursorPositions)
-                .filter(([pid,pos])=> pos.group === group)
-                .map(([playerID, position]) => (
-                    <div className='playerCursorID'
-                        key={playerID}
-                        style={{
-                            position: 'absolute',
-                            top: position.y,
-                            left: position.x,
-                            pointerEvents: 'none', // Make sure it doesn't interfere with interactions
-                            transform: 'translate(-50%, -50%)',
-                            backgroundColor: 'rgba(0, 0, 255, 0.5)', // Customize as needed
-                            width: '10px',
-                            height: '10px',
-                            borderRadius: '50%',
-                            zIndex: 1000,
-                        }}
-                    >
-                        {/* Optional: display player ID */}
-                        <span style={{ fontSize: '10px', color: 'red' }}>{playerID}</span>
-                    </div>
-                ))}
+                    .filter(([pid, pos]) => pos.group === group)
+                    .map(([playerID, position]) => (
+                        <div className='playerCursorID'
+                            key={playerID}
+                            style={{
+                                position: 'absolute',
+                                top: position.y,
+                                left: position.x,
+                                pointerEvents: 'none', // Make sure it doesn't interfere with interactions
+                                transform: 'translate(-50%, -50%)',
+                                backgroundColor: 'rgba(0, 0, 255, 0.5)', // Customize as needed
+                                width: '10px',
+                                height: '10px',
+                                borderRadius: '50%',
+                                zIndex: 1000,
+                            }}
+                        >
+                            {/* Optional: display player ID */}
+                            <span style={{ fontSize: '10px', color: 'red' }}>{playerID}</span>
+                        </div>
+                    ))}
 
             </div >
         </div>
