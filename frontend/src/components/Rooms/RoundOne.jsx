@@ -139,7 +139,8 @@ const RoundOne = ({ roomId, playerID, socket }) => {
                 ...prevPositions,
                 [data.playerID]: {
                     x: data.x,
-                    y: data.y
+                    y: data.y,
+                    group: data.group
                 },
             }));
         }
@@ -260,6 +261,7 @@ const RoundOne = ({ roomId, playerID, socket }) => {
                 y: event.clientY,
                 playerID,
                 gameCode: roomId,
+                group
             };
             socket.emit('cursorMove', position);
         };
@@ -365,7 +367,9 @@ const RoundOne = ({ roomId, playerID, socket }) => {
 
                 </DragDropContext>
 
-                {Object.entries(cursorPositions).map(([playerID, position]) => (
+                {Object.entries(cursorPositions)
+                .filter(([pid,pos])=> pos.group === group)
+                .map(([playerID, position]) => (
                     <div className='playerCursorID'
                         key={playerID}
                         style={{

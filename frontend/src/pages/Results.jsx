@@ -27,30 +27,19 @@ const Results = () => {
             // Handle first round fetch
             if (firstRoundResult.status === 'fulfilled' && firstRoundResult.value.ok) {
                 const firstRoundData = await firstRoundResult.value.json();
-                setFirstRoundDropZones(firstRoundData.dropZones || {});
+                setFirstRoundDropZones(firstRoundData.groups || {});
             } else {
                 console.error('First round fetch failed:', firstRoundResult.reason || await firstRoundResult.value.text());
-                setFirstRoundDropZones({
-                    box1: [],
-                    box2: [],
-                    box3: [],
-                    box4: [],
-                });
+                setFirstRoundDropZones([]);
             }
 
             // Handle second round fetch
             if (secondRoundResult.status === 'fulfilled' && secondRoundResult.value.ok) {
                 const secondRoundData = await secondRoundResult.value.json();
-                setSecondRoundDropZones(secondRoundData.dropZones || {});
+                setSecondRoundDropZones(secondRoundData.groups || {});
             } else {
                 console.error('Second round fetch failed:', secondRoundResult.reason || await secondRoundResult.value.text());
-                setSecondRoundDropZones({
-                    box1: [],
-                    box2: [],
-                    box3: [],
-                    box4: [],
-                    box5: [],
-                });
+                setSecondRoundDropZones([]);
             }
 
             // Third Round
@@ -74,23 +63,42 @@ const Results = () => {
         fetchRoundData();
     }, [roomId]);
 
-    const renderDropZones = (dropZones, roundTitle) => (
+    const renderDropZones = (groups, roundTitle) => (
         <div>
-            <h3>{roundTitle} Drop Zones:</h3>
-            {Object.entries(dropZones).map(([zone, items]) => (
-                <div key={zone} className="drop-zone">
-                    <h4>{zone}:</h4>
-                    {items.length > 0 ? (
-                        <ul>
-                            {items.map((item, index) => (
-                                <li key={index}>{item.category || 'Unnamed Item'}</li>
-                            ))}
-                        </ul>
-                    ) : (
-                        <p>Empty</p>
-                    )}
-                </div>
-            ))}
+            <h3>{roundTitle} Groups:</h3>
+            {groups.length > 0 ? (
+                groups.map((group, gIndex) => (
+                    <div key={gIndex} className="group-section">
+                        <h4>Group {group.groupNumber}</h4>
+                        {Object.entries(group.dropZones || {}).map(([zone, items]) => (
+                            <div key={zone} className="drop-zone">
+                                <h5>{zone}:</h5>
+                                {items.length > 0 ? (
+                                    <ul>
+                                        {items.map((item, index) => (
+                                            <li key={index}>{item.category || 'Unnamed Item'}</li>
+                                        ))}
+                                    </ul>
+                                ) : (
+                                    <p>Empty</p>
+                                )}
+                            </div>
+                        ))}
+                        {group.messages && group.messages.length > 0 && (
+                            <div className="messages">
+                                <h5>Messages:</h5>
+                                <ul>
+                                    {group.messages.map((msg, i) => (
+                                        <li key={i}>{msg}</li>
+                                    ))}
+                                </ul>
+                            </div>
+                        )}
+                    </div>
+                ))
+            ) : (
+                <p>No groups found for {roundTitle}</p>
+            )}
         </div>
     );
 

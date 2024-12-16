@@ -111,9 +111,9 @@ function setupWebSocket(server) {
 
     // Capture and broadcast cursor position
     socket.on('cursorMove', (data) => {
-      const { x, y, playerID, gameCode } = data;
+      const { x, y, playerID, gameCode,group } = data;
       // Broadcast the cursor position to all players in the room except the sender
-      socket.to(gameCode).emit('cursorUpdate', { x, y, playerID });
+      socket.to(gameCode).emit('cursorUpdate', { x, y, playerID, group });
     });
 
     socket.on('sendMessage', async (data) => {
