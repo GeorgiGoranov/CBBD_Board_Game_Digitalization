@@ -22,6 +22,36 @@ const RoundTwo = ({ roomId, playerID, socket }) => {
     const [cursorPositions, setCursorPositions] = useState({});
     const [userActionOccurred, setUserActionOccurred] = useState(false);
 
+    const [group, setGroup] = useState('');
+    const [loading, setLoading] = useState(true);
+    const [socketMessage, setSocketMessage] = useState(''); // This can be used to display socket events
+
+    useEffect(() => {
+
+        const fetchUserRole = async () => {
+            try {
+                const response = await fetch('/api/routes/user-role-updated', {
+                    method: 'GET',
+                    credentials: 'include', // Include JWT cookies
+                });
+                const data = await response.json();
+
+                if (response.ok) {
+                    setGroup(data.group)
+                }
+            } catch (error) {
+                console.error('Error fetching role:', error);
+
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchUserRole()
+
+    }, [roomId])
+
+
 
     const toggleCategoryCollapse = (categoryName) => {
         setCollapsedCategories((prevState) => ({
@@ -147,14 +177,22 @@ const RoundTwo = ({ roomId, playerID, socket }) => {
         }
     };
 
+
     const saveState = useCallback(async () => {
         try {
+            // Construct groups array similar to RoundOne
+            const groups = [{
+                groupNumber: group, // If you know the group number from props or context
+                dropZones,
+                messages: socketMessage ? [socketMessage] : [] // put the message in the messages array
+
+            }];
             const response = await fetch('/api/rounds/save-state-second-round', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     roomId, // Pass the current room ID
-                    dropZones,
+                    groups
                 }),
             });
             if (response.ok) {
@@ -164,6 +202,8 @@ const RoundTwo = ({ roomId, playerID, socket }) => {
             console.error('Error saving state:', error);
         }
     }, [roomId, dropZones])
+
+    
 
     useEffect(() => {
         const fetchCategories = async () => {
@@ -239,9 +279,20 @@ const RoundTwo = ({ roomId, playerID, socket }) => {
             updateCursorDisplay(data);
         });
 
+        // Listen for group messages
+        socket.on('receiveGroupMessage', ({ message }) => {
+
+            // Only the targeted group members will get this
+            console.log("Group message received:", message);
+            // You can display it in the UI as needed
+            setSocketMessage(`${message}`);
+        });
+
+
         return () => {
             socket.off('cursorUpdate');
             socket.off('dragDropUpdate');
+            socket.off('receiveGroupMessage');
         };
     }, [socket]);
 
@@ -272,7 +323,7 @@ const RoundTwo = ({ roomId, playerID, socket }) => {
         }
     }, [userActionOccurred, saveState]);
 
-
+    if (loading) return <div>Loading...</div>;
 
     return (
         <div>

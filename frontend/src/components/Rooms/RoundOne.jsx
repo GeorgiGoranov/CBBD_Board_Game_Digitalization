@@ -12,10 +12,11 @@ const RoundOne = ({ roomId, playerID, socket }) => {
         box3: [],
         box4: [],
     });
-    const [group, setGroup] = useState('');
-
+    
     const [cursorPositions, setCursorPositions] = useState({});
     const [userActionOccurred, setUserActionOccurred] = useState(false);
+    
+    const [group, setGroup] = useState('');
     const [loading, setLoading] = useState(true);
     const [socketMessage, setSocketMessage] = useState(''); // This can be used to display socket events
     
