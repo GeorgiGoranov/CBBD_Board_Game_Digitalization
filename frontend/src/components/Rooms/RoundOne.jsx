@@ -288,6 +288,8 @@ const RoundOne = ({ roomId, playerID, socket }) => {
 
     return (
         <div className='round-one-container'>
+            {socketMessage && <p>{socketMessage}</p>}
+
             <div className='dragdrop-container' >
                 <DragDropContext onDragEnd={handleDragDrop}   >
                     <ul className='api-list'>

@@ -29,7 +29,7 @@ const Room = () => {
 
     const [adminMessage, setAdminMessage] = useState('');
     const [targetGroup, setTargetGroup] = useState('');
-    const [socketMessage, setSocketMessage] = useState(''); // This can be used to display socket events
+    // const [socketMessage, setSocketMessage] = useState(''); // This can be used to display socket events
 
 
 
@@ -104,25 +104,27 @@ const Room = () => {
             console.log(`Round changed to ${roundNumber}`);
         });
 
-        // Listen for group messages
-        socket.on('receiveGroupMessage', ({ message }) => {
-            console.log(message)
-
-            // Only the targeted group members will get this
-            console.log("Group message received:", message);
-            // You can display it in the UI as needed
-            setSocketMessage(`Recruitment Job: ${message}`);
-        });
-
         // Cleanup listener when the component unmounts
         return () => {
             socket.off('playerJoined'); // Remove the listener when the component unmounts
             socket.off('updatePlayerList');
             socket.off('playerLeftRoom');
             socket.off('roundChanged');
-            socket.off('receiveGroupMessage');
         };
     }, [socket]);
+
+    // useEffect(() => {
+    //     const handleReceiveGroupMessage = ({ message }) => {
+    //         console.log("Group message received:", message);
+    //         setSocketMessage(`Recruitment Job: ${message}`);
+    //     };
+    //     socket.on('receiveGroupMessage', handleReceiveGroupMessage);
+
+    //     // No change in dependencies means this won't re-run unexpectedly
+    //     return () => {
+    //         socket.off('receiveGroupMessage', handleReceiveGroupMessage);
+    //     };
+    // }, [socket])
 
     useEffect(() => {
         if (playerID && roomId) {
@@ -176,24 +178,9 @@ const Room = () => {
                 )}
 
             </div>
-            {/* <div className='test-layout'>
-                <h1>Room ID: {roomId}</h1>
-                {message && <p>{message}</p>}
-                
-                <h2>Players in the Room:</h2>
-                <ul>
-                {players.map((player, index) => (
-                    <li key={index}>
-                    {/* Check if the player is an object and render the playerID or other relevant property */}
-            {/* {typeof player === 'object' ? player.playerID : player} */}
-            {/* </li> */}
-            {/* ))} */}
-            {/* </ul> */}
-
-            {/* </div>  */}
 
             <h2>Group Number: {group}</h2>
-            {socketMessage && <p>{socketMessage}</p>}
+            {/* {socketMessage && <p>{socketMessage}</p>} */}
             <div className='information-pannel'>
                 {/* Render RoundOne component */}
                 {currentRound === 1 && (
@@ -220,7 +207,7 @@ const Room = () => {
                 {/* Chat Component */}
                 <div className='chat'>
 
-                <Chat playerID={playerID} socket={socket} group={group}/>
+                    <Chat playerID={playerID} socket={socket} group={group} />
                 </div>
             </div>
 

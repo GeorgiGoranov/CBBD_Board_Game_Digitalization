@@ -208,11 +208,17 @@ const updateTokenGroup = async (req, res) => {
     try {
         const { code, playerUsername, nationality, role, group } = req.body
 
-        console.log(code +"+"+playerUsername+"+"+ nationality+"+" + role + "+"+ group )
-        
-        const token = updateeToken(generateObjectIdForParticipants(),role, playerUsername, nationality, code, group);
+        console.log(code + "+" + playerUsername + "+" + nationality + "+" + role + "+" + group)
 
-        res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 }); // cookie operates in milisecond and not in minutes
+        if (role === 'admin') {
+            const token = updateeToken(generateObjectIdForParticipants(), role, playerUsername, nationality, code, group);
+            res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 }); // cookie operates in milisecond and not in minutes
+
+        } else {
+            const token = updateeToken(generateObjectIdForParticipants(), 'user', playerUsername, nationality, code, group);
+            res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 }); // cookie operates in milisecond and not in minutes
+
+        }
 
         return res.status(200).json({ message: 'newToken' })
 
@@ -367,7 +373,7 @@ const userRole = async (req, res) => {
 }
 
 const userRoleUpdated = async (req, res) => {
-    const { id, role, name, nationality, sessionCode,group } = req.user;
+    const { id, role, name, nationality, sessionCode, group } = req.user;
     res.status(200).json({ id, role, name, nationality, sessionCode, group });
 }
 

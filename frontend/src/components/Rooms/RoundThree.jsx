@@ -118,9 +118,6 @@ const RoundThree = ({ roomId, playerID, socket, role }) => {
     useEffect(() => {
 
 
-        // Listen for WebSocket event
-        socket.on('nextDilemmaCardR', fetchRandomCard);
-
         socket.on('updateDilemmaCardData', (cardData) => {
             setCard(cardData);
         });

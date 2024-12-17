@@ -92,7 +92,16 @@ const Lobby = () => {
 
         // Listen for updates to the player list
         socket.on('updatePlayerList', (playerList) => {
-            setPlayers(playerList);  // Update the player list when received from the server
+
+            let filteredPlayers = playerList;
+
+            // If the current user is the admin, remove them from the players list
+            // This ensures the admin does not appear in the grouped lists
+            if (role === 'admin') {
+                filteredPlayers = playerList.filter(player => player.playerID !== playerID);
+            }
+
+            setPlayers(filteredPlayers );  // Update the filtered players list
 
             const allGroups = [];
             const nationalities = ['german', 'dutch', 'other'];
@@ -111,8 +120,8 @@ const Lobby = () => {
             setGroupedPlayers(allGroups);
         });
 
-        socket.on('playerLeftRoom', (playerList) => {
-            setMessage(`${playerList} left the game!`);
+        socket.on('playerLeftRoom', (playerIDWhoLeft) => {
+            setMessage(`${playerIDWhoLeft} left the game!`);
         });
 
         // Cleanup listener when the component unmounts
@@ -123,7 +132,7 @@ const Lobby = () => {
             socket.off('playerLeftRoom');
 
         };
-    }, [socket, roomId, navigate]);
+    }, [socket]);
 
     useEffect(() => {
         socket.on('updateTokens', async ({ groupedPlayers }) => {

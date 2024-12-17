@@ -88,20 +88,14 @@ function setupWebSocket(server) {
     socket.on('sendGroupMessage', (data) => {
       const { roomId, group, message } = data;
 
-      console.log(roomId + "+" + group + "+" + message)
-
       if (!rooms[roomId]) return;
 
       const targetPlayers = rooms[roomId].filter(player => String(player.group) === String(group));
-
-      console.log('Target players:', targetPlayers)
 
       targetPlayers.forEach(player => {
         io.to(player.socketId).emit('receiveGroupMessage', { message });
       });
     });
-
-
 
     socket.on('dragDropUpdate', (data) => {
       const { gameCode, playerID } = data;
@@ -157,15 +151,6 @@ function setupWebSocket(server) {
 
       console.log(`Round changed to ${roundNumber} in room ${roomId}`);
     });
-    socket.on('nextDilemmaCard', (data) => {
-      const { roomId } = data;
-
-      // Broadcast the event to all players in the room
-      io.to(roomId).emit('nextDilemmaCardR');
-
-      console.log(`Moderator requested a new dilemma card in room: ${roomId}`);
-    });
-
     socket.on('newDilemmaCardData', (data) => {
       const { roomId, card } = data;
 
@@ -218,10 +203,18 @@ function setupWebSocket(server) {
       }
 
       if (roomCode) {
-        // Emit the updated player list to everyone in the room
-        io.to(roomCode).emit('updatePlayerList', rooms[roomCode].map(player => player.playerID));
-        io.to(roomCode).emit('playerLeftRoom', playerID);
+        // Emit the updated player list to everyone in the room with full player details
+        io.to(roomCode).emit(
+          'updatePlayerList',
+          rooms[roomCode].map(player => ({
+            playerID: player.playerID,
+            nationality: player.nationality,
+            group: player.group
+          }))
+        );
 
+        // Then emit the playerLeftRoom event for the message
+        io.to(roomCode).emit('playerLeftRoom', playerID);
 
         console.log(`${playerID} left room: ${roomCode}`);
       }

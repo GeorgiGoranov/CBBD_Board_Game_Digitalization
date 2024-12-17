@@ -125,6 +125,7 @@ const RoundTwo = ({ roomId, playerID, socket }) => {
             source,
             destination,
             movedItem,
+            playerID
         });
         setUserActionOccurred(true);
     };
@@ -136,10 +137,8 @@ const RoundTwo = ({ roomId, playerID, socket }) => {
         const sourceIsCategory = sourceDroppableId.startsWith('category-');
         const destinationIsCategory = destinationDroppableId.startsWith('category-');
 
-        if (sourceIsCategory) {
-            // Do nothing since items aren't removed from categories
-        } else {
-            // Remove the item from the drop zone
+        if (!sourceIsCategory) {
+            // Remove the item from the source drop zone
             setDropZones((prev) => {
                 const updatedSourceItems = Array.from(prev[sourceDroppableId]);
                 const itemIndex = updatedSourceItems.findIndex((item) => item.id === movedItem.id);
@@ -151,16 +150,19 @@ const RoundTwo = ({ roomId, playerID, socket }) => {
             });
         }
 
-        if (destinationIsCategory) {
-            // Item dragged back to categories; no action needed
-        } else {
+        if (!destinationIsCategory) {
+            // Add the item to the destination drop zone
             setDropZones((prev) => {
                 const updatedDestinationItems = Array.from(prev[destinationDroppableId]);
                 updatedDestinationItems.splice(destination.index, 0, movedItem);
                 return { ...prev, [destinationDroppableId]: updatedDestinationItems };
             });
+        } else {
+            // If needed, handle the case where the item moves back to categories 
+            // If you allow that scenario, you'd replicate what you do in handleDragDrop for categories
         }
     };
+
 
     // Function to update cursor positions
     const updateCursorDisplay = (data) => {
@@ -295,8 +297,11 @@ const RoundTwo = ({ roomId, playerID, socket }) => {
 
     useEffect(() => {
         // Listen for drag-and-drop updates from other clients
-        socket.on('dragDropUpdate', ({ source, destination, movedItem }) => {
-            handleExternalDragDrop(source, destination, movedItem);
+        socket.on('dragDropUpdate', ({ source, destination, movedItem,playerID: senderID }) => {
+            // Ignore the update if it came from the same player who performed the drag locally
+            if (senderID !== playerID) {
+                handleExternalDragDrop(source, destination, movedItem);
+            }
         });
 
         socket.on('cursorUpdate', (data) => {
@@ -352,6 +357,8 @@ const RoundTwo = ({ roomId, playerID, socket }) => {
 
     return (
         <div>
+            {socketMessage && <p>{socketMessage}</p>}
+
             <DragDropContext onDragEnd={handleDragDrop}>
                 <ul className="api-list categories-grid">
                     {/* Iterate over categories */}
