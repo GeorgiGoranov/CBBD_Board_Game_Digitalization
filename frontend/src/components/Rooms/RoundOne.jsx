@@ -4,7 +4,7 @@ import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 
 import '../../SCSS/roundOne.scss';
 
-const RoundOne = ({ roomId, playerID, socket }) => {
+const RoundOne = ({ roomId, playerID, socket, group }) => {
     const [categories, setCategories] = useState([]);
     const [dropZones, setDropZones] = useState({
         box1: [],
@@ -16,36 +16,7 @@ const RoundOne = ({ roomId, playerID, socket }) => {
     const [cursorPositions, setCursorPositions] = useState({});
     const [userActionOccurred, setUserActionOccurred] = useState(false);
 
-    const [group, setGroup] = useState('');
-    const [loading, setLoading] = useState(true);
     const [socketMessage, setSocketMessage] = useState(''); // This can be used to display socket events
-
-
-
-    useEffect(() => {
-
-        const fetchUserRole = async () => {
-            try {
-                const response = await fetch('/api/routes/user-role-updated', {
-                    method: 'GET',
-                    credentials: 'include', // Include JWT cookies
-                });
-                const data = await response.json();
-
-                if (response.ok) {
-                    setGroup(data.group)
-                }
-            } catch (error) {
-                console.error('Error fetching role:', error);
-
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchUserRole()
-
-    }, [roomId])
 
 
     const handleDragDrop = (results) => {
@@ -283,8 +254,6 @@ const RoundOne = ({ roomId, playerID, socket }) => {
             setUserActionOccurred(false);
         }
     }, [userActionOccurred, saveState]);
-
-    if (loading) return <div>Loading...</div>;
 
     return (
         <div className='round-one-container'>

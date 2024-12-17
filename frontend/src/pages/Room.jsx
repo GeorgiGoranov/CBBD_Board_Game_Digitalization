@@ -152,64 +152,74 @@ const Room = () => {
     };
 
     return (
-
         <div className='room-container'>
-            <div className='question-by-moderator'>
-                {role === "admin" && (
-                    <form onSubmit={handleAdminFormSubmit}>
-                        <input
-                            type="text"
-                            value={adminMessage}
-                            onChange={(e) => setAdminMessage(e.target.value)}
-                            placeholder="Enter your Recruitment Job?"
-                        />
-                        <select
-                            value={targetGroup}
-                            onChange={(e) => setTargetGroup(e.target.value)}
-                        >
-                            <option value="">Select a Group</option>
-                            <option value="1">G1</option>
-                            <option value="2">G2</option>
-                            <option value="3">G3</option>
-                            <option value="4">G4</option>
-                        </select>
-                        <button type="submit">Submit</button>
-                    </form>
-                )}
 
-            </div>
+            {role === 'admin' ? (
+                <>
+                    <div className='question-by-moderator'>
 
-            <h2>Group Number: {group}</h2>
-            {/* {socketMessage && <p>{socketMessage}</p>} */}
-            <div className='information-pannel'>
-                {/* Render RoundOne component */}
-                {currentRound === 1 && (
-                    <div>
-                        Round 1
-                        <RoundOne roomId={roomId} playerID={playerID} socket={socket} />
+                        <form onSubmit={handleAdminFormSubmit}>
+                            <input
+                                type="text"
+                                value={adminMessage}
+                                onChange={(e) => setAdminMessage(e.target.value)}
+                                placeholder="Enter your Recruitment Job?"
+                            />
+                            <select
+                                value={targetGroup}
+                                onChange={(e) => setTargetGroup(e.target.value)}
+                            >
+                                <option value="">Select a Group</option>
+                                <option value="1">G1</option>
+                                <option value="2">G2</option>
+                                <option value="3">G3</option>
+                                <option value="4">G4</option>
+                            </select>
+                            <button type="submit">Submit</button>
+                        </form>
+
 
                     </div>
-                )}
-                {currentRound === 2 && (
-                    <div>
-                        Round 2
-                        <RoundTwo roomId={roomId} playerID={playerID} socket={socket} />
+                </>
 
+            ) : (
+
+                <div className='outer-container'>
+                    <h2>Group Number: {group}</h2>
+                    <div className='information-pannel'>
+                        {/* Render RoundOne component */}
+                        {currentRound === 1 && (
+                            <div>
+                                Round 1
+                                <RoundOne roomId={roomId} playerID={playerID} socket={socket} group={group} />
+
+                            </div>
+                        )}
+                        {currentRound === 2 && (
+                            <div>
+                                Round 2
+                                <RoundTwo roomId={roomId} playerID={playerID} socket={socket} group={group} />
+
+                            </div>
+                        )}
+                        {/* Chat Component - Only for Round 1 and Round 2 */}
+                        {(currentRound === 1 || currentRound === 2) && (
+                            <div className='chat'>
+                                <Chat playerID={playerID} socket={socket} group={group} />
+                            </div>
+                        )}
                     </div>
-                )}
-                {currentRound === 3 && (
-                    <div>
-                        Round 3
-                        <RoundThree roomId={roomId} playerID={playerID} socket={socket} role={role} />
-
-                    </div>
-                )}
-                {/* Chat Component */}
-                <div className='chat'>
-
-                    <Chat playerID={playerID} socket={socket} group={group} />
                 </div>
-            </div>
+
+            )}
+            {currentRound === 3 && (
+                <div>
+                    Round 3
+                    <RoundThree roomId={roomId} playerID={playerID} socket={socket} role={role} />
+
+                </div>
+            )}
+
 
             {/* Role-based layout */}
             <div className='role-based-layout'>
