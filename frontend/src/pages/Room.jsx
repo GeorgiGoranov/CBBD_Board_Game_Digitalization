@@ -145,7 +145,7 @@ const Room = () => {
                 group: targetGroup,
                 message: adminMessage
             });
-            console.log(targetGroup + "+" + adminMessage)
+           
             setAdminMessage('');
             setTargetGroup('');
         }

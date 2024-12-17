@@ -75,46 +75,49 @@ const saveThirdRoomStateMode = (RoundModel) => {
             }
 
             if (card) {
-
-                // Add the new card with initial votes
+                // Add a new card to the array with empty votes object
                 const newCard = {
                     card: card,
-                    votes: {
-                        agree: { count: 0, playerID: [] },
-                        disagree: { count: 0, playerID: [] },
-                    },
+                    votes: {}, // Start with no votes
                 };
                 round.cards.push(newCard);
-
             }
 
-            if (vote === 'agree' || vote === 'disagree') {
+            if (vote) {
                 // Ensure there is at least one card to vote on
                 if (round.cards.length === 0) {
                     return res.status(400).json({ message: 'No card available to vote on' });
                 }
 
                 // Get the latest card
-                const lastCard = round.cards[round.cards.length - 1];
+                const lastCardIndex = round.cards.length - 1;
+                const lastCard = round.cards[lastCardIndex];
 
-                // Update the vote counts and player IDs
+                // Initialize vote data for this option if it doesn't exist
+                if (!lastCard.votes[vote]) {
+                    lastCard.votes[vote] = { count: 0, playerID: [] };
+                }
+
+                // Update the vote count and the list of player IDs who voted for this option
                 lastCard.votes[vote].count += 1;
                 lastCard.votes[vote].playerID.push(playerID);
-            } else if (vote) {
-                // Invalid vote option provided
-                return res.status(400).json({ message: 'Invalid vote option' });
-            }
 
+                // Assign updated card back to the array (usually not strictly necessary)
+                round.cards[lastCardIndex] = lastCard;
+            }
 
             // Save the updated room state to the database
             await round.save();
-            res.status(200).json({ message: 'Room state saved successfully' });
+            return res.status(200).json({ message: 'Room state saved successfully' });
         } catch (error) {
             console.error('Error saving room state:', error);
-            res.status(500).json({ message: 'Error saving room state', error: error.message });
+            return res.status(500).json({ message: 'Error saving room state', error: error.message });
         }
     };
 };
+
+module.exports = saveThirdRoomStateMode;
+
 
 
 const getRoomStateMode = (RoundModel) => {

@@ -163,18 +163,15 @@ function setupWebSocket(server) {
     socket.on('vote', (data) => {
       const { vote, roomId } = data;
 
-      if (!roomVotes[roomId]) {
-        roomVotes[roomId] = { agree: 0, disagree: 0 };
-      }
+      if (!roomVotes[roomId]) roomVotes[roomId] = {};
 
-      if (vote === 'agree') {
-        roomVotes[roomId].agree += 1;
-      } else if (vote === 'disagree') {
-        roomVotes[roomId].disagree += 1;
+      // Increment vote count for the selected option
+      if (!roomVotes[roomId][vote]) {
+        roomVotes[roomId][vote] = 0;
       }
+      roomVotes[roomId][vote] += 1;
 
-      // Broadcast updated vote counts to all clients in the room
-      io.to(roomId).emit('updateVotes', roomVotes[roomId]);
+      io.to(roomId).emit('updateVotes', roomVotes[roomId]); // Broadcast updated votes
     });
 
     // Handle resetting votes when a new dilemma card is selected

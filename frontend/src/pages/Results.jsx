@@ -108,25 +108,30 @@ const Results = () => {
         <div>
             <h3>Third Round Cards:</h3>
             {cards.length > 0 ? (
-                cards.map((cardData) => (
-                    <div key={cardData._id} className="card">
-                        <h4>Category: {cardData.card.category}</h4>
-                        <h5>Subcategory: {cardData.card.subcategory}</h5>
+                cards.map((cardData, index) => (
+                    <div key={index} className="card">
+                        <h4>Category: {cardData.card.category || 'Unknown'}</h4>
+                        <h5>Subcategory: {cardData.card.subcategory || 'Unknown'}</h5>
                         <div className="votes">
-                            <p>Agree Votes: {cardData.votes.agree.count}</p>
-                            <p>Disagree Votes: {cardData.votes.disagree.count}</p>
+                            {Object.keys(cardData.votes).length > 0 ? (
+                                Object.entries(cardData.votes).map(([option, voteData]) => (
+                                    <p key={option}>{option} Votes: {voteData.count}</p>
+                                ))
+                            ) : (
+                                <p>No votes recorded.</p>
+                            )}
                         </div>
                         <div className="options">
                             <h5>Options (NL):</h5>
                             <ul>
-                                {cardData.card.options.nl.map((option, index) => (
-                                    <li key={`nl-${index}`}>{option}</li>
+                                {(cardData.card.options?.nl || []).map((option, nlIndex) => (
+                                    <li key={`nl-${nlIndex}`}>{option}</li>
                                 ))}
                             </ul>
                             <h5>Options (DE):</h5>
                             <ul>
-                                {cardData.card.options.de.map((option, index) => (
-                                    <li key={`de-${index}`}>{option}</li>
+                                {(cardData.card.options?.de || []).map((option, deIndex) => (
+                                    <li key={`de-${deIndex}`}>{option}</li>
                                 ))}
                             </ul>
                         </div>
