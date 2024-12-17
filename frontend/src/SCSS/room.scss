@@ -26,12 +26,21 @@
 
 .room-container {
   overflow: hidden; /* Prevent scrolling */
-
+  position: relative;
 }
 
 .information-pannel{
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  align-items: center;
+  text-align: center;
   gap: 10px;
+  
+}
+
+.chat{
+
+  place-items: center;
 }
 
 

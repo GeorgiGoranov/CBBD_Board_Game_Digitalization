@@ -141,35 +141,33 @@ const getRoomStateMode = (RoundModel) => {
 };
 
 const saveMessage = async (messagesData) => {
-    const { roomId, sender, message } = messagesData;
+    const { roomId, sender, message, group } = messagesData;
     // Sanitize the message text
     const sanitizedText = sanitizeHtml(message);
 
     try {
-        // Find the chat room document by roomId
         let chatRoom = await ChatRoom.findOne({ roomId });
 
         if (!chatRoom) {
-            // If no chat room exists, create a new one
-            chatRoom = new ChatRoom({
-                roomId,
-                messages: [],
-            });
+            chatRoom = new ChatRoom({ roomId, groups: [] });
         }
 
-        // Create a new message object
-        const newMessage = {
-            sender,
-            message: sanitizedText,
-        };
+        // Find or create the group
+        let targetGroup = chatRoom.groups.find(g => g.groupNumber === Number(group));
+        if (!targetGroup) {
+            // If no group exists for this groupNumber, create it
+            targetGroup = { groupNumber: Number(group), messages: [] };
+            chatRoom.groups.push(targetGroup);
+        }
 
-        // Add the new message to the messages array
-        chatRoom.messages.push(newMessage);
+        // Now push the new message into the target group
+        targetGroup.messages.push({ sender, message: sanitizedText });
 
-        // Save the chat room document
         await chatRoom.save();
 
-        return { success: true, message: newMessage };
+        // Return the newly added message
+        const newMessage = targetGroup.messages[targetGroup.messages.length - 1];
+        return { success: true, message: { ...newMessage.toObject(), groupNumber: Number(group), roomId } };
     } catch (error) {
         console.error('Error saving message:', error);
         return { success: false, error: error.message };
@@ -178,17 +176,29 @@ const saveMessage = async (messagesData) => {
 
 const getMessage = async (req, res) => {
     const { roomId } = req.params;
+    const { group } = req.query;
 
     try {
-        // Find the chat room by roomId and return only the messages array
-        const chatRoom = await ChatRoom.findOne({ roomId }, { messages: 1, _id: 0 });
+        const chatRoom = await ChatRoom.findOne({ roomId });
 
         if (!chatRoom) {
             return res.status(404).json({ error: 'Room not found' });
         }
 
-        // Send only the messages array
-        res.json({ messages: chatRoom.messages });
+        if (group) {
+            const targetGroup = chatRoom.groups.find(g => g.groupNumber === Number(group));
+            const messages = targetGroup ? targetGroup.messages : [];
+            return res.json({ messages });
+        } else {
+            // If no group is specified, you could return all messages from all groups,
+            // or just return an empty array depending on your needs.
+            // Here, we return all messages grouped by groupNumber.
+            const allMessages = chatRoom.groups.reduce((acc, grp) => {
+                acc.push({ groupNumber: grp.groupNumber, messages: grp.messages });
+                return acc;
+            }, []);
+            return res.json({ groups: allMessages });
+        }
     } catch (error) {
         console.error('Error fetching messages:', error);
         res.status(500).json({ error: 'Server error' });

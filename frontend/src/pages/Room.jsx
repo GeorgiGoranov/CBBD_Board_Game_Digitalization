@@ -218,7 +218,10 @@ const Room = () => {
                     </div>
                 )}
                 {/* Chat Component */}
-                <Chat playerID={playerID} socket={socket} />
+                <div className='chat'>
+
+                <Chat playerID={playerID} socket={socket} group={group}/>
+                </div>
             </div>
 
             {/* Role-based layout */}

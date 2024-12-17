@@ -132,18 +132,16 @@ const RoundOne = ({ roomId, playerID, socket }) => {
 
     // Function to update cursor positions
     const updateCursorDisplay = (data) => {
-        const container = document.querySelector('.room-container');
-        if (container) {
 
-            setCursorPositions((prevPositions) => ({
-                ...prevPositions,
-                [data.playerID]: {
-                    x: data.x,
-                    y: data.y,
-                    group: data.group
-                },
-            }));
-        }
+        setCursorPositions((prevPositions) => ({
+            ...prevPositions,
+            [data.playerID]: {
+                x: data.x ,
+                y: data.y - 50,
+                group: data.group
+            },
+        }));
+
     };
 
 
@@ -230,6 +228,7 @@ const RoundOne = ({ roomId, playerID, socket }) => {
         socket.on('cursorUpdate', (data) => {
             // Handle cursor updates from other players
             updateCursorDisplay(data);
+
         });
 
         // Listen for drag-and-drop updates from other clients
@@ -379,19 +378,18 @@ const RoundOne = ({ roomId, playerID, socket }) => {
                                 position: 'absolute',
                                 top: position.y,
                                 left: position.x,
-                                pointerEvents: 'none', // Make sure it doesn't interfere with interactions
+                                pointerEvents: 'none',
                                 transform: 'translate(-50%, -50%)',
-                                backgroundColor: 'rgba(0, 0, 255, 0.5)', // Customize as needed
+                                backgroundColor: 'rgba(0, 0, 255, 0.5)',
                                 width: '10px',
                                 height: '10px',
                                 borderRadius: '50%',
                                 zIndex: 1000,
-                            }}
-                        >
-                            {/* Optional: display player ID */}
+                            }}>
                             <span style={{ fontSize: '10px', color: 'red' }}>{playerID}</span>
                         </div>
                     ))}
+
 
             </div >
         </div>

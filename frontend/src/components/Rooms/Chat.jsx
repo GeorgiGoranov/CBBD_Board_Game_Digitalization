@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import '../../SCSS/chat.scss'
-const Chat = ({ playerID, socket }) => {
+const Chat = ({ playerID, socket, group }) => {
 
     const [messages, setMessages] = useState([]);
     const [currentMessage, setCurrentMessage] = useState('');
@@ -17,19 +17,20 @@ const Chat = ({ playerID, socket }) => {
     useEffect(() => {
         const fetchMessages = async () => {
             try {
-                const response = await fetch(`/api/rounds/get-message/${roomId}`);
+                const response = await fetch(`/api/rounds/get-message/${roomId}?group=${group}`);
                 if (response.ok) {
                     const data = await response.json();
-                    setMessages(data.messages);
+                   
+                    setMessages(data.messages || []);
                 }
             } catch (error) {
                 console.error('Error fetching messages:', error);
             }
         };
 
-        fetchMessages()
+        fetchMessages();
 
-    }, [roomId])
+    }, [roomId, group])
 
     const sendMessage = (e) => {
         e.preventDefault();
@@ -37,14 +38,15 @@ const Chat = ({ playerID, socket }) => {
             const messageData = {
                 roomId,
                 sender: playerID,
-                message: currentMessage
+                message: currentMessage,
+                group: Number(group)
             };
 
             // Emit the message via Socket.IO
             socket.emit('sendMessage', { message: messageData });
 
             // Update local state
-            setMessages((prevMessages) => [...prevMessages, messageData]);
+            // setMessages((prevMessages) => [...prevMessages, messageData]);
             setCurrentMessage('');
         }
     };
@@ -52,13 +54,17 @@ const Chat = ({ playerID, socket }) => {
     // Listen for new messages via Socket.IO
     useEffect(() => {
         socket.on('receiveMessage', (data) => {
-            setMessages((prevMessages) => [...prevMessages, data.message]);
+            const msg = data.message;
+            // Only add if msg.groupNumber matches our current group
+            if (Number(msg.groupNumber) === Number(group)) {
+                setMessages((prevMessages) => [...prevMessages, msg]);
+            }
         });
 
         return () => {
             socket.off('receiveMessage');
         };
-    }, [socket]);
+    }, [socket, group]);
 
     useEffect(() => {
         if (isAtBottom && messagesEndRef.current) {
@@ -85,7 +91,7 @@ const Chat = ({ playerID, socket }) => {
         }
         setShowNewMessageAlert(false); // Hide alert immediately after clicking
     };
-    
+
 
     return (
         <div className="chat-container">

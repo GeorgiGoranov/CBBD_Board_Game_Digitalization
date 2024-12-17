@@ -1,26 +1,38 @@
 const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 
-const MessageSchema = new mongoose.Schema(
-  {
-    sender: {
-      type: String,
-      required: true,
-    },
-    message: {
-      type: String,
-      required: true,
-    },
+const MessageSchema = new Schema({
+  sender: {
+    type: String,
+    required: true,
   },
-  { timestamps: true } // This adds createdAt and updatedAt fields
-);
+  message: {
+    type: String,
+    required: true,
+  },
+}, { timestamps: true });
 
-const ChatRoomSchema = new mongoose.Schema({
+const GroupChatSchema = new Schema({
+  groupNumber: {
+    type: Number,
+    required: true
+  },
+  messages: {
+    type: [MessageSchema],
+    default: []
+  }
+}, { _id: false });
+
+const ChatRoomSchema = new Schema({
   roomId: {
     type: String,
     required: true,
-    unique: true, // Ensures one document per roomId
+    unique: true
   },
-  messages: [MessageSchema], // Array of messages
-});
+  groups: {
+    type: [GroupChatSchema],
+    default: []
+  }
+}, { timestamps: true });
 
 module.exports = mongoose.model('ChatRoom', ChatRoomSchema);

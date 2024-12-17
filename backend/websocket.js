@@ -105,7 +105,7 @@ function setupWebSocket(server) {
 
     socket.on('dragDropUpdate', (data) => {
       const { gameCode, playerID } = data;
-      
+
       const roomPlayers = rooms[gameCode] || [];
       const triggeringPlayer = roomPlayers.find(p => p.playerID === playerID);
 
@@ -133,7 +133,15 @@ function setupWebSocket(server) {
       const result = await saveMessage(message);
 
       if (result.success) {
-        socket.to(message.roomId).emit('receiveMessage', { message: result.message });
+        const { roomId, groupNumber } = result.message;
+
+        // Find all players in this room with the same groupNumber
+        const roomPlayers = rooms[roomId] || [];
+        const targetPlayers = roomPlayers.filter(p => Number(p.group) === Number(groupNumber));
+
+        targetPlayers.forEach((player) => {
+          io.to(player.socketId).emit('receiveMessage', { message: result.message });
+        });
       } else {
         socket.emit('errorMessage', { error: 'Could not save message' });
       }

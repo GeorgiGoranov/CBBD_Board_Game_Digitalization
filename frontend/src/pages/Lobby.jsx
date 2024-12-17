@@ -3,6 +3,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import initSocket from '../context/socket';
 import "../SCSS/lobby.scss"
 
+import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+
 
 const Lobby = () => {
     const { roomId } = useParams(); // Fetch roomId from the URL
@@ -244,6 +246,39 @@ const Lobby = () => {
 
     }, [playerID, roomId, socket])
 
+    // Function to handle drag end event
+    const onDragEnd = (result) => {
+        const { destination, source } = result;
+        if (!destination) return;
+
+        if (
+            destination.droppableId === source.droppableId &&
+            destination.index === source.index
+        ) {
+            return; // no change in position
+        }
+
+        // Find the source group and destination group
+        const sourceGroupIndex = groupedPlayers.findIndex(
+            (g) => g.groupNumber.toString() === source.droppableId
+        );
+        const destinationGroupIndex = groupedPlayers.findIndex(
+            (g) => g.groupNumber.toString() === destination.droppableId
+        );
+
+        const sourceGroup = groupedPlayers[sourceGroupIndex];
+        const destinationGroup = groupedPlayers[destinationGroupIndex];
+
+        const [movedPlayer] = sourceGroup.players.splice(source.index, 1);
+        destinationGroup.players.splice(destination.index, 0, movedPlayer);
+
+        const updatedGroups = [...groupedPlayers];
+        updatedGroups[sourceGroupIndex] = sourceGroup;
+        updatedGroups[destinationGroupIndex] = destinationGroup;
+
+        setGroupedPlayers(updatedGroups);
+    };
+
     if (loading) return <div>Loading...</div>;
 
     return (
@@ -300,27 +335,54 @@ const Lobby = () => {
                             {message && <p>{message}</p>}
 
                             <h2>Players in the Room:</h2>
-                            <div className="player-columns">
-                                {groupedPlayers.map((group) => (
-                                    <div
-                                        key={group.groupNumber}
-                                        className="player-group"
-                                        style={{
-                                            border: '2px solid red',
-                                            padding: '10px',
-                                            margin: '10px 0',
-                                            borderRadius: '8px',
-                                        }}
-                                    >
-                                        <h3>Group {group.groupNumber}</h3>
-                                        <ul>
-                                            {group.players.map((player) => (
-                                                <li key={player.playerID}>{player.playerID}</li>
-                                            ))}
-                                        </ul>
-                                    </div>
-                                ))}
-                            </div>
+                            <DragDropContext onDragEnd={onDragEnd}>
+                                <div className="player-columns">
+                                    {groupedPlayers.map((group) => (
+                                        <Droppable droppableId={group.groupNumber.toString()} key={group.groupNumber}>
+                                            {(provided) => (
+                                                <div
+                                                    className="player-group"
+                                                    {...provided.droppableProps}
+                                                    ref={provided.innerRef}
+                                                    style={{
+                                                        border: '2px solid red',
+                                                        padding: '10px',
+                                                        margin: '10px 0',
+                                                        borderRadius: '8px',
+                                                        minWidth: '200px'
+                                                    }}
+                                                >
+                                                    <h3>Group {group.groupNumber}</h3>
+                                                    <ul style={{ listStyle: 'none', padding: 0 }}>
+                                                        {group.players.map((player, index) => (
+                                                            <Draggable draggableId={player.playerID} key={player.playerID} index={index}>
+                                                                {(provided) => (
+                                                                    <li
+                                                                        ref={provided.innerRef}
+                                                                        {...provided.draggableProps}
+                                                                        {...provided.dragHandleProps}
+                                                                        style={{
+                                                                            border: '1px solid #ccc',
+                                                                            padding: '8px',
+                                                                            marginBottom: '8px',
+                                                                            borderRadius: '4px',
+                                                                            backgroundColor: '#f9f9f9',
+                                                                            ...provided.draggableProps.style
+                                                                        }}
+                                                                    >
+                                                                        {player.playerID}
+                                                                    </li>
+                                                                )}
+                                                            </Draggable>
+                                                        ))}
+                                                        {provided.placeholder}
+                                                    </ul>
+                                                </div>
+                                            )}
+                                        </Droppable>
+                                    ))}
+                                </div>
+                            </DragDropContext>
                             {role === 'admin' && (
                                 <button className='btn' onClick={handleSaveGroups}>
                                     Save Groups
