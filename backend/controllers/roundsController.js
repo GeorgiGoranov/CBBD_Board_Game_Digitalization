@@ -120,8 +120,6 @@ const saveThirdRoomStateMode = (RoundModel) => {
 const getRoomStateMode = (RoundModel) => {
     return async (req, res) => {
         const { roomId } = req.params;
-        console.log('Using model:', RoundModel.modelName); // Log the model name
-        console.log('Received roomId:', roomId); // Log the roomId
         try {
             // Find the room by roomId`
             const room = await RoundModel.findOne({ roomId });
