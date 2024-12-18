@@ -4,22 +4,49 @@ const ChatRoom = require('../models/ChatModel')
 
 const saveRoomStateMode = (RoundModel) => {
     return async (req, res) => {
-        const { roomId, categories, dropZones } = req.body;
+        const { roomId, groups } = req.body;
+
+        if (!Array.isArray(groups)) {
+            return res.status(400).json({ message: 'groups must be an array' });
+        }
+
         try {
             // Check if the room already exists
             let round = await RoundModel.findOne({ roomId });
 
             if (round) {
-                // If the room exists, update its state
-                round.categories = categories;
-                round.dropZones = dropZones;
+                // If the room exists, we merge or update groups
+                for (const newGroup of groups) {
+                    const existingGroupIndex = round.groups.findIndex(
+                        (g) => g.groupNumber === newGroup.groupNumber
+                    );
 
+                    if (existingGroupIndex !== -1) {
+                        // Update the existing group's details
+                        round.groups[existingGroupIndex].categories = newGroup.categories;
+                        round.groups[existingGroupIndex].dropZones = newGroup.dropZones;
+
+                        // For messages, you can either replace them or append:
+                        // Replace existing messages:
+                        // round.groups[existingGroupIndex].messages = newGroup.messages;
+
+                        // Or append new messages to existing:
+                        if (Array.isArray(newGroup.messages)) {
+                            round.groups[existingGroupIndex].messages = [
+                                ...round.groups[existingGroupIndex].messages,
+                                ...newGroup.messages
+                            ];
+                        }
+                    } else {
+                        // Add the new group if it doesn't exist
+                        round.groups.push(newGroup);
+                    }
+                }
             } else {
                 // If the room doesn't exist, create a new one
                 round = new RoundModel({
                     roomId,
-                    categories,
-                    dropZones,
+                    groups,
                 });
             }
 
@@ -36,7 +63,7 @@ const saveRoomStateMode = (RoundModel) => {
 
 const saveThirdRoomStateMode = (RoundModel) => {
     return async (req, res) => {
-        const { roomId, card, vote, playerID } = req.body;
+        const { roomId, card, vote, playerID, nationality } = req.body;
 
         try {
             // Find the room by roomId
@@ -48,43 +75,54 @@ const saveThirdRoomStateMode = (RoundModel) => {
             }
 
             if (card) {
-
-                // Add the new card with initial votes
+                // Add a new card to the array with empty votes object
                 const newCard = {
                     card: card,
-                    votes: {
-                        agree: { count: 0, playerID: [] },
-                        disagree: { count: 0, playerID: [] },
-                    },
+                    votes: {}, // Start with no votes
                 };
                 round.cards.push(newCard);
-
             }
 
-            if (vote === 'agree' || vote === 'disagree') {
+            if (vote) {
                 // Ensure there is at least one card to vote on
                 if (round.cards.length === 0) {
                     return res.status(400).json({ message: 'No card available to vote on' });
                 }
 
                 // Get the latest card
-                const lastCard = round.cards[round.cards.length - 1];
+                const lastCardIndex = round.cards.length - 1;
+                const lastCard = round.cards[lastCardIndex];
 
-                // Update the vote counts and player IDs
-                lastCard.votes[vote].count += 1;
-                lastCard.votes[vote].playerID.push(playerID);
-            } else if (vote) {
-                // Invalid vote option provided
-                return res.status(400).json({ message: 'Invalid vote option' });
+                // Initialize the vote option if it doesn't exist
+                if (!lastCard.votes[vote]) {
+                    lastCard.votes[vote] = {
+                        count: 0,
+                        playerID: [],
+                        nationalities: {
+                            german: 0,
+                            dutch: 0,
+                            other: 0
+                        }
+                    };
+                }
+
+                // Update nationality count
+                if (!lastCard.votes[vote].nationalities[nationality]) {
+                    // If nationality doesn't match these three, categorize as 'other'
+                    // or adjust logic to handle only these three known categories
+                    lastCard.votes[vote].nationalities[nationality] = 0;
+                }
+                lastCard.votes[vote].nationalities[nationality] += 1;
+
+                round.cards[lastCardIndex] = lastCard;
             }
-
 
             // Save the updated room state to the database
             await round.save();
-            res.status(200).json({ message: 'Room state saved successfully' });
+            return res.status(200).json({ message: 'Room state saved successfully' });
         } catch (error) {
             console.error('Error saving room state:', error);
-            res.status(500).json({ message: 'Error saving room state', error: error.message });
+            return res.status(500).json({ message: 'Error saving room state', error: error.message });
         }
     };
 };
@@ -93,8 +131,6 @@ const saveThirdRoomStateMode = (RoundModel) => {
 const getRoomStateMode = (RoundModel) => {
     return async (req, res) => {
         const { roomId } = req.params;
-        console.log('Using model:', RoundModel.modelName); // Log the model name
-        console.log('Received roomId:', roomId); // Log the roomId
         try {
             // Find the room by roomId`
             const room = await RoundModel.findOne({ roomId });
@@ -114,35 +150,33 @@ const getRoomStateMode = (RoundModel) => {
 };
 
 const saveMessage = async (messagesData) => {
-    const { roomId, sender, message } = messagesData;
+    const { roomId, sender, message, group } = messagesData;
     // Sanitize the message text
     const sanitizedText = sanitizeHtml(message);
 
     try {
-        // Find the chat room document by roomId
         let chatRoom = await ChatRoom.findOne({ roomId });
 
         if (!chatRoom) {
-            // If no chat room exists, create a new one
-            chatRoom = new ChatRoom({
-                roomId,
-                messages: [],
-            });
+            chatRoom = new ChatRoom({ roomId, groups: [] });
         }
 
-        // Create a new message object
-        const newMessage = {
-            sender,
-            message: sanitizedText,
-        };
+        // Find or create the group
+        let targetGroup = chatRoom.groups.find(g => g.groupNumber === Number(group));
+        if (!targetGroup) {
+            // If no group exists for this groupNumber, create it
+            targetGroup = { groupNumber: Number(group), messages: [] };
+            chatRoom.groups.push(targetGroup);
+        }
 
-        // Add the new message to the messages array
-        chatRoom.messages.push(newMessage);
+        // Now push the new message into the target group
+        targetGroup.messages.push({ sender, message: sanitizedText });
 
-        // Save the chat room document
         await chatRoom.save();
 
-        return { success: true, message: newMessage };
+        // Return the newly added message
+        const newMessage = targetGroup.messages[targetGroup.messages.length - 1];
+        return { success: true, message: { ...newMessage.toObject(), groupNumber: Number(group), roomId } };
     } catch (error) {
         console.error('Error saving message:', error);
         return { success: false, error: error.message };
@@ -151,17 +185,29 @@ const saveMessage = async (messagesData) => {
 
 const getMessage = async (req, res) => {
     const { roomId } = req.params;
+    const { group } = req.query;
 
     try {
-        // Find the chat room by roomId and return only the messages array
-        const chatRoom = await ChatRoom.findOne({ roomId }, { messages: 1, _id: 0 });
+        const chatRoom = await ChatRoom.findOne({ roomId });
 
         if (!chatRoom) {
             return res.status(404).json({ error: 'Room not found' });
         }
 
-        // Send only the messages array
-        res.json({ messages: chatRoom.messages });
+        if (group) {
+            const targetGroup = chatRoom.groups.find(g => g.groupNumber === Number(group));
+            const messages = targetGroup ? targetGroup.messages : [];
+            return res.json({ messages });
+        } else {
+            // If no group is specified, you could return all messages from all groups,
+            // or just return an empty array depending on your needs.
+            // Here, we return all messages grouped by groupNumber.
+            const allMessages = chatRoom.groups.reduce((acc, grp) => {
+                acc.push({ groupNumber: grp.groupNumber, messages: grp.messages });
+                return acc;
+            }, []);
+            return res.json({ groups: allMessages });
+        }
     } catch (error) {
         console.error('Error fetching messages:', error);
         res.status(500).json({ error: 'Server error' });

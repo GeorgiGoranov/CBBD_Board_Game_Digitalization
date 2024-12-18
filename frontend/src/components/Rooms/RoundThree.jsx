@@ -3,28 +3,25 @@ import { useLanguage } from '../../context/LanguageContext';
 import "../../SCSS/roundThree.scss"
     ;
 
-const RoundThree = ({ roomId, playerID, socket, role }) => {
+const RoundThree = ({ roomId, playerID, socket, role, nationality }) => {
     const [card, setCard] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const { language } = useLanguage();
-    const [votes, setVotes] = useState({ agree: 0, disagree: 0 });
-    const [userVote, setUserVote] = useState('');
-
-
+    const [votes, setVotes] = useState({});
+    const [userVote, setUserVote] = useState(null);
 
     const saveState = useCallback(async (currentCard, currentVote) => {
         try {
-            const body = {
-                roomId,
-                playerID,
-            };
+            const body = { roomId, playerID, nationality }
+
             if (currentCard) {
                 body.card = currentCard;
             }
             if (currentVote) {
                 body.vote = currentVote;
             }
+            console.log(body)
             const response = await fetch('/api/rounds/save-state-third-round', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -40,12 +37,7 @@ const RoundThree = ({ roomId, playerID, socket, role }) => {
         } catch (error) {
             console.error('Error saving state:', error);
         }
-    }, [roomId, playerID]);
-
-
-
-
-
+    }, [roomId, playerID, nationality]);
 
     const fetchRandomCard = async () => {
         try {
@@ -54,8 +46,6 @@ const RoundThree = ({ roomId, playerID, socket, role }) => {
                 throw new Error('Failed to fetch a random card');
             }
             const data = await response.json();
-            console.log('Card being sent:', data);
-
             setCard(data);
 
             // Save the new card to the backend
@@ -71,64 +61,30 @@ const RoundThree = ({ roomId, playerID, socket, role }) => {
         }
     };
 
-
-
-    const handleVote = (vote) => {
-        socket.emit('vote', { vote, roomId });
-        setUserVote(vote); // Store the user's vote
-        // Save state with current card and vote
-        saveState(null, vote);
+    const handleNextDilemma = () => {
+        fetchRandomCard()
     };
 
-    // const fetchRoomState = async () => {
-    //     try {
-    //         const response = await fetch(`/api/rounds/get-state-third-round/${roomId}`);
-    //         if (!response.ok) {
-    //             throw new Error("Failed to fetch room state");
-    //         }
-    //         const data = await response.json();
-
-    //         // Check if cards array exists and has at least one card
-    //         if (data.cards && data.cards.length > 0) {
-    //             const lastCard = data.cards[data.cards.length - 1]; // Get the last card
-    //             setCard(lastCard.card); // Set the card state
-    //             if (lastCard.votes) {
-    //                 setVotes({
-    //                     agree: lastCard.votes.agree.count,
-    //                     disagree: lastCard.votes.disagree.count,
-    //                 });
-    //             }
-    //         } else {
-    //             console.warn("No cards found in the fetched room state.");
-    //         }
-    //     } catch (err) {
-    //         setError(err.message);
-    //     } finally {
-    //         setLoading(false);
-    //     }
-    // };
-
-    //on start fetch
+    const handleVote = (option) => {
+        if (role === 'admin') {
+            // Prevent admins from voting
+            alert('Admins are not allowed to vote');
+            return;
+        }
+        socket.emit('vote', { vote: option, roomId });
+        setUserVote(option); // Store the user's selected option
+        saveState(null, option); // Save the selected option
+    };
 
     useEffect(() => {
         fetchRandomCard()
     }, [])
 
-
     useEffect(() => {
 
+        socket.on('updateDilemmaCardData', setCard);
+        socket.on('updateVotes', setVotes);
 
-        // Listen for WebSocket event
-        socket.on('nextDilemmaCardR', fetchRandomCard);
-
-        socket.on('updateDilemmaCardData', (cardData) => {
-            setCard(cardData);
-        });
-
-        socket.on('updateVotes', (updatedVotes) => {
-            setVotes(updatedVotes);
-
-        });
 
         // Cleanup listener on component unmount
         return () => {
@@ -142,16 +98,7 @@ const RoundThree = ({ roomId, playerID, socket, role }) => {
     if (error) return <div>Error: {error}</div>;
 
     const options = card?.options?.[language]; // Extract options for the selected language
-
-    if (!card || !options) {
-        return <div>No card or options available for the selected language</div>;
-    }
-
-    const handleNextDilemma = () => {
-        fetchRandomCard()
-    };
-
-
+    if (!options) return <div>No card or options available</div>;
 
     return (
         <div className="round-three-container">
@@ -162,42 +109,27 @@ const RoundThree = ({ roomId, playerID, socket, role }) => {
 
                 <div className="options-container-dilemma">
                     {options.map((option, index) => (
-                        <div key={index} className="option-item-dilemma">
-                            {option}
+                        <div
+                            key={index}
+                            className={`option-item-dilemma ${userVote === option ? 'voted' : ''}`}
+                            onClick={() => userVote === null && role !== 'admin' && handleVote(option)}
+                            style={{
+                                cursor: userVote === null && role !== 'admin' ? "pointer" : "not-allowed",
+                                backgroundColor: userVote === option ? "#cce5ff" : ""
+                            }}
+                        >
+                            {option} {votes[option] ? `- Votes: ${votes[option]}` : ''}
                         </div>
                     ))}
                 </div>
-            </div>
-            <div className="vote-container">
-                <button
-                    className="vote-btn"
-                    onClick={() => handleVote('agree')}
-                    disabled={userVote !== ''}
-                >
-                    Agree
-                </button>
-                <button
-                    className="vote-btn"
-                    onClick={() => handleVote('disagree')}
-                    disabled={userVote !== ''}
-                >
-                    Disagree
-                </button>
-            </div>
-            <div className="vote-results">
-                <p>Votes for: {votes.agree}</p>
-                <p>Votes against: {votes.disagree}</p>
-
-                {role === 'admin' && (
-                    <div className='moderator-container-layout'>
-                        <i class="bi bi-arrow-right-circle" onClick={handleNextDilemma}></i>
-                    </div>
-                )}
 
             </div>
-
+            {role === 'admin' && (
+                <div className='moderator-container-layout'>
+                    <i className="bi bi-arrow-right-circle" onClick={fetchRandomCard}></i>
+                </div>
+            )}
         </div>
-
 
     );
 

@@ -25,7 +25,7 @@ function setupWebSocket(server) {
     // Handle when a player joins a session
     socket.on('joinSession', (data) => {
 
-      const { playerID, gameCode } = data;
+      const { playerID, nationality, gameCode, group } = data;
 
       // Add the player to the room's player list
       if (!rooms[gameCode]) {
@@ -38,9 +38,10 @@ function setupWebSocket(server) {
       if (existingPlayer) {
         // Update the player's socketId to the new one (in case of reconnect)
         existingPlayer.socketId = socket.id;
+        existingPlayer.group = group; // Update group if needed
       } else {
         // Add the new player to the room if not already present
-        rooms[gameCode].push({ playerID, socketId: socket.id });
+        rooms[gameCode].push({ playerID, socketId: socket.id, nationality, group });
       }
 
       // Add the player to the specific room associated with the gameCode
@@ -59,22 +60,65 @@ function setupWebSocket(server) {
       socket.emit('updateVotes', roomVotes[gameCode]);
 
       // Notify everyone in this specific room about the new player
-      io.to(gameCode).emit('playerJoined', { playerID });
+      io.to(gameCode).emit('playerJoined', { playerID, nationality });
       // Notify everyone in this specific room with the updated player list
-      io.to(gameCode).emit('updatePlayerList', rooms[gameCode].map(player => player.playerID));
+      io.to(gameCode).emit(
+        'updatePlayerList',
+        rooms[gameCode].map((player) => ({
+          playerID: player.playerID,
+          nationality: player.nationality,
+          group: player.group
+        }))
+      );
+    });
+
+    socket.on('navigateToRoom', (data) => {
+      const { roomId } = data;
+      console.log(`Navigating all players in room ${roomId} to game room`);
+
+      // Broadcast the event to all players in the room
+      io.to(roomId).emit('navigateToRoom', { roomId });
+    });
+
+    socket.on('updateTokens', ({ roomId, groupedPlayers }) => {
+      // Broadcast the groupedPlayers data to all players in the room
+      socket.to(roomId).emit('updateTokens', { groupedPlayers });
+    });
+
+    socket.on('sendGroupMessage', (data) => {
+      const { roomId, group, message } = data;
+
+      if (!rooms[roomId]) return;
+
+      const targetPlayers = rooms[roomId].filter(player => String(player.group) === String(group));
+
+      targetPlayers.forEach(player => {
+        io.to(player.socketId).emit('receiveGroupMessage', { message });
+      });
     });
 
     socket.on('dragDropUpdate', (data) => {
-      const { gameCode } = data;
-      // Broadcast the dragDropUpdate event to all clients in the same room
-      socket.to(gameCode).emit('dragDropUpdate', data);
+      const { gameCode, playerID } = data;
+
+      const roomPlayers = rooms[gameCode] || [];
+      const triggeringPlayer = roomPlayers.find(p => p.playerID === playerID);
+
+      if (triggeringPlayer) {
+        const playerGroup = triggeringPlayer.group;
+        const targetPlayers = roomPlayers.filter(p => p.group === playerGroup);
+
+        // Emit only to players in the same group
+        targetPlayers.forEach(p => {
+          io.to(p.socketId).emit('dragDropUpdate', data);
+        });
+      }
     });
 
     // Capture and broadcast cursor position
     socket.on('cursorMove', (data) => {
-      const { x, y, playerID, gameCode } = data;
+      const { x, y, playerID, gameCode, group } = data;
       // Broadcast the cursor position to all players in the room except the sender
-      socket.to(gameCode).emit('cursorUpdate', { x, y, playerID });
+      socket.to(gameCode).emit('cursorUpdate', { x, y, playerID, group });
     });
 
     socket.on('sendMessage', async (data) => {
@@ -83,7 +127,15 @@ function setupWebSocket(server) {
       const result = await saveMessage(message);
 
       if (result.success) {
-        socket.to(message.roomId).emit('receiveMessage', { message: result.message });
+        const { roomId, groupNumber } = result.message;
+
+        // Find all players in this room with the same groupNumber
+        const roomPlayers = rooms[roomId] || [];
+        const targetPlayers = roomPlayers.filter(p => Number(p.group) === Number(groupNumber));
+
+        targetPlayers.forEach((player) => {
+          io.to(player.socketId).emit('receiveMessage', { message: result.message });
+        });
       } else {
         socket.emit('errorMessage', { error: 'Could not save message' });
       }
@@ -99,15 +151,6 @@ function setupWebSocket(server) {
 
       console.log(`Round changed to ${roundNumber} in room ${roomId}`);
     });
-    socket.on('nextDilemmaCard', (data) => {
-      const { roomId } = data;
-
-      // Broadcast the event to all players in the room
-      io.to(roomId).emit('nextDilemmaCardR');
-
-      console.log(`Moderator requested a new dilemma card in room: ${roomId}`);
-    });
-
     socket.on('newDilemmaCardData', (data) => {
       const { roomId, card } = data;
 
@@ -117,25 +160,19 @@ function setupWebSocket(server) {
       console.log(`Broadcasted new dilemma card data for room: ${roomId}`);
     });
 
-
-
     socket.on('vote', (data) => {
       const { vote, roomId } = data;
 
-      if (!roomVotes[roomId]) {
-        roomVotes[roomId] = { agree: 0, disagree: 0 };
-      }
+      if (!roomVotes[roomId]) roomVotes[roomId] = {};
 
-      if (vote === 'agree') {
-        roomVotes[roomId].agree += 1;
-      } else if (vote === 'disagree') {
-        roomVotes[roomId].disagree += 1;
+      // Increment vote count for the selected option
+      if (!roomVotes[roomId][vote]) {
+        roomVotes[roomId][vote] = 0;
       }
+      roomVotes[roomId][vote] += 1;
 
-      // Broadcast updated vote counts to all clients in the room
-      io.to(roomId).emit('updateVotes', roomVotes[roomId]);
+      io.to(roomId).emit('updateVotes', roomVotes[roomId]); // Broadcast updated votes
     });
-
 
     // Handle resetting votes when a new dilemma card is selected
     socket.on('resetVotes', () => {
@@ -163,10 +200,18 @@ function setupWebSocket(server) {
       }
 
       if (roomCode) {
-        // Emit the updated player list to everyone in the room
-        io.to(roomCode).emit('updatePlayerList', rooms[roomCode].map(player => player.playerID));
-        io.to(roomCode).emit('playerLeftRoom', playerID);
+        // Emit the updated player list to everyone in the room with full player details
+        io.to(roomCode).emit(
+          'updatePlayerList',
+          rooms[roomCode].map(player => ({
+            playerID: player.playerID,
+            nationality: player.nationality,
+            group: player.group
+          }))
+        );
 
+        // Then emit the playerLeftRoom event for the message
+        io.to(roomCode).emit('playerLeftRoom', playerID);
 
         console.log(`${playerID} left room: ${roomCode}`);
       }

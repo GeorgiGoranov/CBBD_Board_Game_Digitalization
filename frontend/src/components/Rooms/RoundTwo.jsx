@@ -8,7 +8,7 @@ import { useLanguage } from '../../context/LanguageContext';
 import '../../SCSS/roundTwo.scss';
 
 
-const RoundTwo = ({ roomId, playerID, socket }) => {
+const RoundTwo = ({ roomId, playerID, socket, group }) => {
     const { language } = useLanguage(); // Access selected language
     const [categoriesData, setCategoriesData] = useState([]);
     const [collapsedCategories, setCollapsedCategories] = useState({});
@@ -21,6 +21,8 @@ const RoundTwo = ({ roomId, playerID, socket }) => {
     });
     const [cursorPositions, setCursorPositions] = useState({});
     const [userActionOccurred, setUserActionOccurred] = useState(false);
+
+    const [socketMessage, setSocketMessage] = useState(''); // This can be used to display socket events
 
 
     const toggleCategoryCollapse = (categoryName) => {
@@ -95,6 +97,7 @@ const RoundTwo = ({ roomId, playerID, socket }) => {
             source,
             destination,
             movedItem,
+            playerID
         });
         setUserActionOccurred(true);
     };
@@ -106,10 +109,8 @@ const RoundTwo = ({ roomId, playerID, socket }) => {
         const sourceIsCategory = sourceDroppableId.startsWith('category-');
         const destinationIsCategory = destinationDroppableId.startsWith('category-');
 
-        if (sourceIsCategory) {
-            // Do nothing since items aren't removed from categories
-        } else {
-            // Remove the item from the drop zone
+        if (!sourceIsCategory) {
+            // Remove the item from the source drop zone
             setDropZones((prev) => {
                 const updatedSourceItems = Array.from(prev[sourceDroppableId]);
                 const itemIndex = updatedSourceItems.findIndex((item) => item.id === movedItem.id);
@@ -121,16 +122,19 @@ const RoundTwo = ({ roomId, playerID, socket }) => {
             });
         }
 
-        if (destinationIsCategory) {
-            // Item dragged back to categories; no action needed
-        } else {
+        if (!destinationIsCategory) {
+            // Add the item to the destination drop zone
             setDropZones((prev) => {
                 const updatedDestinationItems = Array.from(prev[destinationDroppableId]);
                 updatedDestinationItems.splice(destination.index, 0, movedItem);
                 return { ...prev, [destinationDroppableId]: updatedDestinationItems };
             });
+        } else {
+            // If needed, handle the case where the item moves back to categories 
+            // If you allow that scenario, you'd replicate what you do in handleDragDrop for categories
         }
     };
+
 
     // Function to update cursor positions
     const updateCursorDisplay = (data) => {
@@ -147,14 +151,22 @@ const RoundTwo = ({ roomId, playerID, socket }) => {
         }
     };
 
+
     const saveState = useCallback(async () => {
         try {
+            // Construct groups array similar to RoundOne
+            const groups = [{
+                groupNumber: group, // If you know the group number from props or context
+                dropZones,
+                messages: socketMessage ? [socketMessage] : [] // put the message in the messages array
+
+            }];
             const response = await fetch('/api/rounds/save-state-second-round', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     roomId, // Pass the current room ID
-                    dropZones,
+                    groups
                 }),
             });
             if (response.ok) {
@@ -164,6 +176,8 @@ const RoundTwo = ({ roomId, playerID, socket }) => {
             console.error('Error saving state:', error);
         }
     }, [roomId, dropZones])
+
+
 
     useEffect(() => {
         const fetchCategories = async () => {
@@ -214,8 +228,31 @@ const RoundTwo = ({ roomId, playerID, socket }) => {
                 const response = await fetch(`/api/rounds/get-state-second-round/${roomId}`);
                 if (response.ok) {
                     const data = await response.json();
-                    setDropZones(data.dropZones || { box1: [], box2: [], box3: [], box4: [], box5: [] });
-                    console.log('Room state loaded successfully');
+                    console.log(data)
+                    // Convert group to a number if it's a string
+                    const groupNumber = Number(group);
+                    const currentGroup = data.groups?.find(g => g.groupNumber === groupNumber);
+
+                    if (currentGroup) {
+                        // Do NOT set categoriesData here since we have no categories in the saved state
+                        // setCategoriesData(currentGroup.categories || []);
+
+                        setDropZones(currentGroup.dropZones || {
+                            box1: [],
+                            box2: [],
+                            box3: [],
+                            box4: [],
+                            box5: []
+                        });
+
+                        if (currentGroup.messages && currentGroup.messages.length > 0) {
+                            setSocketMessage(currentGroup.messages[currentGroup.messages.length - 1]);
+                        }
+
+                        console.log('Room state loaded successfully');
+                    } else {
+                        console.log('No matching group found in room state');
+                    }
                 } else {
                     console.log('Room state not found');
                 }
@@ -224,14 +261,19 @@ const RoundTwo = ({ roomId, playerID, socket }) => {
             }
         };
 
-        fetchCategories();
-        fetchSavedRoomState();
-    }, [roomId, language]);
+        if (group) {
+            fetchCategories();
+            fetchSavedRoomState();
+        }
+    }, [roomId, language, group]);
 
     useEffect(() => {
         // Listen for drag-and-drop updates from other clients
-        socket.on('dragDropUpdate', ({ source, destination, movedItem }) => {
-            handleExternalDragDrop(source, destination, movedItem);
+        socket.on('dragDropUpdate', ({ source, destination, movedItem,playerID: senderID }) => {
+            // Ignore the update if it came from the same player who performed the drag locally
+            if (senderID !== playerID) {
+                handleExternalDragDrop(source, destination, movedItem);
+            }
         });
 
         socket.on('cursorUpdate', (data) => {
@@ -239,9 +281,20 @@ const RoundTwo = ({ roomId, playerID, socket }) => {
             updateCursorDisplay(data);
         });
 
+        // Listen for group messages
+        socket.on('receiveGroupMessage', ({ message }) => {
+
+            // Only the targeted group members will get this
+            console.log("Group message received:", message);
+            // You can display it in the UI as needed
+            setSocketMessage(`${message}`);
+        });
+
+
         return () => {
             socket.off('cursorUpdate');
             socket.off('dragDropUpdate');
+            socket.off('receiveGroupMessage');
         };
     }, [socket]);
 
@@ -273,9 +326,10 @@ const RoundTwo = ({ roomId, playerID, socket }) => {
     }, [userActionOccurred, saveState]);
 
 
-
     return (
         <div>
+            {socketMessage && <p>{socketMessage}</p>}
+
             <DragDropContext onDragEnd={handleDragDrop}>
                 <ul className="api-list categories-grid">
                     {/* Iterate over categories */}

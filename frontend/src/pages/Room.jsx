@@ -15,15 +15,22 @@ import RoundThree from '../components/Rooms/RoundThree';
 
 const Room = () => {
     const { roomId } = useParams(); // Fetch roomId from the URL
-    const [message, setMessage] = useState('');
-    const [players, setPlayers] = useState([]);
     const [playerID, setPlayerID] = useState('');
+    const [message, setMessage] = useState('');
+    const socketRef = useRef();
+
+    const [players, setPlayers] = useState([]);
     const [role, setRole] = useState(null); // Role state to determine layout
     const [loading, setLoading] = useState(true);
-    const socketRef = useRef();
     const navigate = useNavigate()
     const [userSessionCode, setUserSessionCode] = useState(null);
     const [currentRound, setCurrentRound] = useState(0); // Start at round 0
+    const [group, setGroup] = useState('');
+
+    const [adminMessage, setAdminMessage] = useState('');
+    const [targetGroup, setTargetGroup] = useState('');
+    // const [socketMessage, setSocketMessage] = useState(''); // This can be used to display socket events
+  const [nationality, setNationality] = useState('')
 
 
     if (!socketRef.current) {
@@ -33,9 +40,12 @@ const Room = () => {
     const socket = socketRef.current;
 
     useEffect(() => {
+
+
+
         const fetchUserRole = async () => {
             try {
-                const response = await fetch('/api/routes/user-role', {
+                const response = await fetch('/api/routes/user-role-updated', {
                     method: 'GET',
                     credentials: 'include', // Include JWT cookies
                 });
@@ -45,6 +55,8 @@ const Room = () => {
                     setUserSessionCode(data.sessionCode);
                     setRole(data.role);
                     setPlayerID(data.name);
+                    setGroup(data.group)
+                    setNationality(data.nationality);
 
                 } else {
                     navigate('/duser')
@@ -102,63 +114,119 @@ const Room = () => {
         };
     }, [socket]);
 
+    // useEffect(() => {
+    //     const handleReceiveGroupMessage = ({ message }) => {
+    //         console.log("Group message received:", message);
+    //         setSocketMessage(`Recruitment Job: ${message}`);
+    //     };
+    //     socket.on('receiveGroupMessage', handleReceiveGroupMessage);
+
+    //     // No change in dependencies means this won't re-run unexpectedly
+    //     return () => {
+    //         socket.off('receiveGroupMessage', handleReceiveGroupMessage);
+    //     };
+    // }, [socket])
+
     useEffect(() => {
         if (playerID && roomId) {
-            socket.emit('joinSession', { playerID, gameCode: roomId });
+            socket.emit('joinSession', { playerID, gameCode: roomId, group: String(group) });
         }
 
-    }, [playerID, roomId, socket])
+    }, [playerID, roomId, socket, group])
 
 
     if (loading) return <div>Loading...</div>;
 
+    const handleAdminFormSubmit = (e) => {
+        e.preventDefault();
+        if (adminMessage.trim() && targetGroup) {
+            // Emit an event to the server to send a message to a specific group
+            socket.emit('sendGroupMessage', {
+                roomId,
+                group: targetGroup,
+                message: adminMessage
+            });
+           
+            setAdminMessage('');
+            setTargetGroup('');
+        }
+    };
+
     return (
-
         <div className='room-container'>
-            <div className='test-layout'>
-                <h1>Room ID: {roomId}</h1>
-                {message && <p>{message}</p>}
 
-                <h2>Players in the Room:</h2>
-                <ul>
-                    {players.map((player, index) => (
-                        <li key={index}>{player}</li>
-                    ))}
-                </ul>
-            </div>
+            {role === 'admin' ? (
+                <>
+                    <div className='question-by-moderator'>
 
-            <div className='information-pannel'>
-                {/* Render RoundOne component */}
-                {currentRound === 1 && (
-                    <div>
-                        Round 1
-                        <RoundOne roomId={roomId} playerID={playerID} socket={socket} />
+                        <form onSubmit={handleAdminFormSubmit}>
+                            <input
+                                type="text"
+                                value={adminMessage}
+                                onChange={(e) => setAdminMessage(e.target.value)}
+                                placeholder="Enter your Recruitment Job?"
+                            />
+                            <select
+                                value={targetGroup}
+                                onChange={(e) => setTargetGroup(e.target.value)}
+                            >
+                                <option value="">Select a Group</option>
+                                <option value="1">G1</option>
+                                <option value="2">G2</option>
+                                <option value="3">G3</option>
+                                <option value="4">G4</option>
+                            </select>
+                            <button type="submit">Submit</button>
+                        </form>
 
-                    </div>
-                )}
-                {currentRound === 2 && (
-                    <div>
-                        Round 2
-                        <RoundTwo roomId={roomId} playerID={playerID} socket={socket} />
-
-                    </div>
-                )}
-                {currentRound === 3 && (
-                    <div>
-                        Round 3
-                        <RoundThree roomId={roomId} playerID={playerID} socket={socket} role={role} />
 
                     </div>
-                )}
-                {/* Chat Component */}
-                <Chat playerID={playerID} socket={socket} />
-            </div>
+                </>
+
+            ) : (
+
+                <div className='outer-container'>
+                    <h2>Group Number: {group}</h2>
+                    <div className='information-pannel'>
+                        {/* Render RoundOne component */}
+                        {currentRound === 1 && (
+                            <div>
+                                Round 1
+                                <RoundOne roomId={roomId} playerID={playerID} socket={socket} group={group} />
+
+                            </div>
+                        )}
+                        {currentRound === 2 && (
+                            <div>
+                                Round 2
+                                <RoundTwo roomId={roomId} playerID={playerID} socket={socket} group={group} />
+
+                            </div>
+                        )}
+                        {/* Chat Component - Only for Round 1 and Round 2 */}
+                        {(currentRound === 1 || currentRound === 2) && (
+                            <div className='chat'>
+                                <Chat playerID={playerID} socket={socket} group={group} />
+                            </div>
+                        )}
+                    </div>
+                </div>
+
+            )}
+            {currentRound === 3 && (
+                <div>
+                    Round 3
+                    <RoundThree roomId={roomId} playerID={playerID} socket={socket} role={role} nationality={nationality} />
+
+                </div>
+            )}
+
 
             {/* Role-based layout */}
             <div className='role-based-layout'>
                 {role === 'admin' ? (
                     <div className='moderator-container-layout'> Moderator Layout for Room {roomId}
-                        <ModeratorRoomLayout roomId={roomId}/>
+                        <ModeratorRoomLayout roomId={roomId} />
                     </div>
                 ) : (
                     <div>
@@ -168,6 +236,7 @@ const Room = () => {
                     </div>
                 )}
             </div>
+
         </div>
     )
 }

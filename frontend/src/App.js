@@ -16,6 +16,7 @@ import ModeratorRoomLayout from './components/Moderator/ModeratorRoomLayout';
 import { LanguageProvider } from './context/LanguageContext';
 import Chat from './components/Rooms/Chat';
 import Results from './pages/Results'
+import Lobby from './pages/Lobby';
 
 
 
@@ -33,6 +34,8 @@ function App() {
               <Routes>
                 <Route path="/" element={<Login />} />
                 <Route path="/register" element={<Register />} />
+                <Route path="/lobby/:roomId" element={<Lobby />} />
+
                 <Route path="/duser" element={<ParticipantHomeLayout/>} />
                 <Route path="/room/:roomId" element={<Room />} />
                 <Route path="/muser" element={<ProtectedRoute allowedRoles={['admin']}><ModeratorHomeLayout /></ProtectedRoute>} />

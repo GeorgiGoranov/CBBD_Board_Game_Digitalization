@@ -27,30 +27,19 @@ const Results = () => {
             // Handle first round fetch
             if (firstRoundResult.status === 'fulfilled' && firstRoundResult.value.ok) {
                 const firstRoundData = await firstRoundResult.value.json();
-                setFirstRoundDropZones(firstRoundData.dropZones || {});
+                setFirstRoundDropZones(firstRoundData.groups || {});
             } else {
                 console.error('First round fetch failed:', firstRoundResult.reason || await firstRoundResult.value.text());
-                setFirstRoundDropZones({
-                    box1: [],
-                    box2: [],
-                    box3: [],
-                    box4: [],
-                });
+                setFirstRoundDropZones([]);
             }
 
             // Handle second round fetch
             if (secondRoundResult.status === 'fulfilled' && secondRoundResult.value.ok) {
                 const secondRoundData = await secondRoundResult.value.json();
-                setSecondRoundDropZones(secondRoundData.dropZones || {});
+                setSecondRoundDropZones(secondRoundData.groups || {});
             } else {
                 console.error('Second round fetch failed:', secondRoundResult.reason || await secondRoundResult.value.text());
-                setSecondRoundDropZones({
-                    box1: [],
-                    box2: [],
-                    box3: [],
-                    box4: [],
-                    box5: [],
-                });
+                setSecondRoundDropZones([]);
             }
 
             // Third Round
@@ -74,23 +63,42 @@ const Results = () => {
         fetchRoundData();
     }, [roomId]);
 
-    const renderDropZones = (dropZones, roundTitle) => (
+    const renderDropZones = (groups, roundTitle) => (
         <div>
-            <h3>{roundTitle} Drop Zones:</h3>
-            {Object.entries(dropZones).map(([zone, items]) => (
-                <div key={zone} className="drop-zone">
-                    <h4>{zone}:</h4>
-                    {items.length > 0 ? (
-                        <ul>
-                            {items.map((item, index) => (
-                                <li key={index}>{item.category || 'Unnamed Item'}</li>
-                            ))}
-                        </ul>
-                    ) : (
-                        <p>Empty</p>
-                    )}
-                </div>
-            ))}
+            <h3>{roundTitle} Groups:</h3>
+            {groups.length > 0 ? (
+                groups.map((group, gIndex) => (
+                    <div key={gIndex} className="group-section">
+                        <h4>Group {group.groupNumber}</h4>
+                        {Object.entries(group.dropZones || {}).map(([zone, items]) => (
+                            <div key={zone} className="drop-zone">
+                                <h5>{zone}:</h5>
+                                {items.length > 0 ? (
+                                    <ul>
+                                        {items.map((item, index) => (
+                                            <li key={index}>{item.category || 'Unnamed Item'}</li>
+                                        ))}
+                                    </ul>
+                                ) : (
+                                    <p>Empty</p>
+                                )}
+                            </div>
+                        ))}
+                        {group.messages && group.messages.length > 0 && (
+                            <div className="messages">
+                                <h5>Messages:</h5>
+                                <ul>
+                                    {group.messages.map((msg, i) => (
+                                        <li key={i}>{msg}</li>
+                                    ))}
+                                </ul>
+                            </div>
+                        )}
+                    </div>
+                ))
+            ) : (
+                <p>No groups found for {roundTitle}</p>
+            )}
         </div>
     );
 
@@ -100,25 +108,35 @@ const Results = () => {
         <div>
             <h3>Third Round Cards:</h3>
             {cards.length > 0 ? (
-                cards.map((cardData) => (
-                    <div key={cardData._id} className="card">
-                        <h4>Category: {cardData.card.category}</h4>
-                        <h5>Subcategory: {cardData.card.subcategory}</h5>
+                cards.map((cardData, index) => (
+                    <div key={index} className="card">
+                        <h4>Category: {cardData.card.category || 'Unknown'}</h4>
+                        <h5>Subcategory: {cardData.card.subcategory || 'Unknown'}</h5>
                         <div className="votes">
-                            <p>Agree Votes: {cardData.votes.agree.count}</p>
-                            <p>Disagree Votes: {cardData.votes.disagree.count}</p>
+                            {Object.keys(cardData.votes).length > 0 ? (
+                                Object.entries(cardData.votes).map(([option, voteData]) => (
+                                    <div key={option}>
+                                        <p>{option} Votes: {voteData.count}</p>
+                                        <p>German: {voteData.nationalities.german || 0}</p>
+                                        <p>Dutch: {voteData.nationalities.dutch || 0}</p>
+                                        <p>Other: {voteData.nationalities.other || 0}</p>
+                                    </div>
+                                ))
+                            ) : (
+                                <p>No votes recorded.</p>
+                            )}
                         </div>
                         <div className="options">
                             <h5>Options (NL):</h5>
                             <ul>
-                                {cardData.card.options.nl.map((option, index) => (
-                                    <li key={`nl-${index}`}>{option}</li>
+                                {(cardData.card.options?.nl || []).map((option, nlIndex) => (
+                                    <li key={`nl-${nlIndex}`}>{option}</li>
                                 ))}
                             </ul>
                             <h5>Options (DE):</h5>
                             <ul>
-                                {cardData.card.options.de.map((option, index) => (
-                                    <li key={`de-${index}`}>{option}</li>
+                                {(cardData.card.options?.de || []).map((option, deIndex) => (
+                                    <li key={`de-${deIndex}`}>{option}</li>
                                 ))}
                             </ul>
                         </div>

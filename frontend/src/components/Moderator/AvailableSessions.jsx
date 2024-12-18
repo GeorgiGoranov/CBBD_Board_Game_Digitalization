@@ -37,7 +37,8 @@ const AvailableSessions = () => {
           
             alert(`Session ${session.code} is INACTIVE and cannot be joined.`);
         }else{
-            navigate(`/room/${session.code}`);
+            // navigate(`/room/${session.code}`);
+            navigate(`/lobby/${session.code}`)
 
         }
 

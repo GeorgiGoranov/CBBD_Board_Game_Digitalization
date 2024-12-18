@@ -1,0 +1,32 @@
+.lobby-container{
+    display: flex;
+    justify-content: space-between;
+    max-width: 1000px;
+}
+
+.test-layout{
+    display: flex;
+    flex-direction: column;
+    
+}
+
+.player-columns {
+    display: flex;
+    gap: 20px;
+}
+
+
+
+ul {
+
+    padding: 0;
+}
+
+.btn{
+    width: 200px;
+}
+
+.moderator-layout{
+    display: flex;
+
+}

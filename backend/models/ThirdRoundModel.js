@@ -12,26 +12,8 @@ const ThirdRoomSchema = new Schema({
             required: true,
         },
         votes: {
-            agree: {
-                count: {
-                    type: Number,
-                    default: 0,
-                },
-                playerID: {
-                    type: [String],
-                    default: [],
-                },
-            },
-            disagree: {
-                count: {
-                    type: Number,
-                    default: 0,
-                },
-                playerID: {
-                    type: [String],
-                    default: [],
-                },
-            },
+            type: Object,
+            default: {}, // Store votes as a regular object
         },
     }],
 }, { timestamps: true });
