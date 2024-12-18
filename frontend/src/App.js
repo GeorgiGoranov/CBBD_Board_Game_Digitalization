@@ -30,8 +30,13 @@ function App() {
           <LanguageProvider>
 
             <NavBar />
+              {console.log("below nav")}
             <div className="pages">
+            {console.log("bin pages")}
+
               <Routes>
+              {console.log("in routes")}
+
                 <Route path="/" element={<Login />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/lobby/:roomId" element={<Lobby />} />
