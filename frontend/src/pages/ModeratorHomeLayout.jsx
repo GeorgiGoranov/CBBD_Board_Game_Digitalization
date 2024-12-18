@@ -16,7 +16,7 @@ const Home = () => {
 
   const createGameSession = async () => {
 
-    const response = await fetch('/api/routes/create-session', {
+    const response = await fetch('https://cbbd-board-game-digitalization.onrender.com/api/routes/create-session', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
