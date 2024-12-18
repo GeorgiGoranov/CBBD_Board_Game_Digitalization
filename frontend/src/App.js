@@ -30,7 +30,6 @@ function App() {
           <LanguageProvider>
 
             <NavBar />
-            <ModeratorHomeLayout/>
             {console.log("below nav")}
             <div className="pages">
               {console.log("bin pages")}
@@ -44,7 +43,7 @@ function App() {
 
                 <Route path="/duser" element={<ParticipantHomeLayout />} />
                 <Route path="/room/:roomId" element={<Room />} />
-                <Route path="/muser" element={<ProtectedRoute allowedRoles={['admin']}><ModeratorHomeLayout /></ProtectedRoute>} />
+                <Route path="/muser" element={<ModeratorHomeLayout /> }/>
                 <Route path="/additions" element={<ProtectedRoute allowedRoles={['admin']} ><Additions /></ProtectedRoute>} />
                 <Route path="/results" element={<ProtectedRoute allowedRoles={['admin']} ><Results /></ProtectedRoute>} />
                 {/* component routes below*/}
