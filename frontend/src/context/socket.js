@@ -5,7 +5,7 @@ let socket;
 const initSocket = () => {
   if (!socket) {
     // Initialize the WebSocket connection with autoConnect disabled
-    socket = io('http://localhost:4000', {
+    socket = io('https://cbbd-board-game-digitalization.onrender.com', {
       autoConnect: false, 
       transports: ['websocket'], // Prevents auto connection when imported
     });

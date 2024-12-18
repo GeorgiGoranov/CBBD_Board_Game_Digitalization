@@ -30,7 +30,7 @@ const Room = () => {
     const [adminMessage, setAdminMessage] = useState('');
     const [targetGroup, setTargetGroup] = useState('');
     // const [socketMessage, setSocketMessage] = useState(''); // This can be used to display socket events
-
+  const [nationality, setNationality] = useState('')
 
 
     if (!socketRef.current) {
@@ -56,6 +56,7 @@ const Room = () => {
                     setRole(data.role);
                     setPlayerID(data.name);
                     setGroup(data.group)
+                    setNationality(data.nationality);
 
                 } else {
                     navigate('/duser')
@@ -215,7 +216,7 @@ const Room = () => {
             {currentRound === 3 && (
                 <div>
                     Round 3
-                    <RoundThree roomId={roomId} playerID={playerID} socket={socket} role={role} />
+                    <RoundThree roomId={roomId} playerID={playerID} socket={socket} role={role} nationality={nationality} />
 
                 </div>
             )}

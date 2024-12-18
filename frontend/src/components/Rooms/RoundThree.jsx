@@ -3,7 +3,7 @@ import { useLanguage } from '../../context/LanguageContext';
 import "../../SCSS/roundThree.scss"
     ;
 
-const RoundThree = ({ roomId, playerID, socket, role }) => {
+const RoundThree = ({ roomId, playerID, socket, role, nationality }) => {
     const [card, setCard] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -13,7 +13,7 @@ const RoundThree = ({ roomId, playerID, socket, role }) => {
 
     const saveState = useCallback(async (currentCard, currentVote) => {
         try {
-            const body = {roomId,playerID}
+            const body = { roomId, playerID, nationality }
 
             if (currentCard) {
                 body.card = currentCard;
@@ -37,7 +37,7 @@ const RoundThree = ({ roomId, playerID, socket, role }) => {
         } catch (error) {
             console.error('Error saving state:', error);
         }
-    }, [roomId, playerID]);
+    }, [roomId, playerID, nationality]);
 
     const fetchRandomCard = async () => {
         try {
@@ -66,6 +66,11 @@ const RoundThree = ({ roomId, playerID, socket, role }) => {
     };
 
     const handleVote = (option) => {
+        if (role === 'admin') {
+            // Prevent admins from voting
+            alert('Admins are not allowed to vote');
+            return;
+        }
         socket.emit('vote', { vote: option, roomId });
         setUserVote(option); // Store the user's selected option
         saveState(null, option); // Save the selected option
@@ -107,9 +112,9 @@ const RoundThree = ({ roomId, playerID, socket, role }) => {
                         <div
                             key={index}
                             className={`option-item-dilemma ${userVote === option ? 'voted' : ''}`}
-                            onClick={() => userVote === null && handleVote(option)}
+                            onClick={() => userVote === null && role !== 'admin' && handleVote(option)}
                             style={{
-                                cursor: userVote === null ? "pointer" : "not-allowed",
+                                cursor: userVote === null && role !== 'admin' ? "pointer" : "not-allowed",
                                 backgroundColor: userVote === option ? "#cce5ff" : ""
                             }}
                         >

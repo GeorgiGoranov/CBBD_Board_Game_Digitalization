@@ -5,7 +5,7 @@ module.exports = function(app) {
   app.use(
     '/api',
     createProxyMiddleware({
-      target: 'http://localhost:4000/api',  // Your backend server URL
+      target: 'https://cbbd-board-game-digitalization.onrender.com',  // Your backend server URL
       changeOrigin: true,
       credentials: 'include'
     })
@@ -15,7 +15,7 @@ module.exports = function(app) {
    app.use(
     '/socket.io',  // WebSocket connections handled here
     createProxyMiddleware({
-      target: 'http://localhost:4000',  // Backend server URL
+      target: 'https://cbbd-board-game-digitalization.onrender.com',  // Backend server URL
       changeOrigin: true,
       ws: true,  // Enable WebSocket proxying
     })

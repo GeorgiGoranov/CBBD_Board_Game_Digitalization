@@ -63,7 +63,7 @@ const saveRoomStateMode = (RoundModel) => {
 
 const saveThirdRoomStateMode = (RoundModel) => {
     return async (req, res) => {
-        const { roomId, card, vote, playerID } = req.body;
+        const { roomId, card, vote, playerID, nationality } = req.body;
 
         try {
             // Find the room by roomId
@@ -93,16 +93,27 @@ const saveThirdRoomStateMode = (RoundModel) => {
                 const lastCardIndex = round.cards.length - 1;
                 const lastCard = round.cards[lastCardIndex];
 
-                // Initialize vote data for this option if it doesn't exist
+                // Initialize the vote option if it doesn't exist
                 if (!lastCard.votes[vote]) {
-                    lastCard.votes[vote] = { count: 0, playerID: [] };
+                    lastCard.votes[vote] = {
+                        count: 0,
+                        playerID: [],
+                        nationalities: {
+                            german: 0,
+                            dutch: 0,
+                            other: 0
+                        }
+                    };
                 }
 
-                // Update the vote count and the list of player IDs who voted for this option
-                lastCard.votes[vote].count += 1;
-                lastCard.votes[vote].playerID.push(playerID);
+                // Update nationality count
+                if (!lastCard.votes[vote].nationalities[nationality]) {
+                    // If nationality doesn't match these three, categorize as 'other'
+                    // or adjust logic to handle only these three known categories
+                    lastCard.votes[vote].nationalities[nationality] = 0;
+                }
+                lastCard.votes[vote].nationalities[nationality] += 1;
 
-                // Assign updated card back to the array (usually not strictly necessary)
                 round.cards[lastCardIndex] = lastCard;
             }
 
@@ -115,9 +126,6 @@ const saveThirdRoomStateMode = (RoundModel) => {
         }
     };
 };
-
-module.exports = saveThirdRoomStateMode;
-
 
 
 const getRoomStateMode = (RoundModel) => {
