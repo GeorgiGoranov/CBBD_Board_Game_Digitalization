@@ -4,7 +4,7 @@ import NavBar from './components/Navbar';
 import Register from './pages/Register';
 import Login from './pages/Login';
 import ParticipantHomeLayout
- from './pages/ParticipantHomeLayout';
+  from './pages/ParticipantHomeLayout';
 import Room from './pages/Room';
 import ProtectedRoute from './components/ProtectedRoute';
 import { AuthProvider } from './auth/authContext';
@@ -30,18 +30,19 @@ function App() {
           <LanguageProvider>
 
             <NavBar />
-              {console.log("below nav")}
+            <ModeratorHomeLayout/>
+            {console.log("below nav")}
             <div className="pages">
-            {console.log("bin pages")}
+              {console.log("bin pages")}
 
               <Routes>
-              {console.log("in routes")}
+                {console.log("in routes")}
 
                 <Route path="/" element={<Login />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/lobby/:roomId" element={<Lobby />} />
 
-                <Route path="/duser" element={<ParticipantHomeLayout/>} />
+                <Route path="/duser" element={<ParticipantHomeLayout />} />
                 <Route path="/room/:roomId" element={<Room />} />
                 <Route path="/muser" element={<ProtectedRoute allowedRoles={['admin']}><ModeratorHomeLayout /></ProtectedRoute>} />
                 <Route path="/additions" element={<ProtectedRoute allowedRoles={['admin']} ><Additions /></ProtectedRoute>} />
