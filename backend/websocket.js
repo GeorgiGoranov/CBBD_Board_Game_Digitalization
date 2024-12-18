@@ -13,7 +13,7 @@ const roomVotes = {}; // Store votes per room: { [roomId]: { agree: number, disa
 function setupWebSocket(server) {
   const io = new Server(server, {
     cors: {
-      origin: 'http://localhost:3000',
+      origin: 'https://cbbd-board-game-digitalization-1.onrender.com',
       methods: ["GET", "POST"],
       credentials: true, // Enable credentials (cookies, authorization headers)
     }
