@@ -256,51 +256,53 @@ const generateObjectIdForParticipants = () => {
 
 }
 
-const isAuth = (req, res) => {
+const isAuth = (req, res, next) => {
     const token = req.cookies.jwt;
-  
+
     if (!token) {
-      return res.status(200).json({ authenticated: false });
-    }
-  
-    jwt.verify(token, process.env.SECRET_KEY, async (error, decodedToken) => {
-      if (error) {
         return res.status(200).json({ authenticated: false });
-      }
-  
-      if (!mongoose.Types.ObjectId.isValid(decodedToken.id)) {
-        return res.status(200).json({ authenticated: false, error: "Invalid user ID" });
-      }
-  
-      try {
-        const user = await User.findById(decodedToken.id).select('-password');
-        if (!user) {
-          return res.status(200).json({ authenticated: false });
+    }
+
+    jwt.verify(token, process.env.SECRET_KEY, async (error, decodedToken) => {
+        if (error) {
+            return res.status(200).json({ authenticated: false });
         }
-  
-        req.user = {
-          id: user._id,
-          role: user.role,
-          name: user.name,
-        };
-  
-        // Always return a response
-        if (user.role === 'admin') {
-          return res.status(200).json({ authenticated: true, user: req.user });
-        } else {
-          // If user is not admin, also return authenticated
-          if (decodedToken.sessionCode) {
-            req.user.sessionCode = decodedToken.sessionCode;
-          }
-          return res.status(200).json({ authenticated: true, user: req.user });
+
+        // Validate the decodedToken.id to ensure it's a valid ObjectId
+        if (!mongoose.Types.ObjectId.isValid(decodedToken.id)) {
+            console.warn("Invalid object name!", decodedToken.id);
+            return res.status(200).json({ authenticated: false, error: "Invalid user ID" });
         }
-      } catch (error) {
-        console.error('Error fetching user: ', error);
-        return res.status(500).json({ authenticated: false });
-      }
+
+        try {
+            const user = await User.findById(decodedToken.id).select('-password');
+
+            if (!user) {
+                return res.status(200).json({ authenticated: false });
+            }
+
+            req.user = {
+                id: user._id,
+                role: user.role,
+                name: user.name,
+            };
+
+            if (user.role === 'admin') {
+                return res.status(200).json({ authenticated: true, user: req.user });
+            }
+            // Include sessionCode only if it's provided in the token
+            if (decodedToken.sessionCode) {
+                req.user.sessionCode = decodedToken.sessionCode;
+            }
+
+            next();
+            // res.status(200).json({ authenticated: true, user })
+        } catch (error) {
+            console.error('Error fetching user: ', error);
+            res.status(500).json({ authenticated: false });
+        }
     });
-  };
-  
+};
 
 const logOut = async (req, res) => {
     res.cookie("jwt", "", { maxAge: 1 });
