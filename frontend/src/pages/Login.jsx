@@ -2,7 +2,8 @@ import { useState, useEffect } from "react"
 import '../SCSS/login.scss'
 import { useNavigate } from "react-router-dom";
 import { useAuth } from '../auth/authContext';
-const API_URL = process.env.BACKEND_URL;
+const API_URL = process.env.REACT_APP_BACKEND_URL;
+
 
 const Login = () => {
   const [email, setEmail] = useState('');

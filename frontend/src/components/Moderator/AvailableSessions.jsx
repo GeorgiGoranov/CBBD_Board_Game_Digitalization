@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import "../../SCSS/availableSessions.scss"
 import { useSessionsContext } from '../../hooks/useSessionContext';
 import { useNavigate } from 'react-router-dom';
+const API_URL = process.env.REACT_APP_BACKEND_URL;
 
 
 const AvailableSessions = () => {
@@ -16,7 +17,7 @@ const AvailableSessions = () => {
         // Function to fetch available sessions
         const fetchSessions = async () => {
             try {
-                const response = await fetch('https://cbbd-board-game-digitalization.onrender.com/api/routes/available-sessions');
+                const response = await fetch(`${API_URL}/api/routes/available-sessions`);
                 if (!response.ok) {
                     throw new Error('Error fetching sessions');
                 }
