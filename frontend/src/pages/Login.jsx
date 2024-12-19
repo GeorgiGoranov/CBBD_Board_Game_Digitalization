@@ -53,11 +53,9 @@ const Login = () => {
         // Navigate based on the role of the logged-in user
        
         if (data.user && data.user.role === 'admin') {
-          window.location.assign('/muser');
-
+          navigate('/muser');
         } else {
-          window.location.assign('/muser');
-
+          navigate('/duser');
         }
       }
     } catch (error) {
