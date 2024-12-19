@@ -61,7 +61,7 @@ const Results = () => {
 
     useEffect(() => {
         fetchRoundData();
-    }, [roomId]);
+    }, [roomId,fetchRoundData]);
 
     const renderDropZones = (groups, roundTitle) => (
         <div>

@@ -61,9 +61,9 @@ const RoundThree = ({ roomId, playerID, socket, role, nationality }) => {
         }
     };
 
-    const handleNextDilemma = () => {
-        fetchRandomCard()
-    };
+    // const handleNextDilemma = () => {
+    //     fetchRandomCard()
+    // };
 
     const handleVote = (option) => {
         if (role === 'admin') {
@@ -78,7 +78,7 @@ const RoundThree = ({ roomId, playerID, socket, role, nationality }) => {
 
     useEffect(() => {
         fetchRandomCard()
-    }, [])
+    }, [fetchRandomCard])
 
     useEffect(() => {
 
