@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react"
 import '../SCSS/login.scss'
 import { useNavigate } from "react-router-dom";
-// import { useAuth } from '../auth/authContext';
+import { useAuth } from '../auth/authContext';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -10,14 +10,14 @@ const Login = () => {
   const [loginSuccess, setLoginSuccess] = useState(false);
 
   const navigate = useNavigate()
-  // const { isAuthenticated, login } = useAuth();
+  const { isAuthenticated, login } = useAuth();
 
-  // // Check if user is already logged in and redirect to home if so
-  // useEffect(() => {
-  //   if (isAuthenticated) {
-  //     navigate('/muser')
-  //   }
-  // }, [isAuthenticated, navigate]);
+  // Check if user is already logged in and redirect to home if so
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/muser')
+    }
+  }, [isAuthenticated, navigate]);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -49,7 +49,7 @@ const Login = () => {
         setLoginSuccess(true);
         console.log('User logged in', data);
 
-        // await login()
+        await login()
         // Navigate based on the role of the logged-in user
        
         if (data.user && data.user.role === 'admin') {
