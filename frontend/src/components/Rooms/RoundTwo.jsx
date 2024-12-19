@@ -175,7 +175,7 @@ const RoundTwo = ({ roomId, playerID, socket, group }) => {
         } catch (error) {
             console.error('Error saving state:', error);
         }
-    }, [roomId, dropZones,group, socketMessage])
+    }, [roomId, dropZones])
 
 
 
@@ -296,7 +296,7 @@ const RoundTwo = ({ roomId, playerID, socket, group }) => {
             socket.off('dragDropUpdate');
             socket.off('receiveGroupMessage');
         };
-    }, [socket, playerID]);
+    }, [socket]);
 
     useEffect(() => {
 

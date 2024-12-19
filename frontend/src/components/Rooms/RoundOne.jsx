@@ -143,7 +143,7 @@ const RoundOne = ({ roomId, playerID, socket, group }) => {
         } catch (error) {
             console.error('Error saving state:', error);
         }
-    }, [roomId, categories, dropZones, group,socketMessage])
+    }, [roomId, categories, dropZones, group])
 
     useEffect(() => {
         const fetchCategories = async () => {
@@ -224,7 +224,7 @@ const RoundOne = ({ roomId, playerID, socket, group }) => {
             socket.off('dragDropUpdate');
             socket.off('receiveGroupMessage');
         }
-    }, [socket, playerID])
+    }, [socket])
 
     useEffect(() => {
 
@@ -245,7 +245,7 @@ const RoundOne = ({ roomId, playerID, socket, group }) => {
             document.removeEventListener('mousemove', handleMouseMove);
         };
 
-    }, [playerID, roomId, socket, group])
+    }, [playerID, roomId, socket])
 
 
     useEffect(() => {

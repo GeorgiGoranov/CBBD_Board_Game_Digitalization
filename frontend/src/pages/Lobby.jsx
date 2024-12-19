@@ -132,7 +132,7 @@ const Lobby = () => {
             socket.off('playerLeftRoom');
 
         };
-    }, [socket, groupedPlayers,navigate,playerID]);
+    }, [socket]);
 
     useEffect(() => {
         socket.on('updateTokens', async ({ groupedPlayers }) => {
@@ -253,7 +253,7 @@ const Lobby = () => {
             socket.emit('joinSession', { playerID, nationality, gameCode: roomId });
         }
 
-    }, [playerID, roomId, socket, nationality])
+    }, [playerID, roomId, socket])
 
     // Function to handle drag end event
     const onDragEnd = (result) => {
