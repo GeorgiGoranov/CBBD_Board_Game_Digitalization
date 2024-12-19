@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-// import { useAuth } from '../auth/authContext';
+import { useAuth } from '../auth/authContext';
 import { useLanguage } from '../context/LanguageContext';
 
 const NavBar = () => {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const navigate = useNavigate();
-  // const {isAuthenticated, logout } = useAuth();
+  const {isAuthenticated, logout } = useAuth();
   const {language, setLanguage} = useLanguage()
 
   const handleLogout = async () => {
@@ -20,7 +20,7 @@ const NavBar = () => {
       });
 
       if (response.ok) {
-        // await logout();  // Clear user context
+        await logout();  // Clear user context
         navigate('/');  // Redirect to login after logout
       } else {
         console.error('Logout failed');
@@ -46,7 +46,7 @@ const NavBar = () => {
               <option value="de">de</option>
               <option value="nl">nl</option>
             </select>
-            {/* {isAuthenticated && (
+            {isAuthenticated && (
               <button
                 onClick={handleLogout}
                 disabled={isLoggingOut}
@@ -57,7 +57,7 @@ const NavBar = () => {
               >
                 {isLoggingOut ? 'Logging out...' : 'Log Out'}
               </button>
-            )} */}
+            )}
           </div>
         </div>
       </div>
