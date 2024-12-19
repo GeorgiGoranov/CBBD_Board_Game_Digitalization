@@ -49,7 +49,7 @@ const AvailableSessions = () => {
     const handleDeleteClick = async (sessionCode) => {
         console.log(sessionCode)
         try {
-            const response = await fetch(`https://cbbd-board-game-digitalization.onrender.com/api/routes/delete-session/${sessionCode}`, {
+            const response = await fetch(`${API_URL}/api/routes/delete-session/${sessionCode}`, {
                 method: 'DELETE',
             });
             if (!response.ok) {
@@ -67,7 +67,7 @@ const AvailableSessions = () => {
     const handleActivityClick = async (sessionCode) => {
         try {
             // Send request to backend to toggle activity
-            const response = await fetch(`https://cbbd-board-game-digitalization.onrender.com/api/routes/toggle-activity/${sessionCode}`, {
+            const response = await fetch(`${API_URL}/api/routes/toggle-activity/${sessionCode}`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
             });

@@ -106,11 +106,9 @@ const getUserLogin = async (req, res) => {
             return res.status(401).json({ error: "Invalid credentials" });
         }
 
-        const token = createToken(user._id, user.role, user.username);
+        const token = createToken(user._id, user.role, user.username, user.nationality);
 
-        res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000,sameSite: 'None',secure: true }); // cookie operates in milisecond and not in minutes
-
-        console.log(token)
+        res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 }); // cookie operates in milisecond and not in minutes
 
         res.status(200).json({ message: "Login successful", user: { _id: user._id, role: user.role }, token });
     } catch (error) {
@@ -118,6 +116,7 @@ const getUserLogin = async (req, res) => {
         res.status(500).json({ message: "Server error" });
     }
 };
+
 
 const generateCode = () => {
     return Math.floor(100000 + Math.random() * 900000).toString(); // Generates a random 6-digit number
@@ -298,7 +297,7 @@ const isAuth = (req, res, next) => {
             }
 
             next();
-            res.status(200).json({ authenticated: true, user })
+            // res.status(200).json({ authenticated: true, user })
         } catch (error) {
             console.error('Error fetching user: ', error);
             res.status(500).json({ authenticated: false });
