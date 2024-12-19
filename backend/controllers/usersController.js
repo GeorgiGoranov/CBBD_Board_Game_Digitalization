@@ -108,7 +108,7 @@ const getUserLogin = async (req, res) => {
 
         const token = createToken(user._id, user.role, user.username, user.nationality);
 
-        res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 }); // cookie operates in milisecond and not in minutes
+        res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000,sameSite: 'None', }); // cookie operates in milisecond and not in minutes
 
         console.log(token)
 
@@ -298,7 +298,7 @@ const isAuth = (req, res, next) => {
             }
 
             next();
-            // res.status(200).json({ authenticated: true, user })
+            res.status(200).json({ authenticated: true, user })
         } catch (error) {
             console.error('Error fetching user: ', error);
             res.status(500).json({ authenticated: false });

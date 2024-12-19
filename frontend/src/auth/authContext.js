@@ -10,8 +10,21 @@ export const AuthProvider = ({ children }) => {
 
   const login = async () => {
     const authStatus = await isAuthenticated();
-    setAuthState({ ...authStatus, loading: false });
+    if (authStatus.isAuthenticated) {
+      setAuthState({
+        isAuthenticated: true,
+        user: authStatus.user,
+        loading: false
+      });
+    } else {
+      setAuthState({
+        isAuthenticated: false,
+        user: null,
+        loading: false
+      });
+    }
   };
+
 
   const logout = () => {
     setAuthState({ isAuthenticated: false, user: null, loading: false });
