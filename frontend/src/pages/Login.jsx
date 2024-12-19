@@ -2,6 +2,7 @@ import { useState, useEffect } from "react"
 import '../SCSS/login.scss'
 import { useNavigate } from "react-router-dom";
 import { useAuth } from '../auth/authContext';
+const API_URL = process.env.BACKEND_URL;
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -29,7 +30,7 @@ const Login = () => {
 
 
     try {
-      const response = await fetch('https://cbbd-board-game-digitalization.onrender.com/api/routes/login', {
+      const response = await fetch(`${API_URL}/api/routes/login`, {
         method: 'POST',
         body: JSON.stringify(userLogin),
         headers: {
