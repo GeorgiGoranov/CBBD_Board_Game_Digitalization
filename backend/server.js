@@ -9,9 +9,6 @@ const cors = require('cors');
 const cookieParser = require('cookie-parser')
 const http = require('http')
 
-import path from 'path'
-
-
 // Import WebSocket setup
 const setupWebSocket = require('./websocket')
 
@@ -19,13 +16,6 @@ const setupWebSocket = require('./websocket')
 const app = express()
 
 const server = http.createServer(app)
-
-const __dirname = path.resolve()
-app.use(express.static(path.join(__dirname), '/build/static'))
-
-app.get('*', (req,res) =>{
-  res.sendFile(path.join(__dirname, 'build', 'static', 'index.html'))
-})
 
 app.use((req, res, next) => {
   console.log(req.path, req.method)
