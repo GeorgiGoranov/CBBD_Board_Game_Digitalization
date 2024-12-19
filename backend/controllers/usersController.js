@@ -108,7 +108,7 @@ const getUserLogin = async (req, res) => {
 
         const token = createToken(user._id, user.role, user.username, user.nationality);
 
-        res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000,secure: process.env.NODE_ENV === 'production',sameSite: 'Strict' }); // cookie operates in milisecond and not in minutes
+        res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 }); // cookie operates in milisecond and not in minutes
 
         console.log(token)
 
