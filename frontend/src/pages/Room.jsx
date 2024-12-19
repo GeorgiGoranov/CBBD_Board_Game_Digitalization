@@ -16,10 +16,10 @@ import RoundThree from '../components/Rooms/RoundThree';
 const Room = () => {
     const { roomId } = useParams(); // Fetch roomId from the URL
     const [playerID, setPlayerID] = useState('');
-    const [message, setMessage] = useState('');
+    // const [message, setMessage] = useState('');
     const socketRef = useRef();
 
-    const [players, setPlayers] = useState([]);
+    // const [players, setPlayers] = useState([]);
     const [role, setRole] = useState(null); // Role state to determine layout
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate()
@@ -87,7 +87,7 @@ const Room = () => {
 
         // Listen for new players joining the session
         socket.on('playerJoined', (data) => {
-            setPlayers(players);  // Update the players state with the updated list
+            // setPlayers(players);  // Update the players state with the updated list
             setMessage(`${data.playerID} joined the game!`);
         });
 
