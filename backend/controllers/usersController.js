@@ -110,6 +110,8 @@ const getUserLogin = async (req, res) => {
 
         res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000,secure: true,sameSite: 'Strict' }); // cookie operates in milisecond and not in minutes
 
+        console.log(token)
+
         res.status(200).json({ message: "Login successful", user: { _id: user._id, role: user.role }, token });
     } catch (error) {
         console.error(error);
