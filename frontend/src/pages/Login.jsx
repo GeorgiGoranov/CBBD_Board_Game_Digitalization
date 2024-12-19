@@ -51,9 +51,6 @@ const Login = () => {
 
         await login()
         // Navigate based on the role of the logged-in user
-
-        localStorage.setItem('jwt', data.token); // Save token to localStorage or sessionStorage
-        console.log('JWT stored:', data.token);
        
         if (data.user && data.user.role === 'admin') {
           navigate('/muser');
