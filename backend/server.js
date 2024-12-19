@@ -29,7 +29,7 @@ const io = setupWebSocket(server)
 app.use(cookieParser())
 app.use(express.json()) //looks if there is an audit to the request/ if data was sent in to the server
 app.use(cors({
-  origin: 'https://cbbd-board-game-digitalization-1.onrender.com',  // The exact URL of your frontend
+  origin: 'http://localhost:3000',  // The exact URL of your frontend
   methods: ["GET", "POST"],
   credentials: true,
 }));

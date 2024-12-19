@@ -16,7 +16,7 @@ const AvailableSessions = () => {
         // Function to fetch available sessions
         const fetchSessions = async () => {
             try {
-                const response = await fetch('/api/routes/available-sessions');
+                const response = await fetch('https://cbbd-board-game-digitalization.onrender.com/api/routes/available-sessions');
                 if (!response.ok) {
                     throw new Error('Error fetching sessions');
                 }
@@ -48,7 +48,7 @@ const AvailableSessions = () => {
     const handleDeleteClick = async (sessionCode) => {
         console.log(sessionCode)
         try {
-            const response = await fetch(`/api/routes/delete-session/${sessionCode}`, {
+            const response = await fetch(`https://cbbd-board-game-digitalization.onrender.com/api/routes/delete-session/${sessionCode}`, {
                 method: 'DELETE',
             });
             if (!response.ok) {
@@ -66,7 +66,7 @@ const AvailableSessions = () => {
     const handleActivityClick = async (sessionCode) => {
         try {
             // Send request to backend to toggle activity
-            const response = await fetch(`/api/routes/toggle-activity/${sessionCode}`, {
+            const response = await fetch(`https://cbbd-board-game-digitalization.onrender.com/api/routes/toggle-activity/${sessionCode}`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
             });
