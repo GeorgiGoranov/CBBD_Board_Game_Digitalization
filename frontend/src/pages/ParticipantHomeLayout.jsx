@@ -27,7 +27,6 @@ const HomeDefautUser = () => {
     }, [socket]);
 
     const joinLobbySession = async () => {
-        console.warn(nationality)
 
         // Make a POST request to the backend to join the session
         const response = await fetch('/api/routes/join-lobby-session', {

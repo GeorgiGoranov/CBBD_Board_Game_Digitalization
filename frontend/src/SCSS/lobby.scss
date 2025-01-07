@@ -10,15 +10,22 @@
     
 }
 
-.player-columns {
+.player-columns  {
     display: flex;
     gap: 20px;
+    
+}
+
+.german-players, .dutch-players, .international-players{
+    border: 2px solid var(--primary);
+    border-radius: 5%;
+    text-align: center;
+    padding: 20px;
 }
 
 
-
 ul {
-
+    list-style: none;
     padding: 0;
 }
 
@@ -29,4 +36,12 @@ ul {
 .moderator-layout{
     display: flex;
 
+}
+
+.message-to-room{
+    font-size: 1.25rem;
+}
+
+.test-layout{
+    font-size: 0.75rem;
 }

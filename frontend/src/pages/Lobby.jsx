@@ -101,7 +101,7 @@ const Lobby = () => {
                 filteredPlayers = playerList.filter(player => player.playerID !== playerID);
             }
 
-            setPlayers(filteredPlayers );  // Update the filtered players list
+            setPlayers(filteredPlayers);  // Update the filtered players list
 
             const allGroups = [];
             const nationalities = ['german', 'dutch', 'other'];
@@ -293,7 +293,6 @@ const Lobby = () => {
         <div className='lobby-container'>
             <div className='test-layout'>
                 <h1>Room ID: {roomId}</h1>
-                {message && <p>{message}</p>}
 
                 <h2>Players in the Room:</h2>
                 <div className="player-columns">
@@ -338,8 +337,6 @@ const Lobby = () => {
                 {role === 'admin' ? (
                     <div className='lobby-container'>
                         <div className='test-layout'>
-                            <h1>Room ID: {roomId}</h1>
-                            {message && <p>{message}</p>}
 
                             <h2>Players in the Room:</h2>
                             <DragDropContext onDragEnd={onDragEnd}>
@@ -399,8 +396,9 @@ const Lobby = () => {
                     </div>
                 ) : (
                     <div>
-                        <div>Player Layout for Room {roomId}
-                            You are a participant!
+                        <div>
+                            <h2>Lobby log:</h2>
+                            {message && <p className='message-to-room'>{message}</p>}
                         </div>
                     </div>
                 )}
