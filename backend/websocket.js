@@ -180,6 +180,13 @@ function setupWebSocket(server) {
       io.emit('updateVotes', votes); // Notify all clients to reset their vote counts
     });
 
+    socket.on('stopGame', (data) => {
+      const { roomId } = data;
+
+      // Broadcast 'gameStopped' to all sockets in roomId
+      io.to(roomId).emit('gameStopped');
+    });
+
     socket.on('disconnect', () => {
       console.log(`User back-end disconnected: ${socket.id}`);
 

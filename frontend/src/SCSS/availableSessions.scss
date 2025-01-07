@@ -43,15 +43,23 @@ p span{
 .bi.bi-x-circle{
    font-size: 1.5em;
    cursor: pointer;
+   color: var(--primary);
 }
 .bi.bi-play-btn-fill{
     font-size: 1.5em;
     cursor: pointer;
+    color: var(--primary);
 }
 .bi.bi-sliders{
     font-size: 1.5em;
     cursor: pointer;
+    color: var(--primary);
     
+}
+.bi.bi-book-half{
+    font-size: 1.75rem;
+    cursor: pointer;
+    color: var(--primary);
 }
 
 .container-for-activity{
@@ -63,9 +71,4 @@ p span{
 p.p-activity {
     margin: 0;
     padding: 0;
-}
-
-.bi.bi-book-half{
-    font-size: 1.75rem;
-    cursor: pointer;
 }

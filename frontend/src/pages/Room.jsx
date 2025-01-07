@@ -77,7 +77,7 @@ const Room = () => {
             fetchUserRole()
         }
     }, [userSessionCode, navigate, roomId])
-
+    
     useEffect(() => {
         // Connect the socket if it's not already connected
         if (!socket.connected) {
@@ -104,28 +104,29 @@ const Room = () => {
             console.log(`Round changed to ${roundNumber}`);
         });
 
+        socket.on('gameStopped', () => {
+            console.warn(role)
+            // Force them back to the start or wherever you want
+            if(role != 'admin'){
+                navigate('/duser');
+            }else{
+                navigate('/muser');
+            }
+            // or, navigate('/'), or any path you desire
+        });
+
         // Cleanup listener when the component unmounts
         return () => {
             socket.off('playerJoined'); // Remove the listener when the component unmounts
             socket.off('updatePlayerList');
             socket.off('playerLeftRoom');
             socket.off('roundChanged');
+            socket.off('gameStopped');
         };
-    }, [socket]);
+    }, [socket,role, navigate]);
 
-    // useEffect(() => {
-    //     const handleReceiveGroupMessage = ({ message }) => {
-    //         console.log("Group message received:", message);
-    //         setSocketMessage(`Recruitment Job: ${message}`);
-    //     };
-    //     socket.on('receiveGroupMessage', handleReceiveGroupMessage);
-
-    //     // No change in dependencies means this won't re-run unexpectedly
-    //     return () => {
-    //         socket.off('receiveGroupMessage', handleReceiveGroupMessage);
-    //     };
-    // }, [socket])
-
+    
+    
     useEffect(() => {
         if (playerID && roomId) {
             socket.emit('joinSession', { playerID, gameCode: roomId, group: String(group) });
@@ -145,7 +146,7 @@ const Room = () => {
                 group: targetGroup,
                 message: adminMessage
             });
-           
+
             setAdminMessage('');
             setTargetGroup('');
         }

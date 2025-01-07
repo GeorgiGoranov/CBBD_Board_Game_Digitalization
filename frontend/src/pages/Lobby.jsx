@@ -199,7 +199,6 @@ const Lobby = () => {
 
                 if (response.ok) {
                     console.log('Groups saved successfully!');
-                    alert('Groups have been saved.');
 
                     // Emit an event to update all players' tokens
                     socket.emit('updateTokens', {
@@ -226,7 +225,6 @@ const Lobby = () => {
                     if (updateResponse.ok) {
                         const data = await updateResponse.json();
                         console.log('Token updated successfully:', data);
-                        alert('Token updated successfully!');
                     } else {
                         const errorData = await updateResponse.json();
                         console.error('Error updating token:', errorData.message);

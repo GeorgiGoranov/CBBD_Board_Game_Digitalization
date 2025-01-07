@@ -306,7 +306,7 @@ const RoundOne = ({ roomId, playerID, socket, group }) => {
                                         ref={provided.innerRef}
                                         {...provided.droppableProps}
                                     >
-                                        <h2>Box {index + 1}</h2>
+                                        <h2 className='box-text'># {index + 1}</h2>
                                         {dropZones[box].map((item, itemIndex) => {
                                             const uniqueId = `${item.category}-${itemIndex}`;
                                             return (

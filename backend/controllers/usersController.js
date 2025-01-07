@@ -106,6 +106,7 @@ const getUserLogin = async (req, res) => {
             return res.status(401).json({ error: "Invalid credentials" });
         }
 
+
         const token = createToken(user._id, user.role, user.username, user.nationality);
 
         res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 }); // cookie operates in milisecond and not in minutes
@@ -124,7 +125,7 @@ const generateCode = () => {
 
 const createSession = async (req, res) => {
     try {
-        const host = req.user.id // Get the host name from the request
+        const host = req.user.name // Get the host name from the request
 
         // Generate a unique 6-digit code
         let sessionCode;
@@ -208,16 +209,11 @@ const updateTokenGroup = async (req, res) => {
     try {
         const { code, playerUsername, nationality, role, group } = req.body
 
-        console.log(code + "+" + playerUsername + "+" + nationality + "+" + role + "+" + group)
+        console.warn(code + "+" + playerUsername + "+" + nationality + "+" + role + "+" + group)
 
-        if (role === 'admin') {
-            const token = updateeToken(generateObjectIdForParticipants(), role, playerUsername, nationality, code, group);
-            res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 }); // cookie operates in milisecond and not in minutes
-
-        } else {
+        if (role != 'admin') {
             const token = updateeToken(generateObjectIdForParticipants(), 'user', playerUsername, nationality, code, group);
             res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 }); // cookie operates in milisecond and not in minutes
-
         }
 
         return res.status(200).json({ message: 'newToken' })

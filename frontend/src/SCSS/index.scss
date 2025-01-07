@@ -3,8 +3,9 @@
 
 /* layout */
 :root {
-  --primary: #1aac83;
+  --primary: #636;
   --error: #e7195a;
+  --lighter-pr: rgba(167, 107, 167, 0.322);
 }
 
 body {
@@ -13,10 +14,11 @@ body {
   font-family: "Poppins";
 }
 header {
-  background: #fff;
+  background: #636;
 }
 header .container h1{
  font-size: 1.5rem;
+ color: #fff;
 }
 header .container {
   max-width: 1400px;
