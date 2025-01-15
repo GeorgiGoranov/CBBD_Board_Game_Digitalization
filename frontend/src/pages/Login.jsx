@@ -65,11 +65,6 @@ const Login = () => {
 
   }
 
-  const gotonext = () => {
-      navigate('/muser')
-  }
-
-  
 
   return (
     <div className="login_container">
@@ -93,7 +88,6 @@ const Login = () => {
           <button type="submit" className='buttons'>Login</button>
         </form>
       </div>
-      <button onClick={gotonext}></button>
       {error && <div className="error">{error}</div>}
       {loginSuccess && <div className="success">Login successful!</div>}
     </div>
