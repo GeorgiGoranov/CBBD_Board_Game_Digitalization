@@ -112,7 +112,7 @@ const getUserLogin = async (req, res) => {
         res.cookie("jwt", token, {
             httpOnly: true,
             secure: "production",
-            sameSite: 'lax',
+            sameSite: 'none',
             maxAge: maxAge * 1000,
             path: '/',
             domain: 'https://cbbd-board-game-digitalization-1.onrender.com'
