@@ -1,5 +1,4 @@
 require('dotenv').config()
-require('dotenv').config({path: '../.env'})
 
 const express = require('express')
 const userRoutes = require('./routes/users')
@@ -45,7 +44,7 @@ mongoose.connect(process.env.MONG_URL_CBBD)
   .then(() => {
     //listener for requests
     server.listen(process.env.BACK_END_URL_HOST, () => {
-      
+
       console.log('SERVER IS RUNNING & connected to db & listening on port', process.env.BACK_END_URL_HOST)
     })
 
