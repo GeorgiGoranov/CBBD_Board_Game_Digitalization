@@ -60,7 +60,7 @@ const Login = () => {
         }
       }
     } catch (error) {
-      setError('An error occurred during login. Please try again.');
+      setError('An error occurred during login. Please try again. ' + error);
     }
 
   }
