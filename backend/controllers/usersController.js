@@ -112,7 +112,7 @@ const getUserLogin = async (req, res) => {
         res.cookie("jwt", token, {
             httpOnly: true,
             secure: true,
-            sameSite: 'lax',
+            sameSite: 'none',
             maxAge: maxAge * 1000,
         }); // cookie operates in milisecond and not in minutes
 
