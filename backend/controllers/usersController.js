@@ -109,7 +109,12 @@ const getUserLogin = async (req, res) => {
 
         const token = createToken(user._id, user.role, user.username, user.nationality);
 
-        res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 }); // cookie operates in milisecond and not in minutes
+        res.cookie("jwt", token, {
+            httpOnly: true,
+            secure: isProduction,
+            sameSite: isProduction ? "strict" : "lax", // Prevents CSRF attacks
+            maxAge: maxAge * 1000
+        }); // cookie operates in milisecond and not in minutes
 
         res.status(200).json({ message: "Login successful", user: { _id: user._id, role: user.role }, token });
     } catch (error) {
