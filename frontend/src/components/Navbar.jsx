@@ -30,6 +30,8 @@ const NavBar = () => {
       });
 
       if (response.ok) {
+        console.error('Logout!!');
+
         await logout();  // Clear user context
         navigate('/');  // Redirect to login after logout
       } else {
