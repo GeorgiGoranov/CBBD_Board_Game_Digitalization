@@ -1,9 +1,8 @@
-const apiUrl = process.env.REACT_APP_BACK_END_URL_HOST;
-console.log(apiUrl)
+
 
 export const isAuthenticated = async () => {
     try {
-        const response = await fetch(`${apiUrl}/api/routes/isAuth`,{
+        const response = await fetch(`https://cbbd-board-game-digitalization.onrender.com/api/routes/isAuth`,{
           method: 'GET',
           credentials: 'include', // Send cookies along with the request
         });
