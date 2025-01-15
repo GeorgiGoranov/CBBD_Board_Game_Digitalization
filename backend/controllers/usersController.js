@@ -278,30 +278,17 @@ const isAuth = (req, res, next) => {
         }
 
         try {
-            const user = await User.findById(decodedToken.id).select('-password');
-
+            const user = await User.findById(decodedToken.id).select("-password");
             if (!user) {
                 return res.status(200).json({ authenticated: false });
             }
 
-            req.user = {
-                id: user._id,
-                role: user.role,
-                name: user.name,
-            };
-
-            if (user.role === 'admin') {
-                return res.status(200).json({ authenticated: true, user: req.user });
-            }
-            // Include sessionCode only if it's provided in the token
-            if (decodedToken.sessionCode) {
-                req.user.sessionCode = decodedToken.sessionCode;
-            }
-
-            next();
-            // res.status(200).json({ authenticated: true, user })
+            res.status(200).json({
+                authenticated: true,
+                user: { id: user._id, role: user.role, name: user.name },
+            });
         } catch (error) {
-            console.error('Error fetching user: ', error);
+            console.error("Error fetching user:", error);
             res.status(500).json({ authenticated: false });
         }
     });
