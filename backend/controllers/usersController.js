@@ -258,14 +258,16 @@ const generateObjectIdForParticipants = () => {
 }
 
 const isAuth = (req, res, next) => {
+    console.log('Cookies:', req.cookies);
     const token = req.cookies.jwt;
 
     if (!token) {
-        return res.status(200).json({ authenticated: false, message: "Token is missing or ivalid" });
+        return res.status(200).json({ authenticated: false, message: "Token is missing or invalid" });
     }
 
     jwt.verify(token, process.env.SECRET_KEY, async (error, decodedToken) => {
         if (error) {
+            console.error('JWT verification error:', error.message);
             return res.status(200).json({ authenticated: false });
         }
 
