@@ -33,7 +33,6 @@ const allowedOrigins = [process.env.FRONT_END_URL_HOST, process.env.BACK_END_URL
 console.log("+++ ", allowedOrigins)
 app.use(cors({
   origin: allowedOrigins,
-  methods: ['GET','POST','OPTIONS'],
   credentials: true,
 }));
 
