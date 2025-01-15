@@ -112,7 +112,7 @@ const getUserLogin = async (req, res) => {
         res.cookie("jwt", token, {
             httpOnly: true,
             secure: "production",
-            sameSite: "production" ? "strict" : "lax", // Prevents CSRF attacks
+            sameSite: 'none',
             maxAge: maxAge * 1000
         }); // cookie operates in milisecond and not in minutes
 
@@ -260,7 +260,7 @@ const generateObjectIdForParticipants = () => {
 }
 
 const isAuth = (req, res, next) => {
-    console.log('Cookies:', req.cookies.jwt);
+    console.log('Cookies:', req.cookies);
     const token = req.cookies.jwt;
 
     if (!token) {
