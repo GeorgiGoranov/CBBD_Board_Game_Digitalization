@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import "../../SCSS/availableSessions.scss"
 import { useSessionsContext } from '../../hooks/useSessionContext';
 import { useNavigate } from 'react-router-dom';
+const apiUrl = process.env.REACT_APP_BACK_END_URL_HOST;
+
 
 
 const AvailableSessions = () => {
@@ -16,7 +18,7 @@ const AvailableSessions = () => {
         // Function to fetch available sessions
         const fetchSessions = async () => {
             try {
-                const response = await fetch('/api/routes/available-sessions');
+                const response = await fetch(`${apiUrl}/api/routes/available-sessions`);
                 if (!response.ok) {
                     throw new Error('Error fetching sessions');
                 }

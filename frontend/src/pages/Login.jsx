@@ -2,6 +2,7 @@ import { useState, useEffect } from "react"
 import '../SCSS/login.scss'
 import { useNavigate } from "react-router-dom";
 import { useAuth } from '../auth/authContext';
+const apiUrl = process.env.REACT_APP_BACK_END_URL_HOST;
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -29,7 +30,7 @@ const Login = () => {
 
 
     try {
-      const response = await fetch('/api/routes/login', {
+      const response = await fetch(`${apiUrl}/api/routes/login`, {
         method: 'POST',
         body: JSON.stringify(userLogin),
         headers: {

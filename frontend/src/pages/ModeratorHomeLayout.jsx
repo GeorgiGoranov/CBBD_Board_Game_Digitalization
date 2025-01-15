@@ -4,6 +4,7 @@ import AvailableSessions from '../components/Moderator/AvailableSessions';
 import { useSessionsContext } from '../hooks/useSessionContext';
 import "../SCSS/homeModerator.scss"
 import initSocket from '../context/socket';
+const apiUrl = process.env.REACT_APP_BACK_END_URL_HOST;
 
 const Home = () => {
 
@@ -16,7 +17,7 @@ const Home = () => {
 
   const createGameSession = async () => {
 
-    const response = await fetch('/api/routes/create-session', {
+    const response = await fetch(`${apiUrl}/api/routes/create-session`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
