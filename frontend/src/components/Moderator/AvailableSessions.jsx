@@ -15,6 +15,7 @@ const AvailableSessions = () => {
 
     // useEffect to fetch sessions when the component mounts
     useEffect(() => {
+        console.log(apiUrl)
         // Function to fetch available sessions
         const fetchSessions = async () => {
             try {
