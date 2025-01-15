@@ -31,7 +31,6 @@ app.use(express.json()) //looks if there is an audit to the request/ if data was
 app.use(cors());
 
 
-
 //route
 app.use('/api/routes', userRoutes)
 app.use('/api/cards', cardsAndSheetsRoutes)
@@ -43,7 +42,7 @@ app.use('/api/rounds', rounds)
 mongoose.connect(process.env.MONG_URL_CBBD)
   .then(() => {
     //listener for requests
-    server.listen(4000, () => {
+    server.listen(process.env.PORT, () => {
       console.log('SERVER IS RUNNING & connected to db & listening on port', process.env.PORT)
     })
 
