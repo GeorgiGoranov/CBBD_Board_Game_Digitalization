@@ -261,7 +261,7 @@ const isAuth = (req, res, next) => {
     const token = req.cookies.jwt;
 
     if (!token) {
-        return res.status(200).json({ authenticated: false });
+        return res.status(200).json({ authenticated: false, message: "Token is missing or ivalid" });
     }
 
     jwt.verify(token, process.env.SECRET_KEY, async (error, decodedToken) => {
