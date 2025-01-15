@@ -53,7 +53,7 @@ const Login = () => {
         await login()
         // Navigate based on the role of the logged-in user
        
-        if (data.user.role === 'admin') {
+        if (data.user && data.user.role === 'admin') {
           navigate('/muser');
         } else {
           navigate('/duser');
