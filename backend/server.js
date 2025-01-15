@@ -39,11 +39,11 @@ app.use('/api/rounds', rounds)
 
 
 //db
-mongoose.connect(process.env.MONG_URL_CBBD)
+mongoose.connect(process.env.BACK_END_URL_HOST)
   .then(() => {
     //listener for requests
     server.listen(process.env.PORT, () => {
-      console.log('SERVER IS RUNNING & connected to db & listening on port', process.env.PORT)
+      console.log('SERVER IS RUNNING & connected to db & listening on port', process.env.BACK_END_URL_HOST)
     })
 
 

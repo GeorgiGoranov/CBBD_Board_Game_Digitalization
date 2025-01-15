@@ -1,5 +1,6 @@
 const { Server } = require('socket.io');
 const { saveMessage } = require('./controllers/roundsController');
+require('dotenv').config()
 
 
 // In-memory stores
@@ -13,7 +14,7 @@ const roomVotes = {}; // Store votes per room: { [roomId]: { agree: number, disa
 function setupWebSocket(server) {
   const io = new Server(server, {
     cors: {
-      origin: 'http://localhost:3000',
+      origin: `${process.env.FRONT_END_URL_HOST}`,
       methods: ["GET", "POST"],
       credentials: true, // Enable credentials (cookies, authorization headers)
     }

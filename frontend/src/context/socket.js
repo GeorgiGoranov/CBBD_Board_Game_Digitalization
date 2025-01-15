@@ -1,11 +1,12 @@
 import { io } from 'socket.io-client';
+require('dotenv').config()
 
 let socket;
 
 const initSocket = () => {
   if (!socket) {
     // Initialize the WebSocket connection with autoConnect disabled
-    socket = io('http://localhost:4000', {
+    socket = io(`${process.env.BACK_END_URL_HOST}`, {
       autoConnect: false, 
       transports: ['websocket'], // Prevents auto connection when imported
     });
