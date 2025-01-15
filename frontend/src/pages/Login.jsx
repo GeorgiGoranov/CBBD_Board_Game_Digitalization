@@ -30,7 +30,7 @@ const Login = () => {
 
 
     try {
-      const response = await fetch(`${apiUrl}/api/routes/login`, {
+      const response = await fetch(`https://cbbd-board-game-digitalization.onrender.com/api/routes/login`, {
         method: 'POST',
         body: JSON.stringify(userLogin),
         headers: {
