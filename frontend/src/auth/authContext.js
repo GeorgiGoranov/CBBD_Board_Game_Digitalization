@@ -18,8 +18,11 @@ export const AuthProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    login();
-  }, []);
+    // Only check authentication on initial load, not after explicit login
+    if (!authState.isAuthenticated) {
+      login();
+    }
+  }, [authState.isAuthenticated]);
 
   return (
     <AuthContext.Provider value={{ ...authState, login, logout }}>

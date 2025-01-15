@@ -123,6 +123,14 @@ const getUserLogin = async (req, res) => {
     }
 };
 
+const maxAge = 3 * 60 * 60 // time lenght 5 min
+const createToken = (id, role, name, nationality, sessionCode) => {
+
+    return jwt.sign({ id, role, name, nationality, sessionCode }, process.env.SECRET_KEY, {
+        expiresIn: maxAge
+    })
+}
+
 const generateCode = () => {
     return Math.floor(100000 + Math.random() * 900000).toString(); // Generates a random 6-digit number
 };
@@ -229,13 +237,7 @@ const updateTokenGroup = async (req, res) => {
     }
 }
 
-const maxAge = 3 * 60 * 60 // time lenght 5 min
-const createToken = (id, role, name, nationality, sessionCode) => {
 
-    return jwt.sign({ id, role, name, nationality, sessionCode }, process.env.SECRET_KEY, {
-        expiresIn: maxAge
-    })
-}
 
 const updateeToken = (id, role, name, nationality, sessionCode, group) => {
 
@@ -258,7 +260,7 @@ const generateObjectIdForParticipants = () => {
 }
 
 const isAuth = (req, res, next) => {
-    console.log('Cookies:', req.cookies);
+    console.log('Cookies:', req.cookies.jwt);
     const token = req.cookies.jwt;
 
     if (!token) {
@@ -278,17 +280,30 @@ const isAuth = (req, res, next) => {
         }
 
         try {
-            const user = await User.findById(decodedToken.id).select("-password");
+            const user = await User.findById(decodedToken.id).select('-password');
+
             if (!user) {
                 return res.status(200).json({ authenticated: false });
             }
 
-            res.status(200).json({
-                authenticated: true,
-                user: { id: user._id, role: user.role, name: user.name },
-            });
+            req.user = {
+                id: user._id,
+                role: user.role,
+                name: user.name,
+            };
+
+            if (user.role === 'admin') {
+                return res.status(200).json({ authenticated: true, user: req.user });
+            }
+            // Include sessionCode only if it's provided in the token
+            if (decodedToken.sessionCode) {
+                req.user.sessionCode = decodedToken.sessionCode;
+            }
+
+            next();
+            // res.status(200).json({ authenticated: true, user })
         } catch (error) {
-            console.error("Error fetching user:", error);
+            console.error('Error fetching user: ', error);
             res.status(500).json({ authenticated: false });
         }
     });

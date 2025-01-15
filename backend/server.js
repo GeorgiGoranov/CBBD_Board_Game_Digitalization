@@ -27,8 +27,8 @@ app.use((req, res, next) => {
 const io = setupWebSocket(server)
 
 //middleware
-app.use(cookieParser())
 app.use(express.json()) //looks if there is an audit to the request/ if data was sent in to the server
+app.use(cookieParser())
 const allowedOrigins = [process.env.FRONT_END_URL_HOST, process.env.BACK_END_URL_HOST];
 console.log("+++ ", allowedOrigins)
 app.use(cors({
