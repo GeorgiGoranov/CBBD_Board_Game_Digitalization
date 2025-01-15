@@ -29,13 +29,19 @@ const io = setupWebSocket(server)
 //middleware
 app.use(express.json()) //looks if there is an audit to the request/ if data was sent in to the server
 app.use(cookieParser())
+
 const allowedOrigins = [process.env.FRONT_END_URL_HOST, process.env.BACK_END_URL_HOST];
-console.log("+++ ", allowedOrigins)
 app.use(cors({
   origin: allowedOrigins,
+  methods: ['GET', 'POST', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Cookie', 'Set-Cookie'],
   credentials: true,
+  exposedHeaders: ['Set-Cookie'],
+
 }));
 
+// Handle preflight requests
+app.options('*', cors());
 
 //route
 app.use('/api/routes', userRoutes)
