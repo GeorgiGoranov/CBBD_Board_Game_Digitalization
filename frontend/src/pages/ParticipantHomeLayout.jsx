@@ -27,6 +27,11 @@ const HomeDefautUser = () => {
     }, [socket]);
 
     const joinLobbySession = async () => {
+        // Check if all required fields are filled
+        if (!playerUsername.trim() || !gameCode.trim() || !nationality) {
+            setMessage('Please fill out all fields before proceeding.');
+            return;
+        }
 
         // Make a POST request to the backend to join the session
         const response = await fetch('/api/routes/join-lobby-session', {
@@ -64,7 +69,7 @@ const HomeDefautUser = () => {
                     type="text"
                     value={playerUsername}
                     onChange={(e) => setPlayerUsername(e.target.value)}
-                    placeholder="Enter your name"
+                    placeholder="Enter your username"
                 />
                 <input
                     type="text"
@@ -82,7 +87,7 @@ const HomeDefautUser = () => {
 
             </div>
             <button onClick={joinLobbySession}>Join Session</button>
-            {message && <p>{message}</p>}
+            {message && <div className='error'>{message}</div>}
 
         </div>
     );

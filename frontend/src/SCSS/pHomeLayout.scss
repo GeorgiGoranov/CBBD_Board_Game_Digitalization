@@ -3,10 +3,15 @@
     flex-direction: column;
     margin-bottom: 20px;
     align-items: center;
+    
+}
+.join-container input, button{
+    font-size: 15px;
 }
 
 .duser-container{
     text-align: center;
+    place-items: center;
 }
 
 .select-react{

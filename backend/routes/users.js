@@ -6,8 +6,8 @@ const {createUser,getAllAvailableSessions,getUser,updateUser,
 ,userRoleUpdated} = require('../controllers/usersController')
 
 const { requireAuth } = require('../middleware/authMiddleware')
-const router = express.Router()
 
+const router = express.Router()
 
 router.post('/login', getUserLogin)
 

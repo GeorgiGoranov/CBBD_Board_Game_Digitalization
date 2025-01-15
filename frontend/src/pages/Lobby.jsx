@@ -20,6 +20,11 @@ const Lobby = () => {
     const [playerID, setPlayerID] = useState('');
     const [nationality, setNationality] = useState('')
 
+    const [checkmessage, setCheckMessage] = useState(null);
+
+
+
+
     if (!socketRef.current) {
         socketRef.current = initSocket();
     }
@@ -132,7 +137,7 @@ const Lobby = () => {
             socket.off('playerLeftRoom');
 
         };
-    }, [socket]);
+    }, [socket, role, playerID]);
 
     useEffect(() => {
         socket.on('updateTokens', async ({ groupedPlayers }) => {
@@ -285,6 +290,27 @@ const Lobby = () => {
 
         setGroupedPlayers(updatedGroups);
     };
+    const lockInGroups = () => {
+        // Filter out empty groups
+        const nonEmptyGroups = groupedPlayers.filter(
+            (group) => group.players.length > 0
+        );
+
+        // Reassign group numbers dynamically
+        const reindexedGroups = nonEmptyGroups.map((group, index) => ({
+            ...group,
+            groupNumber: index + 1, // Reassign group numbers starting from 1
+        }));
+
+        // Update the state with the cleaned-up and reordered groups
+        setGroupedPlayers(reindexedGroups);
+        setCheckMessage(true)
+    };
+
+    const resetGroups = () =>{
+        window.location.reload()
+    }
+
 
     if (loading) return <div>Loading...</div>;
 
@@ -303,7 +329,7 @@ const Lobby = () => {
                             {players
                                 .filter(player => player.nationality === 'german')
                                 .map((player, index) => (
-                                    <li key={index}>{player.playerID}</li>
+                                    <li key={index}>{player.playerID} ({player.nationality === 'german' ? 'de' : player.nationality})</li>
                                 ))}
                         </ul>
                     </div>
@@ -314,7 +340,7 @@ const Lobby = () => {
                             {players
                                 .filter(player => player.nationality === 'dutch')
                                 .map((player, index) => (
-                                    <li key={index}>{player.playerID}</li>
+                                    <li key={index}>{player.playerID} ({player.nationality === 'dutch' ? 'nl' : player.nationality})</li>
                                 ))}
                         </ul>
                     </div>
@@ -325,7 +351,7 @@ const Lobby = () => {
                             {players
                                 .filter(player => player.nationality === 'other')
                                 .map((player, index) => (
-                                    <li key={index}>{player.playerID}</li>
+                                    <li key={index}>{player.playerID} ({player.nationality === 'other' ? 'eu' : player.nationality})</li>
                                 ))}
                         </ul>
                     </div>
@@ -348,13 +374,7 @@ const Lobby = () => {
                                                     className="player-group"
                                                     {...provided.droppableProps}
                                                     ref={provided.innerRef}
-                                                    style={{
-                                                        border: '2px solid red',
-                                                        padding: '10px',
-                                                        margin: '10px 0',
-                                                        borderRadius: '8px',
-                                                        minWidth: '200px'
-                                                    }}
+                                                   
                                                 >
                                                     <h3>Group {group.groupNumber}</h3>
                                                     <ul style={{ listStyle: 'none', padding: 0 }}>
@@ -374,7 +394,18 @@ const Lobby = () => {
                                                                             ...provided.draggableProps.style
                                                                         }}
                                                                     >
-                                                                        {player.playerID}
+                                                                        {player.playerID} (
+                                                                        {(() => {
+                                                                            // Define the mapping of nationalities to their abbreviations
+                                                                            const nationalityMap = {
+                                                                                german: 'de',
+                                                                                dutch: 'nl',
+                                                                                other: 'eu'
+                                                                            };
+                                                                            // Return the corresponding abbreviation for the nationality
+                                                                            return nationalityMap[player.nationality] || player.nationality;
+                                                                        })()}
+                                                                        )
                                                                     </li>
                                                                 )}
                                                             </Draggable>
@@ -387,10 +418,19 @@ const Lobby = () => {
                                     ))}
                                 </div>
                             </DragDropContext>
+                            {checkmessage && <div className='success'>"Groups are good! You can continue!"</div>}
                             {role === 'admin' && (
-                                <button className='btn' onClick={handleSaveGroups}>
-                                    Save Groups
-                                </button>
+                                <div className='lobby-admin-btns'>
+                                    <button className='btn' id='reset' onClick={resetGroups}>
+                                        Reset Groups
+                                    </button>
+                                    <button className='btn' id='lock' onClick={lockInGroups}>
+                                        Check Groups
+                                    </button>
+                                    <button className='btn' id='start' onClick={handleSaveGroups}>
+                                        Start Game
+                                    </button>
+                                </div>
                             )}
                         </div>
                     </div>

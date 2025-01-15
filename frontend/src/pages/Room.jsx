@@ -230,9 +230,9 @@ const Room = () => {
                     </div>
                 ) : (
                     <div>
-                        <div>Player Layout for Room {roomId}
+                        {/* <div>Player Layout for Room {roomId}
                             <ParticipantRoomLayout />
-                        </div>
+                        </div> */}
                     </div>
                 )}
             </div>

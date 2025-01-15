@@ -35,7 +35,6 @@ function App() {
                 <Route path="/" element={<Login />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/lobby/:roomId" element={<Lobby />} />
-
                 <Route path="/duser" element={<ParticipantHomeLayout/>} />
                 <Route path="/room/:roomId" element={<Room />} />
                 <Route path="/muser" element={<ProtectedRoute allowedRoles={['admin']}><ModeratorHomeLayout /></ProtectedRoute>} />

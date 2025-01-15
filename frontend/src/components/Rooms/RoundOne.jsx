@@ -7,10 +7,10 @@ import '../../SCSS/roundOne.scss';
 const RoundOne = ({ roomId, playerID, socket, group }) => {
     const [categories, setCategories] = useState([]);
     const [dropZones, setDropZones] = useState({
-        box1: [],
-        box2: [],
-        box3: [],
-        box4: [],
+        priority1: [],
+        priority2: [],
+        priority3: [],
+        priority4: [],
     });
 
     const [cursorPositions, setCursorPositions] = useState({});
@@ -172,7 +172,7 @@ const RoundOne = ({ roomId, playerID, socket, group }) => {
 
                     if (currentGroup) {
                         setCategories(currentGroup.categories || []);
-                        setDropZones(currentGroup.dropZones || { box1: [], box2: [], box3: [], box4: [] });
+                        setDropZones(currentGroup.dropZones || { priority1: [], priority2: [], priority3: [], priority4: [] });
                         // If you need to restore messages or socketMessage:
                         if (currentGroup.messages && currentGroup.messages.length > 0) {
                             setSocketMessage(currentGroup.messages[currentGroup.messages.length - 1]);
@@ -298,9 +298,9 @@ const RoundOne = ({ roomId, playerID, socket, group }) => {
                     </ul>
                     <div className="droppable-box-b">
                         {/* Render the four drop zones (boxes) */}
-                        {['box1', 'box2', 'box3', 'box4'].map((box, index) => (
+                        {['priority1', 'priority2','priority3', 'priority4'].map((box, index) => (
                             <Droppable droppableId={box} key={box} >
-                                {(provided) => (
+                                {(provided,snapshot) => (
                                     <div
                                         className="droppable-box"
                                         ref={provided.innerRef}
@@ -321,6 +321,7 @@ const RoundOne = ({ roomId, playerID, socket, group }) => {
                                                             {...provided.draggableProps}
                                                             {...provided.dragHandleProps}
                                                             className="draggable-item"
+                                                            
                                                         >
                                                             {item.category}
                                                         </div>

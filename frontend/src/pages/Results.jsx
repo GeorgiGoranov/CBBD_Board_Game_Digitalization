@@ -65,7 +65,7 @@ const Results = () => {
 
     const renderDropZones = (groups, roundTitle) => (
         <div>
-            <h3>{roundTitle} Groups:</h3>
+            <h3>{roundTitle} Decisions:</h3>
             {groups.length > 0 ? (
                 groups.map((group, gIndex) => (
                     <div key={gIndex} className="group-section">
@@ -106,7 +106,7 @@ const Results = () => {
 
     const renderThirdRoundCards = (cards) => (
         <div>
-            <h3>Third Round Cards:</h3>
+            <h3>Third Round Decisions:</h3>
             {cards.length > 0 ? (
                 cards.map((cardData, index) => (
                     <div key={index} className="card">

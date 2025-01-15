@@ -35,7 +35,7 @@ export const SessionContextProvider = ({ children }) => {
     })
 
 
-    //we are outputing the wraped App components back so that they can be rendered with the wrap
+    //outputing the wraped App components back so that they can be rendered with the wrap
     return (
         <SessionContext.Provider value={{ ...state, dispatch }}>
             {children}

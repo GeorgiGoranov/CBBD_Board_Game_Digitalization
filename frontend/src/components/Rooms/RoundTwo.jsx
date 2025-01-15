@@ -13,11 +13,11 @@ const RoundTwo = ({ roomId, playerID, socket, group }) => {
     const [categoriesData, setCategoriesData] = useState([]);
     const [collapsedCategories, setCollapsedCategories] = useState({});
     const [dropZones, setDropZones] = useState({
-        box1: [],
-        box2: [],
-        box3: [],
-        box4: [],
-        box5: [],
+        priority1: [],
+        priority2: [],
+        priority3: [],
+        priority4: [],
+        priority5: [],
     });
     const [cursorPositions, setCursorPositions] = useState({});
     const [userActionOccurred, setUserActionOccurred] = useState(false);
@@ -238,11 +238,11 @@ const RoundTwo = ({ roomId, playerID, socket, group }) => {
                         // setCategoriesData(currentGroup.categories || []);
 
                         setDropZones(currentGroup.dropZones || {
-                            box1: [],
-                            box2: [],
-                            box3: [],
-                            box4: [],
-                            box5: []
+                            priority1: [],
+                            priority2: [],
+                            priority3: [],
+                            priority4: [],
+                            priority5: []
                         });
 
                         if (currentGroup.messages && currentGroup.messages.length > 0) {
@@ -377,7 +377,7 @@ const RoundTwo = ({ roomId, playerID, socket, group }) => {
                 </ul>
 
                 <div className="droppable-box-b">
-                    {['box1', 'box2', 'box3', 'box4', 'box5'].map((box, index) => (
+                    {['priority1', 'priority2', 'priority3', 'priority4', 'priority5'].map((box, index) => (
                         <Droppable droppableId={box} key={box}>
                             {(provided) => (
                                 <div
@@ -385,7 +385,7 @@ const RoundTwo = ({ roomId, playerID, socket, group }) => {
                                     ref={provided.innerRef}
                                     {...provided.droppableProps}
                                 >
-                                    <h2>Box {index + 1}</h2>
+                                    <h2># {index + 1}</h2>
                                     {dropZones[box].map((item, itemIndex) => (
                                         <Draggable
                                             draggableId={item.id}
