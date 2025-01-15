@@ -43,14 +43,14 @@ app.use('/api/rounds', rounds)
 mongoose.connect(process.env.MONG_URL_CBBD)
   .then(() => {
     //listener for requests
-    server.listen(process.env.BACK_END_URL_HOST, () => {
+    server.listen(process.env.PORT, () => {
 
-      console.log('SERVER IS RUNNING & connected to db & listening on port', process.env.BACK_END_URL_HOST)
+      console.log('SERVER IS RUNNING & connected to db & listening on port', process.env.PORT)
     })
 
 
   }).catch((error) => {
-    console.log(error)
+    console.error('Error connecting to the database:', error.message);
   })
 
 
