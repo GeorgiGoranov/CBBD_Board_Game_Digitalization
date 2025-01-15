@@ -114,8 +114,6 @@ const getUserLogin = async (req, res) => {
             secure: "production",
             sameSite: 'none',
             maxAge: maxAge * 1000,
-            path: '/',
-            domain: 'https://cbbd-board-game-digitalization-1.onrender.com'
         }); // cookie operates in milisecond and not in minutes
 
         res.status(200).json({ message: "Login successful", user: { _id: user._id, role: user.role }, token });
