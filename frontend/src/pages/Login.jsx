@@ -44,20 +44,23 @@ const Login = () => {
       if (!response.ok) {
         setError(data.error || 'Unknown error');
       } else {
-        setEmail('');
-        setPassword('');
-        setError(null);
-        setLoginSuccess(true);
-        console.log('User logged in', data);
-
-        await login()
-        // Navigate based on the role of the logged-in user
-       
-        if (data.user && data.user.role === 'admin') {
-          navigate('/muser');
-        } else {
-          navigate('/duser');
-        }
+        setTimeout(async () =>{
+          setEmail('');
+          setPassword('');
+          setError(null);
+          setLoginSuccess(true);
+          console.log('User logged in', data);
+  
+          await login()
+          // Navigate based on the role of the logged-in user
+         
+          if (data.user && data.user.role === 'admin') {
+            navigate('/muser');
+          } else {
+            navigate('/duser');
+          }
+        },10000)
+        
       }
     } catch (error) {
       setError('An error occurred during login. Please try again. ' + error);
