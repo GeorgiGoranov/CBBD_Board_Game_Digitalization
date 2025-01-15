@@ -24,7 +24,7 @@ const NavBar = () => {
     setIsLoggingOut(true);      // Disable the button
 
     try {
-      const response = await fetch('/api/routes/logout', {
+      const response = await fetch('https://cbbd-board-game-digitalization.onrender.com/api/routes/logout', {
         method: 'GET',
         credentials: 'include',  // Include cookies for the request
       });
