@@ -19,7 +19,10 @@ const AvailableSessions = () => {
         // Function to fetch available sessions
         const fetchSessions = async () => {
             try {
-                const response = await fetch(`${apiUrl}/api/routes/available-sessions`);
+                const response = await fetch(`${apiUrl}/api/routes/available-sessions`,{
+                    method: 'GET',
+                    credentials: 'include', // Include cookies in the request
+                });
                 if (!response.ok) {
                     throw new Error('Error fetching sessions');
                 }
