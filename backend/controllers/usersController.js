@@ -311,7 +311,7 @@ const isAuth = (req, res, next) => {
 };
 
 const logOut = async (req, res) => {
-    res.cookie("jwt", "", { maxAge: 1 });
+    res.cookie("jwt", "", { maxAge: 0 });
     res.status(200).json({ message: "Logged out successfully" });
 };
 //get all users
