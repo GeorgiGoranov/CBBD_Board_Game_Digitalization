@@ -15,7 +15,6 @@ const AvailableSessions = () => {
 
     // useEffect to fetch sessions when the component mounts
     useEffect(() => {
-        console.log(apiUrl)
         // Function to fetch available sessions
         const fetchSessions = async () => {
             try {
@@ -54,7 +53,7 @@ const AvailableSessions = () => {
     const handleDeleteClick = async (sessionCode) => {
         console.log(sessionCode)
         try {
-            const response = await fetch(`/api/routes/delete-session/${sessionCode}`, {
+            const response = await fetch(`${apiUrl}/api/routes/delete-session/${sessionCode}`, {
                 method: 'DELETE',
                 credentials: 'include', // Include JWT cookies
             });
@@ -73,7 +72,7 @@ const AvailableSessions = () => {
     const handleActivityClick = async (sessionCode) => {
         try {
             // Send request to backend to toggle activity
-            const response = await fetch(`/api/routes/toggle-activity/${sessionCode}`, {
+            const response = await fetch(`${apiUrl}/api/routes/toggle-activity/${sessionCode}`, {
                 method: 'PATCH',
                 credentials: 'include', // Include JWT cookies
                 headers: { 'Content-Type': 'application/json' },
