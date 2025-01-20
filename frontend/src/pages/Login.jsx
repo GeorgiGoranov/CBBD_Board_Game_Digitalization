@@ -66,6 +66,10 @@ const Login = () => {
 
   }
 
+  const joinasParticipant = async (e) => {
+      navigate('/duser')
+  }
+
 
   return (
     <div className="login_container">
@@ -88,6 +92,7 @@ const Login = () => {
           />
           <button type="submit" className='buttons'>Login</button>
         </form>
+        <button onClick={joinasParticipant}>Join as Participant</button>
       </div>
       {error && <div className="error">{error}</div>}
       {loginSuccess && <div className="success">Login successful!</div>}
