@@ -27,6 +27,7 @@ const Register = () => {
         const response = await fetch(`${apiUrl}/api/routes/register`, {
             method: 'POST',
             body: JSON.stringify(user),
+            credentials: 'include', // Include JWT cookies
             headers: {
                 'Content-Type': 'application/json'
             }

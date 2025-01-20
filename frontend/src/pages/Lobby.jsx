@@ -153,6 +153,7 @@ const Lobby = () => {
                     // Update token for the current player
                     const updateResponse = await fetch(`${apiUrl}/api/routes/update-token-group`, {
                         method: 'POST',
+                        credentials: 'include', // Include JWT cookies
                         headers: {
                             'Content-Type': 'application/json',
                         },
@@ -197,6 +198,7 @@ const Lobby = () => {
                 // Send the data to the backend
                 const response = await fetch(`${apiUrl}/api/routes/join-game-session`, {
                     method: 'POST',
+                    credentials: 'include', // Include JWT cookies
                     headers: {
                         'Content-Type': 'application/json',
                     },
@@ -215,6 +217,7 @@ const Lobby = () => {
                     // Send the data to the backend
                     const updateResponse = await fetch(`${apiUrl}/api/routes/update-token-group`, {
                         method: 'POST',
+                        credentials: 'include', // Include JWT cookies
                         headers: {
                             'Content-Type': 'application/json',
                         },

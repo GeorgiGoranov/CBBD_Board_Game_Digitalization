@@ -56,6 +56,7 @@ const AvailableSessions = () => {
         try {
             const response = await fetch(`/api/routes/delete-session/${sessionCode}`, {
                 method: 'DELETE',
+                credentials: 'include', // Include JWT cookies
             });
             if (!response.ok) {
                 throw new Error('Error deleting session');
@@ -74,6 +75,7 @@ const AvailableSessions = () => {
             // Send request to backend to toggle activity
             const response = await fetch(`/api/routes/toggle-activity/${sessionCode}`, {
                 method: 'PATCH',
+                credentials: 'include', // Include JWT cookies
                 headers: { 'Content-Type': 'application/json' },
             });
             const updatedSession = await response.json();
