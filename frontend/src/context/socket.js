@@ -1,11 +1,12 @@
 import { io } from 'socket.io-client';
 
 let socket;
+const apiUrl = process.env.REACT_APP_BACK_END_URL_HOST;
 
 const initSocket = () => {
   if (!socket) {
     // Initialize the WebSocket connection with autoConnect disabled
-    socket = io(`${process.env.BACK_END_URL_HOST}`, {
+    socket = io(`${apiUrl}`, {
       autoConnect: false, 
       transports: ['websocket'], // Prevents auto connection when imported
     });

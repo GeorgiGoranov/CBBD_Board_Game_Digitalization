@@ -13,6 +13,7 @@ const Register = () => {
     const [error, setError] = useState(null)
     
     const [registrySuccess, setRegistrySuccess] = useState(false);
+    const apiUrl = process.env.REACT_APP_BACK_END_URL_HOST;
 
     
 
@@ -23,7 +24,7 @@ const Register = () => {
 
         const user = { name, username, email, role,nationality, password }
 
-        const response = await fetch('/api/routes/register', {
+        const response = await fetch(`${apiUrl}/api/routes/register`, {
             method: 'POST',
             body: JSON.stringify(user),
             headers: {

@@ -9,6 +9,7 @@ const NavBar = () => {
   const { isAuthenticated, logout } = useAuth();
   const { language, setLanguage } = useLanguage()
   const [isOpen, setIsOpen] = useState(false);
+  const apiUrl = process.env.REACT_APP_BACK_END_URL_HOST;
 
   const toggleDropdown = () => {
     setIsOpen(!isOpen);
@@ -24,7 +25,7 @@ const NavBar = () => {
     setIsLoggingOut(true);      // Disable the button
 
     try {
-      const response = await fetch('https://cbbd-board-game-digitalization.onrender.com/api/routes/logout', {
+      const response = await fetch(`${apiUrl}/api/routes/logout`, {
         method: 'GET',
         credentials: 'include',  // Include cookies for the request
       });

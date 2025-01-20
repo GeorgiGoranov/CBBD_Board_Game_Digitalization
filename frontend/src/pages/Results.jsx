@@ -13,14 +13,15 @@ const Results = () => {
 
 
     const [error, setError] = useState(null);
+    const apiUrl = process.env.REACT_APP_BACK_END_URL_HOST;
 
     const fetchRoundData = async () => {
         try {
             // Run both fetch calls concurrently and handle their results
             const [firstRoundResult, secondRoundResult, thirdRoundResults] = await Promise.allSettled([
-                fetch(`/api/rounds/get-state-first-round/${roomId}`),
-                fetch(`/api/rounds/get-state-second-round/${roomId}`),
-                fetch(`/api/rounds/get-state-third-round/${roomId}`),
+                fetch(`${apiUrl}/api/rounds/get-state-first-round/${roomId}`),
+                fetch(`${apiUrl}/api/rounds/get-state-second-round/${roomId}`),
+                fetch(`${apiUrl}/api/rounds/get-state-third-round/${roomId}`),
 
             ]);
 

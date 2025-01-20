@@ -21,6 +21,7 @@ const Lobby = () => {
     const [nationality, setNationality] = useState('')
 
     const [checkmessage, setCheckMessage] = useState(null);
+    const apiUrl = process.env.REACT_APP_BACK_END_URL_HOST;
 
 
 
@@ -44,7 +45,7 @@ const Lobby = () => {
     useEffect(() => {
         const fetchUserRole = async () => {
             try {
-                const response = await fetch('/api/routes/user-role', {
+                const response = await fetch(`${apiUrl}/api/routes/user-role`, {
                     method: 'GET',
                     credentials: 'include', // Include JWT cookies
                 });
@@ -150,7 +151,7 @@ const Lobby = () => {
                     const groupNumber = playerGroup.groupNumber;
 
                     // Update token for the current player
-                    const updateResponse = await fetch('/api/routes/update-token-group', {
+                    const updateResponse = await fetch(`${apiUrl}/api/routes/update-token-group`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -194,7 +195,7 @@ const Lobby = () => {
                 }));
 
                 // Send the data to the backend
-                const response = await fetch('/api/routes/join-game-session', {
+                const response = await fetch(`${apiUrl}/api/routes/join-game-session`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -212,7 +213,7 @@ const Lobby = () => {
                     });
 
                     // Send the data to the backend
-                    const updateResponse = await fetch('/api/routes/update-token-group', {
+                    const updateResponse = await fetch(`${apiUrl}/api/routes/update-token-group`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',

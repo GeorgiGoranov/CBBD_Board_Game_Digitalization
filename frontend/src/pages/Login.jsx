@@ -12,6 +12,7 @@ const Login = () => {
 
   const navigate = useNavigate()
   const { isAuthenticated, login } = useAuth();
+  const apiUrl = process.env.REACT_APP_BACK_END_URL_HOST;
 
   // Check if user is already logged in and redirect to home if so
   useEffect(() => {
@@ -30,7 +31,7 @@ const Login = () => {
 
 
     try {
-      const response = await fetch(`https://cbbd-board-game-digitalization.onrender.com/api/routes/login`, {
+      const response = await fetch(`${apiUrl}/api/routes/login`, {
         method: 'POST',
         body: JSON.stringify(userLogin),
         headers: {

@@ -30,7 +30,7 @@ const Room = () => {
     const [adminMessage, setAdminMessage] = useState('');
     const [targetGroup, setTargetGroup] = useState('');
     // const [socketMessage, setSocketMessage] = useState(''); // This can be used to display socket events
-
+    const apiUrl = process.env.REACT_APP_BACK_END_URL_HOST;
 
 
     if (!socketRef.current) {
@@ -45,7 +45,7 @@ const Room = () => {
 
         const fetchUserRole = async () => {
             try {
-                const response = await fetch('/api/routes/user-role-updated', {
+                const response = await fetch(`${apiUrl}/api/routes/user-role-updated`, {
                     method: 'GET',
                     credentials: 'include', // Include JWT cookies
                 });

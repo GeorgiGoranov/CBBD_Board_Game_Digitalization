@@ -10,6 +10,7 @@ const HomeDefautUser = () => {
     const [gameCode, setGameCode] = useState('');
     const [message, setMessage] = useState('');
     const [nationality, setNationality] = useState('')
+    const apiUrl = process.env.REACT_APP_BACK_END_URL_HOST;
 
     const socket = initSocket();
 
@@ -34,7 +35,7 @@ const HomeDefautUser = () => {
         }
 
         // Make a POST request to the backend to join the session
-        const response = await fetch('/api/routes/join-lobby-session', {
+        const response = await fetch(`${apiUrl}/api/routes/join-lobby-session`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
