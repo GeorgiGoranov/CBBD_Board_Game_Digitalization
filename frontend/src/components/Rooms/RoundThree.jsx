@@ -10,6 +10,8 @@ const RoundThree = ({ roomId, playerID, socket, role, natnality }) => {
     const { language } = useLanguage();
     const [votes, setVotes] = useState({});
     const [userVote, setUserVote] = useState(null);
+    const apiUrl = process.env.REACT_APP_BACK_END_URL_HOST;
+
 
     const saveState = useCallback(async (currentCard, currentVote) => {
         if (role === 'admin') {
@@ -23,7 +25,7 @@ const RoundThree = ({ roomId, playerID, socket, role, natnality }) => {
                     body.vote = currentVote;
                 }
                 console.log(body)
-                const response = await fetch('/api/rounds/save-state-third-round', {
+                const response = await fetch(`${apiUrl}/api/rounds/save-state-third-round`, {
                     method: 'POST',
                     credentials: 'include', // Include JWT cookies
                     headers: { 'Content-Type': 'application/json' },
@@ -47,7 +49,7 @@ const RoundThree = ({ roomId, playerID, socket, role, natnality }) => {
     const fetchRandomCard = async () => {
         if (role === 'admin') {
             try {
-                const response = await fetch('/api/cards/dilemma/random',{
+                const response = await fetch(`${apiUrl}/api/cards/dilemma/random`,{
                     credentials: 'include', // Include JWT cookies
                 });
                 if (!response.ok) {
@@ -73,7 +75,7 @@ const RoundThree = ({ roomId, playerID, socket, role, natnality }) => {
 
     const fetchCurrentState = async () => {
         try {
-            const response = await fetch(`/api/rounds/get-state-third-round/${roomId}`,{
+            const response = await fetch(`${apiUrl}/api/rounds/get-state-third-round/${roomId}`,{
                 credentials: 'include', // Include JWT cookies
             });
             if (!response.ok) {

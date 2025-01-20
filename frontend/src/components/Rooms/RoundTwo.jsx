@@ -23,6 +23,7 @@ const RoundTwo = ({ roomId, playerID, socket, group }) => {
     const [userActionOccurred, setUserActionOccurred] = useState(false);
 
     const [socketMessage, setSocketMessage] = useState(''); // This can be used to display socket events
+    const apiUrl = process.env.REACT_APP_BACK_END_URL_HOST;
 
 
     const toggleCategoryCollapse = (categoryName) => {
@@ -161,7 +162,7 @@ const RoundTwo = ({ roomId, playerID, socket, group }) => {
                 messages: socketMessage ? [socketMessage] : [] // put the message in the messages array
 
             }];
-            const response = await fetch('/api/rounds/save-state-second-round', {
+            const response = await fetch(`${apiUrl}/api/rounds/save-state-second-round`, {
                 method: 'POST',
                 credentials: 'include', // Include JWT cookies
                 headers: { 'Content-Type': 'application/json' },
@@ -183,7 +184,7 @@ const RoundTwo = ({ roomId, playerID, socket, group }) => {
     useEffect(() => {
         const fetchCategories = async () => {
             try {
-                const response = await fetch('/api/cards/get-all-cards',{
+                const response = await fetch(`${apiUrl}/api/cards/get-all-cards`,{
                     credentials: 'include', // Include JWT cookies
                 });
                 if (response.ok) {
@@ -228,7 +229,7 @@ const RoundTwo = ({ roomId, playerID, socket, group }) => {
 
         const fetchSavedRoomState = async () => {
             try {
-                const response = await fetch(`/api/rounds/get-state-second-round/${roomId}`,{
+                const response = await fetch(`${apiUrl}/api/rounds/get-state-second-round/${roomId}`,{
                     credentials: 'include', // Include JWT cookies
                 });
                 if (response.ok) {

@@ -17,6 +17,7 @@ const RoundOne = ({ roomId, playerID, socket, group }) => {
     const [userActionOccurred, setUserActionOccurred] = useState(false);
 
     const [socketMessage, setSocketMessage] = useState(''); // This can be used to display socket events
+    const apiUrl = process.env.REACT_APP_BACK_END_URL_HOST;
 
 
     const handleDragDrop = (results) => {
@@ -127,7 +128,7 @@ const RoundOne = ({ roomId, playerID, socket, group }) => {
             }];
             console.log(socketMessage)
 
-            const response = await fetch('/api/rounds/save-state-first-round', {
+            const response = await fetch(`${apiUrl}/api/rounds/save-state-first-round`, {
                 method: 'POST',
                 credentials: 'include', // Include JWT cookies
                 headers: { 'Content-Type': 'application/json' },
@@ -149,7 +150,7 @@ const RoundOne = ({ roomId, playerID, socket, group }) => {
     useEffect(() => {
         const fetchCategories = async () => {
             try {
-                const response = await fetch('/api/cards/get-all-categories',{
+                const response = await fetch(`${apiUrl}/api/cards/get-all-categories`,{
                     credentials: 'include', // Include JWT cookies
                 });
                 if (response.ok) {
@@ -165,7 +166,7 @@ const RoundOne = ({ roomId, playerID, socket, group }) => {
 
         const fetchSavedRoomState = async () => {
             try {
-                const response = await fetch(`/api/rounds/get-state-first-round/${roomId}`,{
+                const response = await fetch(`${apiUrl}/api/rounds/get-state-first-round/${roomId}`,{
                     credentials: 'include', // Include JWT cookies
                 });
                 if (response.ok) {

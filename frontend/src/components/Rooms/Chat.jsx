@@ -12,12 +12,14 @@ const Chat = ({ playerID, socket, group }) => {
 
     const chatContainerRef = useRef(null);
     const messagesEndRef = useRef(null);
+    const apiUrl = process.env.REACT_APP_BACK_END_URL_HOST;
+
 
 
     useEffect(() => {
         const fetchMessages = async () => {
             try {
-                const response = await fetch(`/api/rounds/get-message/${roomId}?group=${group}`, {
+                const response = await fetch(`${apiUrl}/api/rounds/get-message/${roomId}?group=${group}`, {
                     credentials: 'include', // Include JWT cookies
                 });
                 if (response.ok) {
