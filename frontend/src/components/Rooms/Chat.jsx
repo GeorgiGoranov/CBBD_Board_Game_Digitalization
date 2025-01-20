@@ -99,7 +99,7 @@ const Chat = ({ playerID, socket, group }) => {
 
     return (
         <div className="chat-container">
-            <div className="chat-messages" ref={chatContainerRef} onScroll={handleScroll}>
+            <div className="chat-messages" ref={chatContainerRef}>
                 {messages.map((message, index) => (
                     <div
                         key={index}
@@ -112,7 +112,7 @@ const Chat = ({ playerID, socket, group }) => {
                         </div>
                     </div>
                 ))}
-                <div ref={messagesEndRef} />
+                {/* <div ref={messagesEndRef} /> */}
             </div>
             {/* {showNewMessageAlert && (
                 <div className="new-message-alert" onClick={handleNewMessageClick}>
