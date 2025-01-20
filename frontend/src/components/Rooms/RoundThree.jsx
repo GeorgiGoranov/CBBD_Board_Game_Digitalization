@@ -113,6 +113,10 @@ const RoundThree = ({ roomId, playerID, socket, role, natnality }) => {
 
         socket.on('updateDilemmaCardData', setCard);
         socket.on('updateVotes', setVotes);
+        socket.on('next-card-3-go', () => {
+            fetchRandomCard()
+           
+        });
 
 
         // Cleanup listener on component unmount
@@ -123,9 +127,6 @@ const RoundThree = ({ roomId, playerID, socket, role, natnality }) => {
         };
     }, [socket]);
 
-    const fetchcards = async (e) => {
-        fetchRandomCard()
-    }
 
     if (loading) return <div>Loading...</div>;
     if (error) return <div>Error: {error}</div>;
@@ -160,7 +161,6 @@ const RoundThree = ({ roomId, playerID, socket, role, natnality }) => {
             {role === 'admin' && (
                 <div className='moderator-container-layout'>
                     <i className="bi bi-arrow-right-circle" onClick={fetchRandomCard}></i>
-                    <button onClick={fetchcards}>fetch cards</button>
                 </div>
             )}
         </div>

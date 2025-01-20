@@ -189,6 +189,15 @@ function setupWebSocket(server) {
       io.to(roomId).emit('gameStopped');
     });
 
+    socket.on('next-card-3', (data) => {
+      const { roomId } = data;
+
+      // Broadcast 'gameStopped' to all sockets in roomId
+      io.to(roomId).emit('next-card-3-go');
+    });
+
+
+
     socket.on('disconnect', () => {
       console.log(`User back-end disconnected: ${socket.id}`);
 

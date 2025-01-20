@@ -51,10 +51,20 @@ const ModeratorRoomLayout = ({ roomId }) => {
         const confirmed = window.confirm('You are about to go to the Conclude the Game! Are you sure?');
         if (confirmed) {
             // Stop the game
-            socket.emit('stopGame', {roomId});
+            socket.emit('stopGame', { roomId });
         }
 
     }
+
+    const handleNextCard = () => {
+
+
+        // Stop the game
+        socket.emit('next-card-3', { roomId });
+
+
+    }
+
 
 
     return (
@@ -70,6 +80,9 @@ const ModeratorRoomLayout = ({ roomId }) => {
             </button>
             <button className="stop-game-btn" onClick={handleConcludeGame}>
                 Stop Game
+            </button>
+            <button className='next-card' onClick={handleNextCard}>
+                Next Card
             </button>
         </div>
 
