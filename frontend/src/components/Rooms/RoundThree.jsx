@@ -25,6 +25,7 @@ const RoundThree = ({ roomId, playerID, socket, role, natnality }) => {
                 console.log(body)
                 const response = await fetch('/api/rounds/save-state-third-round', {
                     method: 'POST',
+                    credentials: 'include', // Include JWT cookies
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(body),
                 });
@@ -46,7 +47,9 @@ const RoundThree = ({ roomId, playerID, socket, role, natnality }) => {
     const fetchRandomCard = async () => {
         if (role === 'admin') {
             try {
-                const response = await fetch('/api/cards/dilemma/random');
+                const response = await fetch('/api/cards/dilemma/random',{
+                    credentials: 'include', // Include JWT cookies
+                });
                 if (!response.ok) {
                     throw new Error('Failed to fetch a random card');
                 }
@@ -70,7 +73,9 @@ const RoundThree = ({ roomId, playerID, socket, role, natnality }) => {
 
     const fetchCurrentState = async () => {
         try {
-            const response = await fetch(`/api/rounds/get-state-third-round/${roomId}`);
+            const response = await fetch(`/api/rounds/get-state-third-round/${roomId}`,{
+                credentials: 'include', // Include JWT cookies
+            });
             if (!response.ok) {
                 throw new Error('Failed to fetch the current state');
             }

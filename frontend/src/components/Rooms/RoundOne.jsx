@@ -129,6 +129,7 @@ const RoundOne = ({ roomId, playerID, socket, group }) => {
 
             const response = await fetch('/api/rounds/save-state-first-round', {
                 method: 'POST',
+                credentials: 'include', // Include JWT cookies
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     roomId, // Pass the current room ID
@@ -148,7 +149,9 @@ const RoundOne = ({ roomId, playerID, socket, group }) => {
     useEffect(() => {
         const fetchCategories = async () => {
             try {
-                const response = await fetch('/api/cards/get-all-categories');
+                const response = await fetch('/api/cards/get-all-categories',{
+                    credentials: 'include', // Include JWT cookies
+                });
                 if (response.ok) {
                     const data = await response.json();
                     setCategories(data); // Update categories state
@@ -162,7 +165,9 @@ const RoundOne = ({ roomId, playerID, socket, group }) => {
 
         const fetchSavedRoomState = async () => {
             try {
-                const response = await fetch(`/api/rounds/get-state-first-round/${roomId}`);
+                const response = await fetch(`/api/rounds/get-state-first-round/${roomId}`,{
+                    credentials: 'include', // Include JWT cookies
+                });
                 if (response.ok) {
                     const data = await response.json();
                     console.log(data)

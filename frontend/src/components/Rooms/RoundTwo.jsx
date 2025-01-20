@@ -163,6 +163,7 @@ const RoundTwo = ({ roomId, playerID, socket, group }) => {
             }];
             const response = await fetch('/api/rounds/save-state-second-round', {
                 method: 'POST',
+                credentials: 'include', // Include JWT cookies
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     roomId, // Pass the current room ID
@@ -182,7 +183,9 @@ const RoundTwo = ({ roomId, playerID, socket, group }) => {
     useEffect(() => {
         const fetchCategories = async () => {
             try {
-                const response = await fetch('/api/cards/get-all-cards');
+                const response = await fetch('/api/cards/get-all-cards',{
+                    credentials: 'include', // Include JWT cookies
+                });
                 if (response.ok) {
                     const data = await response.json();
 
@@ -225,7 +228,9 @@ const RoundTwo = ({ roomId, playerID, socket, group }) => {
 
         const fetchSavedRoomState = async () => {
             try {
-                const response = await fetch(`/api/rounds/get-state-second-round/${roomId}`);
+                const response = await fetch(`/api/rounds/get-state-second-round/${roomId}`,{
+                    credentials: 'include', // Include JWT cookies
+                });
                 if (response.ok) {
                     const data = await response.json();
                     console.log(data)

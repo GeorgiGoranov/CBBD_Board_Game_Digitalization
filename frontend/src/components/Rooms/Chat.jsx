@@ -17,7 +17,9 @@ const Chat = ({ playerID, socket, group }) => {
     useEffect(() => {
         const fetchMessages = async () => {
             try {
-                const response = await fetch(`/api/rounds/get-message/${roomId}?group=${group}`);
+                const response = await fetch(`/api/rounds/get-message/${roomId}?group=${group}`, {
+                    credentials: 'include', // Include JWT cookies
+                });
                 if (response.ok) {
                     const data = await response.json();
                    
