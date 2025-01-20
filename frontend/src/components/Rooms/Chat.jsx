@@ -7,11 +7,11 @@ const Chat = ({ playerID, socket, group }) => {
     const [currentMessage, setCurrentMessage] = useState('');
     const { roomId } = useParams(); // Fetch roomId from the URL
 
-    const [isAtBottom, setIsAtBottom] = useState(true);
-    const [showNewMessageAlert, setShowNewMessageAlert] = useState(false);
+    // const [isAtBottom, setIsAtBottom] = useState(true);
+    // const [showNewMessageAlert, setShowNewMessageAlert] = useState(false);
 
     const chatContainerRef = useRef(null);
-    const messagesEndRef = useRef(null);
+    // const messagesEndRef = useRef(null);
     const apiUrl = process.env.REACT_APP_BACK_END_URL_HOST;
 
 
@@ -70,31 +70,31 @@ const Chat = ({ playerID, socket, group }) => {
         };
     }, [socket, group]);
 
-    useEffect(() => {
-        if (isAtBottom && messagesEndRef.current) {
-            messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
-        } else if (!isAtBottom && messages.length > 0) {
-            // Check if the last message is from someone other than the current user
-            const lastMessage = messages[messages.length - 1];
-            if (lastMessage.sender !== playerID) {
-                setShowNewMessageAlert(true);
-            }
-        }
-    }, [messages, isAtBottom, playerID]);
+    // useEffect(() => {
+    //     if (isAtBottom && messagesEndRef.current) {
+    //         messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    //     } else if (!isAtBottom && messages.length > 0) {
+    //         // Check if the last message is from someone other than the current user
+    //         const lastMessage = messages[messages.length - 1];
+    //         if (lastMessage.sender !== playerID) {
+    //             setShowNewMessageAlert(true);
+    //         }
+    //     }
+    // }, [messages, isAtBottom, playerID]);
 
-    const handleScroll = () => {
-        const bottom =
-            chatContainerRef.current.scrollHeight - chatContainerRef.current.scrollTop ===
-            chatContainerRef.current.clientHeight;
-        setIsAtBottom(bottom);
-        if (bottom) setShowNewMessageAlert(false);
-    };
-    const handleNewMessageClick = () => {
-        if (messagesEndRef.current) {
-            messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
-        }
-        setShowNewMessageAlert(false); // Hide alert immediately after clicking
-    };
+    // const handleScroll = () => {
+    //     const bottom =
+    //         chatContainerRef.current.scrollHeight - chatContainerRef.current.scrollTop ===
+    //         chatContainerRef.current.clientHeight;
+    //     setIsAtBottom(bottom);
+    //     if (bottom) setShowNewMessageAlert(false);
+    // };
+    // const handleNewMessageClick = () => {
+    //     if (messagesEndRef.current) {
+    //         messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    //     }
+    //     setShowNewMessageAlert(false); // Hide alert immediately after clicking
+    // };
 
 
     return (
@@ -114,11 +114,11 @@ const Chat = ({ playerID, socket, group }) => {
                 ))}
                 <div ref={messagesEndRef} />
             </div>
-            {showNewMessageAlert && (
+            {/* {showNewMessageAlert && (
                 <div className="new-message-alert" onClick={handleNewMessageClick}>
                     New message(s) added - Click to see
                 </div>
-            )}
+            )} */}
             <form className="chat-input" onSubmit={sendMessage}>
                 <input
                     type="text"
