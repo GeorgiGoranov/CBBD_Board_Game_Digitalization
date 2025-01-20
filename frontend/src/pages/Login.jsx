@@ -92,7 +92,7 @@ const Login = () => {
           />
           <button type="submit" className='buttons'>Login</button>
         </form>
-        <button onClick={joinasParticipant}>Join as Participant</button>
+        <button onClick={joinasParticipant} className="joinas">Join as Participant</button>
       </div>
       {error && <div className="error">{error}</div>}
       {loginSuccess && <div className="success">Login successful!</div>}

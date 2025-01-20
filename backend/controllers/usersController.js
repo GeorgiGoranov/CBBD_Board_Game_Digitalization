@@ -209,7 +209,14 @@ const joinLobbySession = async (req, res) => {
 
         const token = createToken(generateObjectIdForParticipants(), 'user', playerUsername, nationality, code);
 
-        res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 }); // cookie operates in milisecond and not in minutes
+       
+        res.cookie("jwt", token, {
+            httpOnly: true,
+            secure: true,
+            sameSite: 'none',
+            maxAge: maxAge * 1000,
+            path: '/',
+        }); // cookie operates in milisecond and not in minutes
 
         return res.status(200).json({ message: 'Player joined the session successfully!' })
 
@@ -227,7 +234,14 @@ const updateTokenGroup = async (req, res) => {
 
         if (role != 'admin') {
             const token = updateeToken(generateObjectIdForParticipants(), 'user', playerUsername, nationality, code, group);
-            res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 }); // cookie operates in milisecond and not in minutes
+           
+            res.cookie("jwt", token, {
+                httpOnly: true,
+                secure: true,
+                sameSite: 'none',
+                maxAge: maxAge * 1000,
+                path: '/',
+            }); // cookie operates in milisecond and not in minutes
         }
 
         return res.status(200).json({ message: 'newToken' })
