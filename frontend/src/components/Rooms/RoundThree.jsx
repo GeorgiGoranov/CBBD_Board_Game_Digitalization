@@ -111,7 +111,10 @@ const RoundThree = ({ roomId, playerID, socket, role, natnality }) => {
 
     useEffect(() => {
 
-        socket.on('updateDilemmaCardData', setCard);
+        socket.on('updateDilemmaCardData', (newCard) => {
+            setCard(newCard);
+            setUserVote(null);  // <--- Reset user's vote here so they can vote on the new card
+          });
         socket.on('updateVotes', setVotes);
         socket.on('next-card-3-go', () => {
             fetchRandomCard()
@@ -125,7 +128,7 @@ const RoundThree = ({ roomId, playerID, socket, role, natnality }) => {
             socket.off('updateDilemmaCardData');
             socket.off('updateVotes');
         };
-    }, [socket]);
+    }, [socket,fetchRandomCard]);
 
 
     if (loading) return <div>Loading...</div>;
