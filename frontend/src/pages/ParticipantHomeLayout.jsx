@@ -37,6 +37,7 @@ const HomeDefautUser = () => {
         // Make a POST request to the backend to join the session
         const response = await fetch(`${apiUrl}/api/routes/join-lobby-session`, {
             method: 'POST',
+            credentials: 'include', // Include JWT cookies
             headers: {
                 'Content-Type': 'application/json',
             },
