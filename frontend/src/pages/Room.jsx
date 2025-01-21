@@ -31,6 +31,7 @@ const Room = () => {
     const [targetGroup, setTargetGroup] = useState('');
     // const [socketMessage, setSocketMessage] = useState(''); // This can be used to display socket events
     const apiUrl = process.env.REACT_APP_BACK_END_URL_HOST;
+    const [nationality, setNationality] = useState('')
 
 
     if (!socketRef.current) {
