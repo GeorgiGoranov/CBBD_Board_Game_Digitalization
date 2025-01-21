@@ -8,12 +8,9 @@ const ProtectedRoute = ({ children, allowedRoles, }) => {
     return <div>Loading...</div>; // Show a loading state while checking authentication
   }
 
-  if (!isAuthenticated) {
-    return <Navigate to="/" replace />;
-  }
-//in case customer knows the website routes
-  if (allowedRoles && !allowedRoles.includes(user?.role)) {
-    return <Navigate to="/duser" replace />;
+  if (!isAuthenticated || (allowedRoles && !allowedRoles.includes(user?.role))) {
+    // Redirect to login if not authenticated or not authorized
+    return <Navigate to="/" />;
   }
 
   return children;

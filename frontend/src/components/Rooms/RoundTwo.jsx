@@ -13,16 +13,17 @@ const RoundTwo = ({ roomId, playerID, socket, group }) => {
     const [categoriesData, setCategoriesData] = useState([]);
     const [collapsedCategories, setCollapsedCategories] = useState({});
     const [dropZones, setDropZones] = useState({
-        box1: [],
-        box2: [],
-        box3: [],
-        box4: [],
-        box5: [],
+        priority1: [],
+        priority2: [],
+        priority3: [],
+        priority4: [],
+        priority5: [],
     });
     const [cursorPositions, setCursorPositions] = useState({});
     const [userActionOccurred, setUserActionOccurred] = useState(false);
 
     const [socketMessage, setSocketMessage] = useState(''); // This can be used to display socket events
+    const apiUrl = process.env.REACT_APP_BACK_END_URL_HOST;
 
 
     const toggleCategoryCollapse = (categoryName) => {
@@ -161,8 +162,9 @@ const RoundTwo = ({ roomId, playerID, socket, group }) => {
                 messages: socketMessage ? [socketMessage] : [] // put the message in the messages array
 
             }];
-            const response = await fetch('/api/rounds/save-state-second-round', {
+            const response = await fetch(`${apiUrl}/api/rounds/save-state-second-round`, {
                 method: 'POST',
+                credentials: 'include', // Include JWT cookies
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     roomId, // Pass the current room ID
@@ -182,7 +184,9 @@ const RoundTwo = ({ roomId, playerID, socket, group }) => {
     useEffect(() => {
         const fetchCategories = async () => {
             try {
-                const response = await fetch('/api/cards/get-all-cards');
+                const response = await fetch(`${apiUrl}/api/cards/get-all-cards`,{
+                    credentials: 'include', // Include JWT cookies
+                });
                 if (response.ok) {
                     const data = await response.json();
 
@@ -225,7 +229,9 @@ const RoundTwo = ({ roomId, playerID, socket, group }) => {
 
         const fetchSavedRoomState = async () => {
             try {
-                const response = await fetch(`/api/rounds/get-state-second-round/${roomId}`);
+                const response = await fetch(`${apiUrl}/api/rounds/get-state-second-round/${roomId}`,{
+                    credentials: 'include', // Include JWT cookies
+                });
                 if (response.ok) {
                     const data = await response.json();
                     console.log(data)
@@ -238,11 +244,11 @@ const RoundTwo = ({ roomId, playerID, socket, group }) => {
                         // setCategoriesData(currentGroup.categories || []);
 
                         setDropZones(currentGroup.dropZones || {
-                            box1: [],
-                            box2: [],
-                            box3: [],
-                            box4: [],
-                            box5: []
+                            priority1: [],
+                            priority2: [],
+                            priority3: [],
+                            priority4: [],
+                            priority5: []
                         });
 
                         if (currentGroup.messages && currentGroup.messages.length > 0) {
@@ -377,7 +383,7 @@ const RoundTwo = ({ roomId, playerID, socket, group }) => {
                 </ul>
 
                 <div className="droppable-box-b">
-                    {['box1', 'box2', 'box3', 'box4', 'box5'].map((box, index) => (
+                    {['priority1', 'priority2', 'priority3', 'priority4', 'priority5'].map((box, index) => (
                         <Droppable droppableId={box} key={box}>
                             {(provided) => (
                                 <div
@@ -385,7 +391,7 @@ const RoundTwo = ({ roomId, playerID, socket, group }) => {
                                     ref={provided.innerRef}
                                     {...provided.droppableProps}
                                 >
-                                    <h2>Box {index + 1}</h2>
+                                    <h2># {index + 1}</h2>
                                     {dropZones[box].map((item, itemIndex) => (
                                         <Draggable
                                             draggableId={item.id}

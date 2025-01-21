@@ -2,6 +2,7 @@
 const sanitizeHtml = require('sanitize-html');
 const ChatRoom = require('../models/ChatModel')
 
+
 const saveRoomStateMode = (RoundModel) => {
     return async (req, res) => {
         const { roomId, groups } = req.body;
@@ -214,26 +215,34 @@ const getMessage = async (req, res) => {
     }
 }
 
-// const getThirdRoomStateMode = (RoundModel) => {
-//     return async (req, res) => {
-//         const { roomId } = req.params;
+const getCurrentStateThirdRound = (RoundModel) => {
+    return async (req, res) => {
+        const { roomId } = req.params;
 
-//         try {
-//             // Find the room by roomId
-//             const round = await RoundModel.findOne({ roomId });
+        try {
+            // Find the room by roomId
+            const room = await RoundModel.findOne({ roomId });
 
-//             if (!round) {
-//                 return res.status(404).json({ message: 'Room not found' });
-//             }
+            if (room && room.cards.length > 0) {
+                // Get the latest card (assuming the last element is the current one)
+                const latestCardEntry = room.cards[room.cards.length - 1];
+                const latestCard = latestCardEntry.card;
+                const votes = latestCardEntry.votes;
 
-//             res.status(200).json(round);
-//         } catch (error) {
-//             console.error('Error fetching room state:', error);
-//             res.status(500).json({ message: 'Error fetching room state', error: error.message });
-//         }
-//     }
-
-// };
+                // Send only the latest card and votes
+                res.status(200).json({
+                    card: latestCard,
+                    votes: votes,
+                });
+            } else {
+                res.status(404).json({ message: 'No card found for this room' });
+            }
+        } catch (error) {
+            console.error('Error fetching room state:', error);
+            res.status(500).json({ message: 'Error fetching room state', error: error.message });
+        }
+    };
+};
 
 
 module.exports = {
@@ -242,6 +251,6 @@ module.exports = {
     getMessage,
     saveRoomStateMode,
     saveThirdRoomStateMode,
-    // getThirdRoomStateMode
+    getCurrentStateThirdRound
 
 }

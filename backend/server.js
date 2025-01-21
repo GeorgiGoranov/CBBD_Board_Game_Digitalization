@@ -1,4 +1,5 @@
 require('dotenv').config()
+
 const express = require('express')
 const userRoutes = require('./routes/users')
 const cardsAndSheetsRoutes = require('./routes/cardsAndSheets')
@@ -26,16 +27,21 @@ app.use((req, res, next) => {
 const io = setupWebSocket(server)
 
 //middleware
-app.use(cookieParser())
 app.use(express.json()) //looks if there is an audit to the request/ if data was sent in to the server
+app.use(cookieParser())
+
+const allowedOrigins = [process.env.FRONT_END_URL_HOST, process.env.BACK_END_URL_HOST];
 app.use(cors({
-  origin: 'http://localhost:3000',  // The exact URL of your frontend
-  methods: ["GET", "POST"],
+  origin: allowedOrigins,
+  methods: ['GET', 'POST', 'OPTIONS', 'PATCH', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Cookie', 'Set-Cookie', 'Accept'],
   credentials: true,
+  exposedHeaders: ['Set-Cookie'],
+
 }));
 
-
-
+// Handle preflight requests
+app.options('*', cors());
 
 //route
 app.use('/api/routes', userRoutes)
@@ -48,13 +54,14 @@ app.use('/api/rounds', rounds)
 mongoose.connect(process.env.MONG_URL_CBBD)
   .then(() => {
     //listener for requests
-    server.listen(process.env.PORT || 4000, () => {
+    server.listen(process.env.PORT, () => {
+
       console.log('SERVER IS RUNNING & connected to db & listening on port', process.env.PORT)
     })
 
 
   }).catch((error) => {
-    console.log(error)
+    console.error('Error connecting to the database:', error.message);
   })
 
 

@@ -4,7 +4,7 @@
     display: grid;
     grid-template-columns: repeat(3,1fr);
     max-height: 800px;
-    width: 600px;
+    width: 800px;
     padding: 8px;
     margin-bottom: 10px;
     border: 1px solid #ddd;
@@ -40,9 +40,7 @@
 .droppable-box-b {
     display: flex;
     flex-direction: row;
-    padding: 20px;
-    background-color: #ffffff;
-    border: 2px dashed #ff0404;
+    max-width: 820px;
     min-height: 100px;
     text-align: center;
 }
@@ -50,8 +48,8 @@
 .droppable-box {
     flex: 1;
     padding: 20px;
-    background-color: #e5ff00;
-    border: 2px dashed #ccc;
+    background-color: var(--lighter-pr);
+    border: 2px dashed #636;
     min-height: 100px;
     text-align: center;
 }
@@ -59,7 +57,7 @@
 
 .dragdrop-container {
     max-width: 900px;
-    border: 2px solid rgb(0, 153, 255);
+ 
     padding: 10px;
     /* Optional for better spacing */
     border-radius: 5px;

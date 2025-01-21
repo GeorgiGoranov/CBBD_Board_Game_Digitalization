@@ -1,8 +1,8 @@
-const API_URL = process.env.REACT_APP_BACKEND_URL;
 
 export const isAuthenticated = async () => {
+  const apiUrl = process.env.REACT_APP_BACK_END_URL_HOST;
     try {
-        const response = await fetch(`${API_URL}/api/routes/isAuth`,{
+        const response = await fetch(`${apiUrl}/api/routes/isAuth`,{
           method: 'GET',
           credentials: 'include', // Send cookies along with the request
         });

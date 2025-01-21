@@ -13,14 +13,15 @@ const Results = () => {
 
 
     const [error, setError] = useState(null);
+    const apiUrl = process.env.REACT_APP_BACK_END_URL_HOST;
 
     const fetchRoundData = async () => {
         try {
             // Run both fetch calls concurrently and handle their results
             const [firstRoundResult, secondRoundResult, thirdRoundResults] = await Promise.allSettled([
-                fetch(`/api/rounds/get-state-first-round/${roomId}`),
-                fetch(`/api/rounds/get-state-second-round/${roomId}`),
-                fetch(`/api/rounds/get-state-third-round/${roomId}`),
+                fetch(`${apiUrl}/api/rounds/get-state-first-round/${roomId}`),
+                fetch(`${apiUrl}/api/rounds/get-state-second-round/${roomId}`),
+                fetch(`${apiUrl}/api/rounds/get-state-third-round/${roomId}`),
 
             ]);
 
@@ -65,7 +66,7 @@ const Results = () => {
 
     const renderDropZones = (groups, roundTitle) => (
         <div>
-            <h3>{roundTitle} Groups:</h3>
+            <h3>{roundTitle} Decisions:</h3>
             {groups.length > 0 ? (
                 groups.map((group, gIndex) => (
                     <div key={gIndex} className="group-section">
@@ -106,7 +107,7 @@ const Results = () => {
 
     const renderThirdRoundCards = (cards) => (
         <div>
-            <h3>Third Round Cards:</h3>
+            <h3>Third Round Decisions:</h3>
             {cards.length > 0 ? (
                 cards.map((cardData, index) => (
                     <div key={index} className="card">

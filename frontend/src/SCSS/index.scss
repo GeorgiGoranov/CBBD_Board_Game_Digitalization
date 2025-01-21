@@ -3,8 +3,10 @@
 
 /* layout */
 :root {
-  --primary: #1aac83;
+  --primary: #636;
   --error: #e7195a;
+  --lighter-pr: rgba(167, 107, 167, 0.322);
+  --green: #155724;
 }
 
 body {
@@ -13,10 +15,11 @@ body {
   font-family: "Poppins";
 }
 header {
-  background: #fff;
+  background: #636;
 }
 header .container h1{
  font-size: 1.5rem;
+ color: #fff;
 }
 header .container {
   max-width: 1400px;
@@ -124,4 +127,55 @@ div.error {
   box-sizing: border-box;
   max-width: 500px;
   text-align: center;
+
+}
+
+.dropdown-container {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 5px 10px;
+  display: flex;
+  align-items: center;
+  width: 100px;
+  justify-content: space-between;
+
+}
+
+.dropdown-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.dropdown-header i {
+  font-size: 1.5rem;
+  color: #5c2d91;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin-top: 5px;
+  list-style: none;
+  padding: 0;
+  z-index: 1000;
+}
+
+.dropdown-menu li {
+  padding: 10px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.dropdown-menu li:hover {
+  background-color: var(--lighter-pr);
 }

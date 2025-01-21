@@ -8,20 +8,33 @@ const API_URL = process.env.REACT_APP_BACKEND_URL;
 const NavBar = () => {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const navigate = useNavigate();
-  const {isAuthenticated, logout } = useAuth();
-  const {language, setLanguage} = useLanguage()
+  const { isAuthenticated, logout } = useAuth();
+  const { language, setLanguage } = useLanguage()
+  const [isOpen, setIsOpen] = useState(false);
+  const apiUrl = process.env.REACT_APP_BACK_END_URL_HOST;
+
+  const toggleDropdown = () => {
+    setIsOpen(!isOpen);
+  };
+
+  const handleSelect = (value) => {
+    setLanguage(value);
+    setIsOpen(false);
+  };
 
   const handleLogout = async () => {
     if (isLoggingOut) return;  // Prevent multiple logouts
     setIsLoggingOut(true);      // Disable the button
 
     try {
-      const response = await fetch(`${API_URL}/api/routes/logout`, {
+      const response = await fetch(`${apiUrl}/api/routes/logout`, {
         method: 'GET',
         credentials: 'include',  // Include cookies for the request
       });
 
       if (response.ok) {
+        console.error('Logout!!');
+
         await logout();  // Clear user context
         navigate('/');  // Redirect to login after logout
       } else {
@@ -40,14 +53,18 @@ const NavBar = () => {
         <div className="items">
           <h1>CBBD Competency Game</h1>
           <div className="right-side-container">
-            <select
-              className="input"
-              value={language}
-              onChange={(e) => setLanguage(e.target.value)}
-              placeholder="Select a Nationality">
-              <option value="de">de</option>
-              <option value="nl">nl</option>
-            </select>
+            <div className="dropdown-container" onClick={toggleDropdown}>
+              <div className="dropdown-header">
+                <i className="bi bi-globe"></i>
+                <span>{language}</span>
+              </div>
+              {isOpen && (
+                <ul className="dropdown-menu">
+                  <li onClick={() => handleSelect("de")}>German (de)</li>
+                  <li onClick={() => handleSelect("nl")}>Dutch (nl)</li>
+                </ul>
+              )}
+            </div>
             {isAuthenticated && (
               <button
                 onClick={handleLogout}

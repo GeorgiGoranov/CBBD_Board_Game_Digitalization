@@ -2,8 +2,7 @@ import { useState, useEffect } from "react"
 import '../SCSS/login.scss'
 import { useNavigate } from "react-router-dom";
 import { useAuth } from '../auth/authContext';
-const API_URL = process.env.REACT_APP_BACKEND_URL;
-
+const apiUrl = process.env.REACT_APP_BACK_END_URL_HOST;
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -13,6 +12,7 @@ const Login = () => {
 
   const navigate = useNavigate()
   const { isAuthenticated, login } = useAuth();
+  const apiUrl = process.env.REACT_APP_BACK_END_URL_HOST;
 
   // Check if user is already logged in and redirect to home if so
   useEffect(() => {
@@ -31,7 +31,7 @@ const Login = () => {
 
 
     try {
-      const response = await fetch(`${API_URL}/api/routes/login`, {
+      const response = await fetch(`${apiUrl}/api/routes/login`, {
         method: 'POST',
         body: JSON.stringify(userLogin),
         headers: {
@@ -61,10 +61,15 @@ const Login = () => {
         }
       }
     } catch (error) {
-      setError('An error occurred during login. Please try again.');
+      setError('An error occurred during login. Please try again. ' + error);
     }
 
   }
+
+  const joinasParticipant = async (e) => {
+      navigate('/duser')
+  }
+
 
   return (
     <div className="login_container">
@@ -87,6 +92,7 @@ const Login = () => {
           />
           <button type="submit" className='buttons'>Login</button>
         </form>
+        <button onClick={joinasParticipant} className="joinas">Join as Participant</button>
       </div>
       {error && <div className="error">{error}</div>}
       {loginSuccess && <div className="success">Login successful!</div>}

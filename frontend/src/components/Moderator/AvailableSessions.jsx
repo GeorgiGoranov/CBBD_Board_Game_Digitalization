@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import "../../SCSS/availableSessions.scss"
 import { useSessionsContext } from '../../hooks/useSessionContext';
 import { useNavigate } from 'react-router-dom';
-const API_URL = process.env.REACT_APP_BACKEND_URL;
+const apiUrl = process.env.REACT_APP_BACK_END_URL_HOST;
+
 
 
 const AvailableSessions = () => {
@@ -17,7 +18,10 @@ const AvailableSessions = () => {
         // Function to fetch available sessions
         const fetchSessions = async () => {
             try {
-                const response = await fetch(`${API_URL}/api/routes/available-sessions`);
+                const response = await fetch(`${apiUrl}/api/routes/available-sessions`,{
+                    method: 'GET',
+                    credentials: 'include', // Include cookies in the request
+                });
                 if (!response.ok) {
                     throw new Error('Error fetching sessions');
                 }
@@ -49,8 +53,9 @@ const AvailableSessions = () => {
     const handleDeleteClick = async (sessionCode) => {
         console.log(sessionCode)
         try {
-            const response = await fetch(`${API_URL}/api/routes/delete-session/${sessionCode}`, {
+            const response = await fetch(`${apiUrl}/api/routes/delete-session/${sessionCode}`, {
                 method: 'DELETE',
+                credentials: 'include', // Include JWT cookies
             });
             if (!response.ok) {
                 throw new Error('Error deleting session');
@@ -67,8 +72,9 @@ const AvailableSessions = () => {
     const handleActivityClick = async (sessionCode) => {
         try {
             // Send request to backend to toggle activity
-            const response = await fetch(`${API_URL}/api/routes/toggle-activity/${sessionCode}`, {
+            const response = await fetch(`${apiUrl}/api/routes/toggle-activity/${sessionCode}`, {
                 method: 'PATCH',
+                credentials: 'include', // Include JWT cookies
                 headers: { 'Content-Type': 'application/json' },
             });
             const updatedSession = await response.json();

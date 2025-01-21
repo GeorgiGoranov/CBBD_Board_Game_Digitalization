@@ -1,5 +1,6 @@
 const { Server } = require('socket.io');
 const { saveMessage } = require('./controllers/roundsController');
+require('dotenv').config()
 
 
 // In-memory stores
@@ -13,7 +14,7 @@ const roomVotes = {}; // Store votes per room: { [roomId]: { agree: number, disa
 function setupWebSocket(server) {
   const io = new Server(server, {
     cors: {
-      origin: 'https://cbbd-board-game-digitalization.onrender.com',
+      origin: `${process.env.FRONT_END_URL_HOST}`,
       methods: ["GET", "POST"],
       credentials: true, // Enable credentials (cookies, authorization headers)
     }
@@ -151,6 +152,7 @@ function setupWebSocket(server) {
 
       console.log(`Round changed to ${roundNumber} in room ${roomId}`);
     });
+    
     socket.on('newDilemmaCardData', (data) => {
       const { roomId, card } = data;
 
@@ -179,6 +181,22 @@ function setupWebSocket(server) {
       votes = { agree: 0, disagree: 0 }; // Reset vote counts
       io.emit('updateVotes', votes); // Notify all clients to reset their vote counts
     });
+
+    socket.on('stopGame', (data) => {
+      const { roomId } = data;
+
+      // Broadcast 'gameStopped' to all sockets in roomId
+      io.to(roomId).emit('gameStopped');
+    });
+
+    socket.on('next-card-3', (data) => {
+      const { roomId } = data;
+
+      // Broadcast 'gameStopped' to all sockets in roomId
+      io.to(roomId).emit('next-card-3-go');
+    });
+
+
 
     socket.on('disconnect', () => {
       console.log(`User back-end disconnected: ${socket.id}`);

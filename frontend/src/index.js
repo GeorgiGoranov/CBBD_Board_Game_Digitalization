@@ -11,11 +11,11 @@ import { SessionContextProvider } from './context/SessionContext';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
- 
-    <SessionContextProvider>
-      <App />
-    </SessionContextProvider>
 
- 
+  <SessionContextProvider>
+    <App />
+  </SessionContextProvider>
+
+
 );
 

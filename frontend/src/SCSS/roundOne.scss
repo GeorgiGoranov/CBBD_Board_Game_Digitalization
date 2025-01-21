@@ -1,3 +1,4 @@
+
 .api-list {
     display: flex;
     flex-direction: column;
@@ -42,9 +43,7 @@
 .droppable-box-b {
     display: flex;
     flex-direction: row;
-    padding: 20px;
-    background-color: #ffffff;
-    border: 2px dashed #ff0404;
+  
     min-height: 100px;
     text-align: center;
 }
@@ -52,22 +51,25 @@
 .droppable-box {
     flex: 1;
     padding: 20px;
-    background-color: #e5ff00;
+    background-color: var(--lighter-pr);
     border: 2px dashed #ccc;
     min-height: 100px;
     text-align: center;
+}
+.box-text{
+    color: var(--primary);
 }
 
 
 .dragdrop-container {
     max-width: 1000px;
-    border: 2px solid rgb(0, 153, 255);
     padding: 10px;
-    /* Optional for better spacing */
     border-radius: 5px;
-    /* Optional for rounded corners */
 }
 
 .draggable-item {
     border: 2px dashed #ff0000;
+  
 }
+
+
