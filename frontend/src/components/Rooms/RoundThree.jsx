@@ -99,6 +99,11 @@ const RoundThree = ({ roomId, playerID, socket, role, natnality }) => {
     };
 
     const handleVote = (option) => {
+        if (role === 'admin') {
+            // Prevent admins from voting
+            alert('Admins are not allowed to vote');
+            return;
+        }
         socket.emit('vote', { vote: option, roomId });
         setUserVote(option); // Store the user's selected option
         saveState(null, option); // Save the selected option
@@ -149,9 +154,9 @@ const RoundThree = ({ roomId, playerID, socket, role, natnality }) => {
                         <div
                             key={index}
                             className={`option-item-dilemma ${userVote === option ? 'voted' : ''}`}
-                            onClick={() => userVote === null && handleVote(option)}
+                            onClick={() => userVote === null && role !== 'admin' && handleVote(option)}
                             style={{
-                                cursor: userVote === null ? "pointer" : "not-allowed",
+                                cursor: userVote === null && role !== 'admin' ? "pointer" : "not-allowed",
                                 backgroundColor: userVote === option ? "#cce5ff" : ""
                             }}
                         >

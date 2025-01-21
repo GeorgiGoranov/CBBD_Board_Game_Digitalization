@@ -1,5 +1,4 @@
 
-
 export const isAuthenticated = async () => {
   const apiUrl = process.env.REACT_APP_BACK_END_URL_HOST;
     try {

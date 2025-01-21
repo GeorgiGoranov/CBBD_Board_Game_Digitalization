@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth/authContext';
 import { useLanguage } from '../context/LanguageContext';
+const API_URL = process.env.REACT_APP_BACKEND_URL;
+
 
 const NavBar = () => {
   const [isLoggingOut, setIsLoggingOut] = useState(false);

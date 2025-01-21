@@ -116,7 +116,12 @@ const Results = () => {
                         <div className="votes">
                             {Object.keys(cardData.votes).length > 0 ? (
                                 Object.entries(cardData.votes).map(([option, voteData]) => (
-                                    <p key={option}>{option} Votes: {voteData.count}</p>
+                                    <div key={option}>
+                                        <p>{option} Votes: {voteData.count}</p>
+                                        <p>German: {voteData.nationalities.german || 0}</p>
+                                        <p>Dutch: {voteData.nationalities.dutch || 0}</p>
+                                        <p>Other: {voteData.nationalities.other || 0}</p>
+                                    </div>
                                 ))
                             ) : (
                                 <p>No votes recorded.</p>

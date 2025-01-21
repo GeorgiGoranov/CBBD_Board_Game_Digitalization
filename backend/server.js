@@ -10,19 +10,19 @@ const cors = require('cors');
 const cookieParser = require('cookie-parser')
 const http = require('http')
 
-
-
 // Import WebSocket setup
 const setupWebSocket = require('./websocket')
 
 //express app
 const app = express()
+
 const server = http.createServer(app)
 
 app.use((req, res, next) => {
   console.log(req.path, req.method)
   next()
 })
+
 
 const io = setupWebSocket(server)
 
