@@ -139,17 +139,14 @@ const RoundTwo = ({ roomId, playerID, socket, group }) => {
 
     // Function to update cursor positions
     const updateCursorDisplay = (data) => {
-        const container = document.querySelector('.room-container');
-        if (container) {
-
-            setCursorPositions((prevPositions) => ({
-                ...prevPositions,
-                [data.playerID]: {
-                    x: data.x,
-                    y: data.y
-                },
-            }));
-        }
+        setCursorPositions((prevPositions) => ({
+            ...prevPositions,
+            [data.playerID]: {
+                x: data.x,
+                y: data.y - 50,
+                group: data.group
+            },
+        }));
     };
 
 
@@ -184,7 +181,7 @@ const RoundTwo = ({ roomId, playerID, socket, group }) => {
     useEffect(() => {
         const fetchCategories = async () => {
             try {
-                const response = await fetch(`${apiUrl}/api/cards/get-all-cards`,{
+                const response = await fetch(`${apiUrl}/api/cards/get-all-cards`, {
                     credentials: 'include', // Include JWT cookies
                 });
                 if (response.ok) {
@@ -229,7 +226,7 @@ const RoundTwo = ({ roomId, playerID, socket, group }) => {
 
         const fetchSavedRoomState = async () => {
             try {
-                const response = await fetch(`${apiUrl}/api/rounds/get-state-second-round/${roomId}`,{
+                const response = await fetch(`${apiUrl}/api/rounds/get-state-second-round/${roomId}`, {
                     credentials: 'include', // Include JWT cookies
                 });
                 if (response.ok) {
@@ -275,7 +272,7 @@ const RoundTwo = ({ roomId, playerID, socket, group }) => {
 
     useEffect(() => {
         // Listen for drag-and-drop updates from other clients
-        socket.on('dragDropUpdate', ({ source, destination, movedItem,playerID: senderID }) => {
+        socket.on('dragDropUpdate', ({ source, destination, movedItem, playerID: senderID }) => {
             // Ignore the update if it came from the same player who performed the drag locally
             if (senderID !== playerID) {
                 handleExternalDragDrop(source, destination, movedItem);
@@ -312,6 +309,7 @@ const RoundTwo = ({ roomId, playerID, socket, group }) => {
                 y: event.clientY,
                 playerID,
                 gameCode: roomId,
+                group
             };
             socket.emit('cursorMove', position);
         };
@@ -417,25 +415,27 @@ const RoundTwo = ({ roomId, playerID, socket, group }) => {
                     ))}
                 </div>
             </DragDropContext>
-            {Object.entries(cursorPositions).map(([playerID, position]) => (
-                <div className='playerCursorID'
-                    key={playerID}
-                    style={{
-                        position: 'absolute',
-                        top: position.y,
-                        left: position.x,
-                        pointerEvents: 'none',
-                        transform: 'translate(-50%, -50%)',
-                        backgroundColor: 'rgba(0, 0, 255, 0.5)',
-                        width: '10px',
-                        height: '10px',
-                        borderRadius: '50%',
-                        zIndex: 1000,
-                    }}
-                >
-                    <span style={{ fontSize: '10px', color: 'red' }}>{playerID}</span>
-                </div>
-            ))}
+            {Object.entries(cursorPositions)
+                    .filter(([pid, pos]) => pos.group === group)
+                    .map(([playerID, position]) => (
+                        <div className='playerCursorID'
+                            key={playerID}
+                            style={{
+                                position: 'absolute',
+                                top: position.y,
+                                left: position.x,
+                                pointerEvents: 'none',
+                                transform: 'translate(-50%, -50%)',
+                                backgroundColor: 'rgba(0, 0, 255, 0.5)',
+                                width: '10px',
+                                height: '10px',
+                                borderRadius: '50%',
+                                zIndex: 1000,
+                            }}>
+                            <span style={{ fontSize: '10px', color: 'red' }}>{playerID}</span>
+                        </div>
+                    ))}
+
         </div>
     );
 };

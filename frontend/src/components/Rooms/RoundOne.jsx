@@ -108,7 +108,7 @@ const RoundOne = ({ roomId, playerID, socket, group }) => {
         setCursorPositions((prevPositions) => ({
             ...prevPositions,
             [data.playerID]: {
-                x: data.x ,
+                x: data.x,
                 y: data.y - 50,
                 group: data.group
             },
@@ -150,7 +150,7 @@ const RoundOne = ({ roomId, playerID, socket, group }) => {
     useEffect(() => {
         const fetchCategories = async () => {
             try {
-                const response = await fetch(`${apiUrl}/api/cards/get-all-categories`,{
+                const response = await fetch(`${apiUrl}/api/cards/get-all-categories`, {
                     credentials: 'include', // Include JWT cookies
                 });
                 if (response.ok) {
@@ -166,7 +166,7 @@ const RoundOne = ({ roomId, playerID, socket, group }) => {
 
         const fetchSavedRoomState = async () => {
             try {
-                const response = await fetch(`${apiUrl}/api/rounds/get-state-first-round/${roomId}`,{
+                const response = await fetch(`${apiUrl}/api/rounds/get-state-first-round/${roomId}`, {
                     credentials: 'include', // Include JWT cookies
                 });
                 if (response.ok) {
@@ -304,9 +304,9 @@ const RoundOne = ({ roomId, playerID, socket, group }) => {
                     </ul>
                     <div className="droppable-box-b">
                         {/* Render the four drop zones (boxes) */}
-                        {['priority1', 'priority2','priority3', 'priority4'].map((box, index) => (
+                        {['priority1', 'priority2', 'priority3', 'priority4'].map((box, index) => (
                             <Droppable droppableId={box} key={box} >
-                                {(provided,snapshot) => (
+                                {(provided, snapshot) => (
                                     <div
                                         className="droppable-box"
                                         ref={provided.innerRef}
@@ -327,7 +327,7 @@ const RoundOne = ({ roomId, playerID, socket, group }) => {
                                                             {...provided.draggableProps}
                                                             {...provided.dragHandleProps}
                                                             className="draggable-item"
-                                                            
+
                                                         >
                                                             {item.category}
                                                         </div>
