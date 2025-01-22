@@ -29,36 +29,90 @@ const createCards = (CardModel) => {
     };
 };
 
-const getOneCardPerCategory = (CardModel) => {
+const getOneCardPerCategory = (CardModel, RoundModel) => {
     return async (req, res) => {
         try {
-            // Fetch all distinct categories
-            const categories = await CardModel.distinct('category');
-            if (!categories || categories.length === 0) {
-                return res.status(404).json({ message: 'No categories found' });
+            // 1) Grab roomId from query (or from req.body if you prefer)
+            const { roomId } = req.params;
+
+            console.log(roomId)
+            if (!roomId) {
+                return res.status(400).json({ message: 'roomId is required' });
             }
 
-            // Randomly pick one category
-            const randomCategory = categories[Math.floor(Math.random() * categories.length)];
+            // 2) Find the round doc to see which subcategories are already used
+            const round = await RoundModel.findOne({ roomId });
+            const usedSet = new Set();
+            // This will store something like "category|subcategoryName"
 
-            // Find one random card within the selected category
-            const card = await CardModel.findOne({ category: randomCategory }).select('category subcategories').lean();
-
-            if (!card || !card.subcategories || card.subcategories.length === 0) {
-                return res.status(404).json({ message: 'No subcategories found for this category' });
+            if (round && round.cards && round.cards.length > 0) {
+                for (const c of round.cards) {
+                    const cat = c.card.category;
+                    const subcat = c.card.subcategory;
+                    usedSet.add(`${cat}||${subcat}`);
+                }
             }
 
-            // Randomly pick one subcategory
-            const randomIndex = Math.floor(Math.random() * card.subcategories.length);
-            const selectedSubcategory = card.subcategories[randomIndex];
+            // 3) Fetch all categories from the CardModel
+            //    We'll do a normal find (or .find({}) to get everything)
+            //    Then remove subcategories that were used
+            const allCards = await CardModel.find({}).lean();
 
-            // Send the selected subcategory as the response
-            res.status(200).json({
-                category: card.category,
-                subcategory: selectedSubcategory.name,
-                options: selectedSubcategory.options,
+            // allCards is an array of documents, each doc looks like:
+            // {
+            //   category: "...",
+            //   subcategories: [
+            //     {
+            //       name: "...",
+            //       options: { nl: "...", de: "..." }
+            //     },
+            //     ...
+            //   ]
+            // }
+
+            // 4) Filter out subcategories we already used
+            //    Build an array of possible picks of the form:
+            //    {
+            //       category: 'foo',
+            //       subcategory: subcatDoc,
+            //    }
+            const possiblePicks = [];
+            for (const doc of allCards) {
+                const { category, subcategories } = doc;
+
+                // remove subcategories that are used
+                const filteredSubcats = subcategories.filter(sc => {
+                    const uniqueKey = `${category}||${sc.name}`;
+                    return !usedSet.has(uniqueKey);
+                });
+
+                // for each still-available subcategory, push a "pick" object
+                filteredSubcats.forEach(sc => {
+                    possiblePicks.push({
+                        category,
+                        subcategory: sc.name,
+                        options: sc.options,
+                    });
+                });
+            }
+
+            // 5) If no possible subcategories left, return 404 or similar
+            if (possiblePicks.length === 0) {
+                return res.status(404).json({ message: 'No more available subcategories left' });
+            }
+
+            // 6) Randomly pick from possiblePicks
+            const randomIndex = Math.floor(Math.random() * possiblePicks.length);
+            const randomPick = possiblePicks[randomIndex];
+
+            // 7) Send it back
+            return res.status(200).json({
+                category: randomPick.category,
+                subcategory: randomPick.subcategory,
+                options: randomPick.options,
             });
         } catch (error) {
+            console.error('Error fetching random card', error);
             res.status(500).json({ message: 'Error fetching random card', error: error.message });
         }
     };

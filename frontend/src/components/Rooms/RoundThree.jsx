@@ -12,6 +12,32 @@ const RoundThree = ({ roomId, playerID, socket, role, natnality }) => {
     const [userVote, setUserVote] = useState(null);
     const apiUrl = process.env.REACT_APP_BACK_END_URL_HOST;
 
+ const fetchRandomCard = async () => {
+        if (role === 'admin') {
+            try {
+                const response = await fetch(`${apiUrl}/api/cards/dilemma/random/${roomId}`,{
+                    credentials: 'include', // Include JWT cookies
+                });
+                if (!response.ok) {
+                    throw new Error('Failed to fetch a random card');
+                }
+                const data = await response.json();
+                setCard(data);
+
+                // Save the new card to the backend
+                await saveState(data, null);
+
+                // Emit the card to all players in the room
+                socket.emit('newDilemmaCardData', { roomId, card: data });
+
+            } catch (err) {
+                setError(err.message);
+            } finally {
+                setLoading(false);
+            }
+        }
+
+    };
 
     const saveState = useCallback(async (currentCard, currentVote) => {
         if (role === 'admin') {
@@ -46,57 +72,32 @@ const RoundThree = ({ roomId, playerID, socket, role, natnality }) => {
 
     }, [roomId, playerID, role]);
 
-    const fetchRandomCard = async () => {
-        if (role === 'admin') {
-            try {
-                const response = await fetch(`${apiUrl}/api/cards/dilemma/random`,{
-                    credentials: 'include', // Include JWT cookies
-                });
-                if (!response.ok) {
-                    throw new Error('Failed to fetch a random card');
-                }
-                const data = await response.json();
-                setCard(data);
+   
 
-                // Save the new card to the backend
-                await saveState(data, null);
-
-                // Emit the card to all players in the room
-                socket.emit('newDilemmaCardData', { roomId, card: data });
-
-            } catch (err) {
-                setError(err.message);
-            } finally {
-                setLoading(false);
-            }
-        }
-
-    };
-
-    const fetchCurrentState = async () => {
-        try {
-            const response = await fetch(`${apiUrl}/api/rounds/get-state-third-round/${roomId}`,{
-                credentials: 'include', // Include JWT cookies
-            });
-            if (!response.ok) {
-                throw new Error('Failed to fetch the current state');
-            }
-            const data = await response.json();
-            console.log(data)
-            if (data.card) {
-                setCard(data.card);
-            }
-            setVotes(data.votes || {});
-            // If the user has already voted, set the userVote
-            if (data.votes && data.votes[playerID]) {
-                setUserVote(data.votes[playerID]);
-            }
-        } catch (err) {
-            setError(err.message);
-        } finally {
-            setLoading(false);
-        }
-    };
+    // const fetchCurrentState = async () => {
+    //     try {
+    //         const response = await fetch(`${apiUrl}/api/rounds/get-state-third-round/${roomId}`,{
+    //             credentials: 'include', // Include JWT cookies
+    //         });
+    //         if (!response.ok) {
+    //             throw new Error('Failed to fetch the current state');
+    //         }
+    //         const data = await response.json();
+    //         console.log(data)
+    //         if (data.card) {
+    //             setCard(data.card);
+    //         }
+    //         setVotes(data.votes || {});
+    //         // If the user has already voted, set the userVote
+    //         if (data.votes && data.votes[playerID]) {
+    //             setUserVote(data.votes[playerID]);
+    //         }
+    //     } catch (err) {
+    //         setError(err.message);
+    //     } finally {
+    //         setLoading(false);
+    //     }
+    // };
 
     const handleVote = (option) => {
         if (role === 'admin') {
@@ -111,7 +112,7 @@ const RoundThree = ({ roomId, playerID, socket, role, natnality }) => {
 
     useEffect(() => {
         fetchRandomCard()
-        fetchCurrentState()
+        // fetchCurrentState()
     }, [])
 
     useEffect(() => {
