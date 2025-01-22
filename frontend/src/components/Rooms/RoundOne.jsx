@@ -17,6 +17,7 @@ const RoundOne = ({ roomId, playerID, socket, group }) => {
     const [userActionOccurred, setUserActionOccurred] = useState(false);
 
     const [socketMessage, setSocketMessage] = useState(''); // This can be used to display socket events
+    const [socketMessageFeedback, setSocketMessageFeedback] = useState(''); // This can be used to display socket events
     const apiUrl = process.env.REACT_APP_BACK_END_URL_HOST;
 
 
@@ -26,6 +27,13 @@ const RoundOne = ({ roomId, playerID, socket, group }) => {
 
         // If the item is moved within the same list and position, do nothing
         if (source.droppableId === destination.droppableId && source.index === destination.index) {
+            return;
+        }
+
+        // Prevent adding to a destination that already has an item
+        if (destination.droppableId !== 'ROOT' && dropZones[destination.droppableId].length > 0) {
+            setSocketMessageFeedback(`All drop boxes can only hold one item!`);
+            sendGroupMessage('All drop boxes can only hold one item!')
             return;
         }
 
@@ -55,14 +63,10 @@ const RoundOne = ({ roomId, playerID, socket, group }) => {
                 return updatedCategories;
             });
         } else {
-            setDropZones((prev) => {
-                const updatedDestinationItems = Array.from(prev[destination.droppableId]);
-                updatedDestinationItems.splice(destination.index, 0, movedItem); // Insert item into destination drop zone
-                return {
-                    ...prev,
-                    [destination.droppableId]: updatedDestinationItems,
-                };
-            });
+            setDropZones((prev) => ({
+                ...prev,
+                [destination.droppableId]: [movedItem], // Replace any existing item with the moved item
+            }));
         }
 
         // Emit the drag-drop event to the server with relevant data
@@ -70,6 +74,14 @@ const RoundOne = ({ roomId, playerID, socket, group }) => {
         // Indicate that a user action has occurred
         setUserActionOccurred(true);
 
+    };
+
+    const sendGroupMessage = (message) => {
+        socket.emit('sendFeedbackGroupMessage', {
+            roomId,
+            group, // Include the group identifier
+            message,
+        });
     };
 
     const handleExternalDragDrop = (source, destination, movedItem) => {
@@ -225,10 +237,15 @@ const RoundOne = ({ roomId, playerID, socket, group }) => {
             setSocketMessage(`${message}`);
         });
 
+        socket.on('receiveFeedbackGroupMessage', ({ message }) => {
+            setSocketMessageFeedback(message); // Display the received message
+        });
+
         return () => {
             socket.off('cursorUpdate');
             socket.off('dragDropUpdate');
             socket.off('receiveGroupMessage');
+            socket.off('receiveFeedbackGroupMessage'); 
         }
     }, [socket])
 
@@ -265,7 +282,7 @@ const RoundOne = ({ roomId, playerID, socket, group }) => {
         <div className='round-one-container'>
             {socketMessage && <p>{socketMessage}</p>}
 
-            <div className='dragdrop-container' >
+            <div className='dragdrop-container-1' >
                 <DragDropContext onDragEnd={handleDragDrop}   >
                     <ul className='api-list'>
                         <Droppable droppableId='ROOT' >
@@ -346,6 +363,10 @@ const RoundOne = ({ roomId, playerID, socket, group }) => {
 
 
                 </DragDropContext>
+                <div className='feedback-box-round-1'>
+
+                    {socketMessageFeedback && <div className='error' >{socketMessageFeedback}</div>}
+                </div>
 
                 {Object.entries(cursorPositions)
                     .filter(([pid, pos]) => pos.group === group)

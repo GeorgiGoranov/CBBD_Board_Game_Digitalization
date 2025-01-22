@@ -152,7 +152,7 @@ function setupWebSocket(server) {
 
       console.log(`Round changed to ${roundNumber} in room ${roomId}`);
     });
-    
+
     socket.on('newDilemmaCardData', (data) => {
       const { roomId, card } = data;
 
@@ -194,6 +194,18 @@ function setupWebSocket(server) {
 
       // Broadcast 'gameStopped' to all sockets in roomId
       io.to(roomId).emit('next-card-3-go');
+    });
+
+    socket.on('sendFeedbackGroupMessage', ({ roomId, group, message }) => {
+
+      if (!rooms[roomId]) return;
+      
+
+      const targetPlayers = rooms[roomId].filter(player => String(player.group) === String(group));
+
+      targetPlayers.forEach(player => {
+        io.to(player.socketId).emit('receiveFeedbackGroupMessage', { message });
+      });
     });
 
 
