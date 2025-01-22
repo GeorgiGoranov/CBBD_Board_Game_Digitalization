@@ -15,7 +15,10 @@ body {
   font-family: "Poppins";
 }
 header {
+  display: flex; /* Make header a flex container */
+  align-items: center; /* Vertically align items */
   background: #636;
+ 
 }
 header .container h1{
  font-size: 1.5rem;
@@ -26,6 +29,14 @@ header .container {
   margin: 0 auto;
 }
 
+header img {
+
+  background-color: #fff;
+}
+header .container {
+  flex: 1; /* Allow the container to take the remaining space */
+}
+
 header a {
   color: #333;
   text-decoration: none;
@@ -33,7 +44,7 @@ header a {
 
 header .items{
   display: flex;
-  justify-content: space-between;
+  justify-content: space-around;
   align-items: center;
   
 }
