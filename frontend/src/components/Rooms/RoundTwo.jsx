@@ -17,8 +17,31 @@ const RoundTwo = ({ roomId, playerID, socket, group }) => {
         priority2: [],
         priority3: [],
         priority4: [],
-        priority5: [],
+
     });
+
+    const boxMessages = {
+        en: {
+            priority1: "Competencies (max. 5)",
+            priority2: "Skills (max. 5)",
+            priority3: "Education (max. 2)",
+            priority4: "Experience (max. 2)",
+        },
+        nl: {
+            priority1: "Competenties (max. 5)",
+            priority2: "Vaardigheden (max. 5)",
+            priority3: "Opleiding (max. 2)",
+            priority4: "Ervaring (max. 2)",
+        },
+        de: {
+            priority1: "Kompetenzen (max. 5)",
+            priority2: "Fähigkeiten (max. 5)",
+            priority3: "Bildung (max. 2)",
+            priority4: "Erfahrung (max. 2)",
+        },
+    };
+
+
     const [cursorPositions, setCursorPositions] = useState({});
     const [userActionOccurred, setUserActionOccurred] = useState(false);
 
@@ -244,8 +267,7 @@ const RoundTwo = ({ roomId, playerID, socket, group }) => {
                             priority1: [],
                             priority2: [],
                             priority3: [],
-                            priority4: [],
-                            priority5: []
+                            priority4: []
                         });
 
                         if (currentGroup.messages && currentGroup.messages.length > 0) {
@@ -330,6 +352,9 @@ const RoundTwo = ({ roomId, playerID, socket, group }) => {
     }, [userActionOccurred, saveState]);
 
 
+
+
+
     return (
         <div>
             {socketMessage && <p>{socketMessage}</p>}
@@ -381,7 +406,7 @@ const RoundTwo = ({ roomId, playerID, socket, group }) => {
                 </ul>
 
                 <div className="droppable-box-b">
-                    {['priority1', 'priority2', 'priority3', 'priority4', 'priority5'].map((box, index) => (
+                    {['priority1', 'priority2', 'priority3', 'priority4'].map((box, index) => (
                         <Droppable droppableId={box} key={box}>
                             {(provided) => (
                                 <div
@@ -389,7 +414,13 @@ const RoundTwo = ({ roomId, playerID, socket, group }) => {
                                     ref={provided.innerRef}
                                     {...provided.droppableProps}
                                 >
-                                    <h2># {index + 1}</h2>
+                                    <div className='box-description'>
+                                        <h2># {index + 1}</h2>
+                                        <h6>{boxMessages[language][box]}</h6>
+                                    </div>
+
+
+
                                     {dropZones[box].map((item, itemIndex) => (
                                         <Draggable
                                             draggableId={item.id}
@@ -416,25 +447,25 @@ const RoundTwo = ({ roomId, playerID, socket, group }) => {
                 </div>
             </DragDropContext>
             {Object.entries(cursorPositions)
-                    .filter(([pid, pos]) => pos.group === group)
-                    .map(([playerID, position]) => (
-                        <div className='playerCursorID'
-                            key={playerID}
-                            style={{
-                                position: 'absolute',
-                                top: position.y,
-                                left: position.x,
-                                pointerEvents: 'none',
-                                transform: 'translate(-50%, -50%)',
-                                backgroundColor: 'rgba(0, 0, 255, 0.5)',
-                                width: '10px',
-                                height: '10px',
-                                borderRadius: '50%',
-                                zIndex: 1000,
-                            }}>
-                            <span style={{ fontSize: '10px', color: 'red' }}>{playerID}</span>
-                        </div>
-                    ))}
+                .filter(([pid, pos]) => pos.group === group)
+                .map(([playerID, position]) => (
+                    <div className='playerCursorID'
+                        key={playerID}
+                        style={{
+                            position: 'absolute',
+                            top: position.y,
+                            left: position.x,
+                            pointerEvents: 'none',
+                            transform: 'translate(-50%, -50%)',
+                            backgroundColor: 'rgba(0, 0, 255, 0.5)',
+                            width: '10px',
+                            height: '10px',
+                            borderRadius: '50%',
+                            zIndex: 1000,
+                        }}>
+                        <span style={{ fontSize: '10px', color: 'red' }}>{playerID}</span>
+                    </div>
+                ))}
 
         </div>
     );

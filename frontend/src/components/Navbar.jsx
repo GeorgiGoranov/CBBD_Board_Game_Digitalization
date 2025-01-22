@@ -62,6 +62,7 @@ const NavBar = () => {
                 <ul className="dropdown-menu">
                   <li onClick={() => handleSelect("de")}>German (de)</li>
                   <li onClick={() => handleSelect("nl")}>Dutch (nl)</li>
+                  <li onClick={() => handleSelect("en")}>English (en)</li>
                 </ul>
               )}
             </div>
