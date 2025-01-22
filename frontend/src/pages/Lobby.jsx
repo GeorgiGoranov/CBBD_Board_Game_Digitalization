@@ -23,6 +23,7 @@ const Lobby = () => {
     const [checkmessage, setCheckMessage] = useState(null);
     const apiUrl = process.env.REACT_APP_BACK_END_URL_HOST;
 
+    const [groupsLocked, setGroupsLocked] = useState(false);
 
 
 
@@ -294,24 +295,36 @@ const Lobby = () => {
 
         setGroupedPlayers(updatedGroups);
     };
+
     const lockInGroups = () => {
         // Filter out empty groups
         const nonEmptyGroups = groupedPlayers.filter(
             (group) => group.players.length > 0
         );
 
-        // Reassign group numbers dynamically
-        const reindexedGroups = nonEmptyGroups.map((group, index) => ({
-            ...group,
-            groupNumber: index + 1, // Reassign group numbers starting from 1
-        }));
+        // Check if all groups have exactly 3 players
+        const invalidGroups = nonEmptyGroups.filter(group => group.players.length < 3);
 
-        // Update the state with the cleaned-up and reordered groups
-        setGroupedPlayers(reindexedGroups);
-        setCheckMessage(true)
+
+        if (invalidGroups.length > 0) {
+            // Set an error message if there are invalid groups
+            setCheckMessage("Some groups do not have at least 3 players. Please adjust and CHECK again!");
+            setGroupsLocked(false); // Mark groups as not locked
+        } else {
+            // Reassign group numbers dynamically if groups are valid
+            const reindexedGroups = nonEmptyGroups.map((group, index) => ({
+                ...group,
+                groupNumber: index + 1, // Reassign group numbers starting from 1
+            }));
+
+            // Update the state with the cleaned-up and reordered groups
+            setGroupedPlayers(reindexedGroups);
+            setCheckMessage("Groups are good! You can continue!");
+            setGroupsLocked(true); // Mark groups as locked and valid
+        }
     };
 
-    const resetGroups = () =>{
+    const resetGroups = () => {
         window.location.reload()
     }
 
@@ -378,7 +391,7 @@ const Lobby = () => {
                                                     className="player-group"
                                                     {...provided.droppableProps}
                                                     ref={provided.innerRef}
-                                                   
+
                                                 >
                                                     <h3>Group {group.groupNumber}</h3>
                                                     <ul style={{ listStyle: 'none', padding: 0 }}>
@@ -422,7 +435,8 @@ const Lobby = () => {
                                     ))}
                                 </div>
                             </DragDropContext>
-                            {checkmessage && <div className='success'>"Groups are good! You can continue!"</div>}
+                            {checkmessage && <div className={checkmessage.includes("good") ? 'success' : 'error'}>{checkmessage}</div>}
+
                             {role === 'admin' && (
                                 <div className='lobby-admin-btns'>
                                     <button className='btn' id='reset' onClick={resetGroups}>
@@ -431,7 +445,11 @@ const Lobby = () => {
                                     <button className='btn' id='lock' onClick={lockInGroups}>
                                         Check Groups
                                     </button>
-                                    <button className='btn' id='start' onClick={handleSaveGroups}>
+                                    <button className={`btn ${groupsLocked ? 'valid' : ''}`}
+                                        id='start'
+                                        onClick={handleSaveGroups}
+                                        disabled={!groupsLocked} // Disable if groups are not locked 
+                                    >
                                         Start Game
                                     </button>
                                 </div>

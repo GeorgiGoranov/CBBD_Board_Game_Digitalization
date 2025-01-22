@@ -55,8 +55,9 @@ ul {
 
 .lobby-admin-btns #start{
     transition: background-color 0.3s ease, transform 0.3s ease;
+    background-color: var(--primary);
 }
-.lobby-admin-btns #start:hover{
+.lobby-admin-btns #start.valid:hover{
     background-color: var(--green);
     transform: scale(1.1);
 }
@@ -82,4 +83,11 @@ ul {
 .moderator-layout .success{
     margin: 20px;
 }
+
+.btn:disabled {
+    background-color: #ccc;
+    color: #666;
+    cursor: not-allowed;
+}
+
 
