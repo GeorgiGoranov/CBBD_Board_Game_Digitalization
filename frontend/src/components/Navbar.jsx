@@ -50,9 +50,7 @@ const NavBar = () => {
 
   return (
     <header>
-
       <img className='logo-container' src="https://www.fontys.nl/upload/eebc050a-a660-4c8e-8da8-0ed755d3c1dc_LOGO-FON-en-PAY-OFF-CARD-PAARS-WIT-RGB-pay-off-RZ.png" alt="fontys-logo"  height="70px" />
-
       <div className="container">
         <div className="items">
           <h1>CBBD Competency Game</h1>

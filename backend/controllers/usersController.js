@@ -207,9 +207,16 @@ const joinLobbySession = async (req, res) => {
     try {
         const { code, playerUsername, nationality } = req.body
 
+        // Find the game session by roomId
+        const session = await SessionModel.findOne({ code });
+
+        if (!session) {
+            return res.status(404).json({ message: 'Game session not found!' });
+        }
+
         const token = createToken(generateObjectIdForParticipants(), 'user', playerUsername, nationality, code);
 
-       
+
         res.cookie("jwt", token, {
             httpOnly: true,
             secure: true,
@@ -234,7 +241,7 @@ const updateTokenGroup = async (req, res) => {
 
         if (role != 'admin') {
             const token = updateeToken(generateObjectIdForParticipants(), 'user', playerUsername, nationality, code, group);
-           
+
             res.cookie("jwt", token, {
                 httpOnly: true,
                 secure: true,
@@ -251,8 +258,6 @@ const updateTokenGroup = async (req, res) => {
         res.status(500).json({ message: 'Error joining the sesion', session })
     }
 }
-
-
 
 const updateeToken = (id, role, name, nationality, sessionCode, group) => {
 
@@ -325,12 +330,13 @@ const isAuth = (req, res, next) => {
 };
 
 const logOut = async (req, res) => {
-    res.cookie("jwt", "", { 
+    res.cookie("jwt", "", {
         httpOnly: true,
         secure: true,
         sameSite: 'none',
         maxAge: 0,
-        path: '/', });
+        path: '/',
+    });
     res.status(200).json({ message: "Logged out successfully" });
 };
 //get all users
