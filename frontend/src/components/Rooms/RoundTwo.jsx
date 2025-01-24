@@ -202,6 +202,34 @@ const RoundTwo = ({ roomId, playerID, socket, group }) => {
 
 
     useEffect(() => {
+        const fetchSavedRoomStateMessage = async () => {
+            try {
+                const response = await fetch(`${apiUrl}/api/rounds/get-state-first-round/${roomId}`, {
+                    credentials: 'include', // Include JWT cookies
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    // Convert group to a number if it's a string
+                    const groupNumber = Number(group);
+                    const currentGroup = data.groups?.find(g => g.groupNumber === groupNumber);
+
+                    if (currentGroup) {
+                        // If you need to restore messages or socketMessage:
+                        if (currentGroup.messages && currentGroup.messages.length > 0) {
+                            setSocketMessage(currentGroup.messages[currentGroup.messages.length - 1]);
+                        }
+                        console.log('Room state Message loaded successfully');
+                    } else {
+                        console.log('No matching group message found in room state');
+                    }
+                } else {
+                    console.log('Room state not found');
+                }
+            } catch (error) {
+                console.error('Error fetching room state:', error);
+            }
+        };
+
         const fetchCategories = async () => {
             try {
                 const response = await fetch(`${apiUrl}/api/cards/get-all-cards`, {
@@ -247,6 +275,8 @@ const RoundTwo = ({ roomId, playerID, socket, group }) => {
             }
         };
 
+
+
         const fetchSavedRoomState = async () => {
             try {
                 const response = await fetch(`${apiUrl}/api/rounds/get-state-second-round/${roomId}`, {
@@ -287,6 +317,7 @@ const RoundTwo = ({ roomId, playerID, socket, group }) => {
         };
 
         if (group) {
+            fetchSavedRoomStateMessage();
             fetchCategories();
             fetchSavedRoomState();
         }
