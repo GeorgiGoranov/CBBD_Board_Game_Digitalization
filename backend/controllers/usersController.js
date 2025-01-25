@@ -280,7 +280,7 @@ const generateObjectIdForParticipants = () => {
 }
 
 const isAuth = (req, res, next) => {
-    console.log('Cookies:', req.cookies);
+
     const token = req.cookies.jwt;
 
     if (!token) {
