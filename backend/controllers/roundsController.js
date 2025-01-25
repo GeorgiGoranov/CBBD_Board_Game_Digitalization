@@ -98,7 +98,6 @@ const saveThirdRoomStateMode = (RoundModel) => {
                 if (!lastCard.votes[vote]) {
                     lastCard.votes[vote] = {
                         count: 0,
-                        playerID: [],
                         nationalities: {
                             german: 0,
                             dutch: 0,
@@ -114,6 +113,7 @@ const saveThirdRoomStateMode = (RoundModel) => {
                     lastCard.votes[vote].nationalities[nationality] = 0;
                 }
                 lastCard.votes[vote].nationalities[nationality] += 1;
+                lastCard.votes[vote].count += 1;
 
                 round.cards[lastCardIndex] = lastCard;
             }
@@ -234,6 +234,8 @@ const getCurrentStateThirdRound = (RoundModel) => {
                     card: latestCard,
                     votes: votes,
                 });
+
+                console.log(votes)
             } else {
                 res.status(404).json({ message: 'No card found for this room' });
             }

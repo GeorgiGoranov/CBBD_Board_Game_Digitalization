@@ -3,7 +3,7 @@ import { useLanguage } from '../../context/LanguageContext';
 import "../../SCSS/roundThree.scss"
     ;
 
-const RoundThree = ({ roomId, playerID, socket, role, natnality }) => {
+const RoundThree = ({ roomId, playerID, socket, role, nationality }) => {
     const [card, setCard] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -40,12 +40,13 @@ const RoundThree = ({ roomId, playerID, socket, role, natnality }) => {
     };
 
     const saveState = useCallback(async (currentCard, currentVote) => {
-        if (role === 'admin') {
+        
             try {
-                const body = { roomId, playerID }
+                const body = { roomId, playerID, nationality }
 
                 if (currentCard) {
                     body.card = currentCard;
+                    console.warn(currentCard)
                 }
                 if (currentVote) {
                     body.vote = currentVote;
@@ -68,36 +69,35 @@ const RoundThree = ({ roomId, playerID, socket, role, natnality }) => {
                 console.error('Error saving state:', error);
             }
 
-        }
 
-    }, [roomId, playerID, role]);
+    }, [roomId, playerID]);
 
    
 
-    // const fetchCurrentState = async () => {
-    //     try {
-    //         const response = await fetch(`${apiUrl}/api/rounds/get-state-third-round/${roomId}`,{
-    //             credentials: 'include', // Include JWT cookies
-    //         });
-    //         if (!response.ok) {
-    //             throw new Error('Failed to fetch the current state');
-    //         }
-    //         const data = await response.json();
-    //         console.log(data)
-    //         if (data.card) {
-    //             setCard(data.card);
-    //         }
-    //         setVotes(data.votes || {});
-    //         // If the user has already voted, set the userVote
-    //         if (data.votes && data.votes[playerID]) {
-    //             setUserVote(data.votes[playerID]);
-    //         }
-    //     } catch (err) {
-    //         setError(err.message);
-    //     } finally {
-    //         setLoading(false);
-    //     }
-    // };
+    const fetchCurrentState = async () => {
+        try {
+            const response = await fetch(`${apiUrl}/api/rounds/get-state-third-round/${roomId}`,{
+                credentials: 'include', // Include JWT cookies
+            });
+            if (!response.ok) {
+                throw new Error('Failed to fetch the current state');
+            }
+            const data = await response.json();
+            console.log(data)
+            if (data.card) {
+                setCard(data.card);
+            }
+            setVotes(data.votes || {});
+            // If the user has already voted, set the userVote
+            if (data.votes && data.votes[playerID]) {
+                setUserVote(data.votes[playerID]);
+            }
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const handleVote = (option) => {
         if (role === 'admin') {
@@ -112,7 +112,7 @@ const RoundThree = ({ roomId, playerID, socket, role, natnality }) => {
 
     useEffect(() => {
         fetchRandomCard()
-        // fetchCurrentState()
+        fetchCurrentState()
     }, [])
 
     useEffect(() => {
