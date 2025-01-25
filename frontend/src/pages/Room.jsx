@@ -114,7 +114,6 @@ const Room = () => {
             }else{
                 navigate('/muser');
             }
-            // or, navigate('/'), or any path you desire
         });
 
         // Cleanup listener when the component unmounts
