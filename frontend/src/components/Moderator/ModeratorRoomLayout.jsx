@@ -28,10 +28,10 @@ const ModeratorRoomLayout = ({ roomId }) => {
 
     const handleStartOfRounds = () => {
         // Only allow if we haven't started any round yet (currentRound < 1)
-        // if (currentRound >= 1) {
-        //     alert('You cannot go back to Round 1. The game has already started or advanced!');
-        //     return;
-        // }
+        if (currentRound >= 1) {
+            alert('You cannot go back to Round 1. The game has already started or advanced!');
+            return;
+        }
 
         const confirmed = window.confirm('You are about to START the game! Are you sure?');
         if (confirmed) {
