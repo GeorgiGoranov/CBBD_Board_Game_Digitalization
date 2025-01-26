@@ -10,6 +10,7 @@ import Chat from '../components/Rooms/Chat';
 import RoundOne from '../components/Rooms/RoundOne';
 import RoundTwo from '../components/Rooms/RoundTwo';
 import RoundThree from '../components/Rooms/RoundThree';
+import GroupDiscussion from '../components/Rooms/GroupDiscussion';
 
 
 
@@ -36,6 +37,7 @@ const Room = () => {
     const [availableGroups, setAvailableGroups] = useState([]); // Unique group numbers
     const [selectedGroups, setSelectedGroups] = useState([]); // Selected groups via checkboxes
 
+    const [showGroupDiscussion, setShowGroupDiscussion] = useState(false); // New state
 
 
     if (!socketRef.current) {
@@ -142,6 +144,14 @@ const Room = () => {
             }
         });
 
+        socket.on('groupDiscussionStarted', () => {
+            setShowGroupDiscussion(true); // Show group discussion UI
+        });
+
+        socket.on('groupDiscussionEnded', () => {
+            setShowGroupDiscussion(false); // Hide group discussion UI
+        });
+
         // Cleanup listener when the component unmounts
         return () => {
             socket.off('playerJoined'); // Remove the listener when the component unmounts
@@ -149,6 +159,8 @@ const Room = () => {
             socket.off('playerLeftRoom');
             socket.off('roundChanged');
             socket.off('gameStopped');
+            socket.off('groupDiscussionStarted');
+            socket.off('groupDiscussionEnded');
         };
     }, [socket, role, navigate]);
 
@@ -182,81 +194,95 @@ const Room = () => {
 
     return (
         <div className='room-container'>
-
-            {role === 'admin' ? (
-                <>
-                    <div className='question-by-moderator'>
-
-                        <form onSubmit={handleAdminFormSubmit}>
-                            <input
-                                type="text"
-                                value={adminMessage}
-                                onChange={(e) => setAdminMessage(e.target.value)}
-                                placeholder="Enter your Recruitment Job?"
-                            />
-                            <div className="selected-groups">
-                                <h4>Select Groups:</h4>
-                                <div className="group-checkboxes">
-                                    {availableGroups.map((groupNumber) => (
-                                        <label key={groupNumber} className="group-checkbox">
-                                            <input
-                                                className='checkbox-input'
-                                                type="checkbox"
-                                                value={groupNumber}
-                                                checked={selectedGroups.includes(groupNumber)}
-                                                onChange={() => handleCheckboxChange(groupNumber)}
-                                            />
-                                            Group {groupNumber}
-                                        </label>
-                                    ))}
-                                </div>
-                            </div>
-                            <button type="submit">Submit</button>
-                        </form>
-
-
-                    </div>
-                </>
-
+            {showGroupDiscussion ? (
+                <GroupDiscussion 
+                roomId={roomId}
+                apiUrl={apiUrl}
+                availableGroups={availableGroups}
+                socket={socket}
+                group={group}
+                playerID={playerID} 
+                role={role}
+                />
             ) : (
+                <>
+                    {role === 'admin' ? (
+                        <>
+                            <div className='question-by-moderator'>
 
-                <div className='outer-container'>
-                    <h2>Group Number: {group}</h2>
-                    <div className='information-pannel'>
-                        {/* Render RoundOne component */}
-                        {currentRound === 1 && (
-                            <div>
-                                Round 1
-                                <RoundOne roomId={roomId} playerID={playerID} socket={socket} group={group} />
+                                <form onSubmit={handleAdminFormSubmit}>
+                                    <input
+                                        type="text"
+                                        value={adminMessage}
+                                        onChange={(e) => setAdminMessage(e.target.value)}
+                                        placeholder="Enter your Recruitment Job?"
+                                    />
+                                    <div className="selected-groups">
+                                        <h4>Select Groups:</h4>
+                                        <div className="group-checkboxes">
+                                            {availableGroups.map((groupNumber) => (
+                                                <label key={groupNumber} className="group-checkbox">
+                                                    <input
+                                                        className='checkbox-input'
+                                                        type="checkbox"
+                                                        value={groupNumber}
+                                                        checked={selectedGroups.includes(groupNumber)}
+                                                        onChange={() => handleCheckboxChange(groupNumber)}
+                                                    />
+                                                    Group {groupNumber}
+                                                </label>
+                                            ))}
+                                        </div>
+                                    </div>
+                                    <button type="submit">Submit</button>
+                                </form>
+
 
                             </div>
-                        )}
-                        {currentRound === 2 && (
-                            <div>
-                                Round 2
-                                <RoundTwo roomId={roomId} playerID={playerID} socket={socket} group={group} />
+                        </>
 
+                    ) : (
+
+                        <div className='outer-container'>
+                            <h2>Group Number: {group}</h2>
+                            <div className='information-pannel'>
+                                {/* Render RoundOne component */}
+                                {currentRound === 1 && (
+                                    <div>
+                                        Round 1
+                                        <RoundOne roomId={roomId} playerID={playerID} socket={socket} group={group} />
+
+                                    </div>
+                                )}
+                                {currentRound === 2 && (
+                                    <div>
+                                        Round 2
+                                        <RoundTwo roomId={roomId} playerID={playerID} socket={socket} group={group} />
+
+                                    </div>
+                                )}
+                                {/* Chat Component - Only for Round 1 and Round 2 */}
+                                {(currentRound === 1 || currentRound === 2) && (
+                                    <div className='chat'>
+                                        <Chat playerID={playerID} socket={socket} group={group} />
+                                    </div>
+                                )}
                             </div>
-                        )}
-                        {/* Chat Component - Only for Round 1 and Round 2 */}
-                        {(currentRound === 1 || currentRound === 2) && (
-                            <div className='chat'>
-                                <Chat playerID={playerID} socket={socket} group={group} />
-                            </div>
-                        )}
-                    </div>
-                </div>
+                        </div>
 
-            )}
-            {currentRound === 3 && (
-                <div>
-                    Round 3
-                    <RoundThree roomId={roomId} playerID={playerID} socket={socket} role={role} nationality={nationality} />
+                    )}
 
-                </div>
-            )}
+                    {currentRound === 3 && (
+                        <div>
+                            Round 3
+                            <RoundThree roomId={roomId} playerID={playerID} socket={socket} role={role} nationality={nationality} />
 
+                        </div>
+                    )}
 
+                </>)
+
+            }
             {/* Role-based layout */}
             <div className='role-based-layout'>
                 {role === 'admin' ? (
@@ -266,11 +292,12 @@ const Room = () => {
                 ) : (
                     <div>
                         {/* <div>Player Layout for Room {roomId}
-                            <ParticipantRoomLayout />
-                        </div> */}
+                                <ParticipantRoomLayout />
+                            </div> */}
                     </div>
                 )}
             </div>
+
 
         </div>
     )

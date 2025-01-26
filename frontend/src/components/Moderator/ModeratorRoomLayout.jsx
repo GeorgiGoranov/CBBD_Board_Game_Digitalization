@@ -5,6 +5,8 @@ import "../../SCSS/moderatorLayout.scss"
 const ModeratorRoomLayout = ({ roomId }) => {
     const socketRef = useRef();
     const [currentRound, setCurrentRound] = useState(0);
+    const [inGroupDiscussion, setInGroupDiscussion] = useState(false); // New state for group discussion
+
 
     if (!socketRef.current) {
         socketRef.current = initSocket();
@@ -23,7 +25,6 @@ const ModeratorRoomLayout = ({ roomId }) => {
             socket.off('roundChanged');
         };
     }, [socket]);
-
 
 
     const handleStartOfRounds = () => {
@@ -86,8 +87,30 @@ const ModeratorRoomLayout = ({ roomId }) => {
 
     }
 
-    const handleNextCard = () => {
+    // Handle transitioning to Group Discussion
+    const handleStartGroupDiscussion = () => {
+        if (currentRound === 0) {
+            alert('You must start a round before going to group discussion.');
+            return;
+        }
 
+        const confirmed = window.confirm('You are about to START Group Discussion. Are you sure?');
+        if (confirmed) {
+            setInGroupDiscussion(true);
+            socket.emit('startGroupDiscussion', { roomId }); // Notify the room
+        }
+    };
+
+    // Handle transitioning from Group Discussion to the next round
+    const handleEndGroupDiscussion = () => {
+        const confirmed = window.confirm('You are about to END Group Discussion and proceed to the next round. Are you sure?');
+        if (confirmed) {
+            setInGroupDiscussion(false); // End group discussion phase
+            socket.emit('endGroupDiscussion', { roomId }); // Notify the room
+        }
+    };
+
+    const handleNextCard = () => {
 
         // Stop the game
         socket.emit('next-card-3', { roomId });
@@ -108,6 +131,14 @@ const ModeratorRoomLayout = ({ roomId }) => {
             <button className="next-btn" onClick={handleNextRound3}>
                 Start Round 3
             </button>
+            <button className="group-discussion-btn" onClick={handleStartGroupDiscussion} disabled={inGroupDiscussion}>
+                Start Group Discussion
+            </button>
+            {inGroupDiscussion && (
+                <button className="end-group-discussion-btn" onClick={handleEndGroupDiscussion}>
+                    End Group Discussion
+                </button>
+            )}
             <button className="stop-game-btn" onClick={handleConcludeGame}>
                 Stop Game
             </button>

@@ -101,7 +101,7 @@ function setupWebSocket(server) {
           io.to(player.socketId).emit('receiveGroupMessage', { message });
         });
       });
-      
+
     });
 
     socket.on('dragDropUpdate', (data) => {
@@ -214,7 +214,20 @@ function setupWebSocket(server) {
       });
     });
 
+    socket.on('startGroupDiscussion', ({ roomId }) => {
+      io.to(roomId).emit('groupDiscussionStarted', { message: 'Group discussion has started.' });
+    });
 
+    socket.on('endGroupDiscussion', ({ roomId }) => {
+      io.in(roomId).emit('groupDiscussionEnded', { message: 'Group discussion has ended. Proceeding to the next round.' });
+    });
+
+    // Listen for group change events from clients
+    socket.on('groupChange', (newGroupNumber) => {
+      console.log(`Group change to: ${newGroupNumber} by ${socket.id}`);
+      // Broadcast the new group number to all connected clients
+      io.emit('nextGroupUnderDiscussion', newGroupNumber);
+    });
 
     socket.on('disconnect', () => {
       console.log(`User back-end disconnected: ${socket.id}`);
