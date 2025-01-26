@@ -110,15 +110,6 @@ const ModeratorRoomLayout = ({ roomId }) => {
         }
     };
 
-    const handleNextCard = () => {
-
-        // Stop the game
-        socket.emit('next-card-3', { roomId });
-
-
-    }
-
-
 
     return (
         <div className="moderator-controls">
@@ -141,9 +132,6 @@ const ModeratorRoomLayout = ({ roomId }) => {
             )}
             <button className="stop-game-btn" onClick={handleConcludeGame}>
                 Stop Game
-            </button>
-            <button className='next-card' onClick={handleNextCard}>
-                Next Card
             </button>
         </div>
 

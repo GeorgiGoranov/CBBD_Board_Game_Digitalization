@@ -116,10 +116,7 @@ const RoundThree = ({ roomId, playerID, socket, role, nationality }) => {
             setUserVote(null);  // <--- Reset user's vote here so they can vote on the new card
         });
         socket.on('updateVotes', setVotes);
-        socket.on('next-card-3-go', () => {
-            fetchRandomCard()
 
-        });
 
 
         // Cleanup listener on component unmount
@@ -128,7 +125,7 @@ const RoundThree = ({ roomId, playerID, socket, role, nationality }) => {
             socket.off('updateDilemmaCardData');
             socket.off('updateVotes');
         };
-    }, [socket, fetchRandomCard]);
+    }, [socket]);
 
 
     if (loading) return <div>Loading...</div>;
