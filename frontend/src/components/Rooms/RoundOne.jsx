@@ -17,6 +17,8 @@ const RoundOne = ({ roomId, playerID, socket, group }) => {
     const [userActionOccurred, setUserActionOccurred] = useState(false);
 
     const [socketMessage, setSocketMessage] = useState(''); // This can be used to display socket events
+    const [savedMessages, setSavedMessages] = useState([]); // Track messages that are already saved
+
     const [socketMessageFeedback, setSocketMessageFeedback] = useState(''); // This can be used to display socket events
     const apiUrl = process.env.REACT_APP_BACK_END_URL_HOST;
 
@@ -134,6 +136,7 @@ const RoundOne = ({ roomId, playerID, socket, group }) => {
 
     const saveState = useCallback(async () => {
         try {
+            
             const groups = [{
                 groupNumber: group, // If you know the group number from props or context
                 categories,

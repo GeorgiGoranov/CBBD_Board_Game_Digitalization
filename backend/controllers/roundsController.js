@@ -33,10 +33,13 @@ const saveRoomStateMode = (RoundModel) => {
 
                         // Or append new messages to existing:
                         if (Array.isArray(newGroup.messages)) {
-                            round.groups[existingGroupIndex].messages = [
-                                ...round.groups[existingGroupIndex].messages,
-                                ...newGroup.messages
-                            ];
+                            const existingMessages = new Set(
+                                round.groups[existingGroupIndex].messages
+                            ); // Use a Set for quick lookup
+                            const uniqueMessages = newGroup.messages.filter(
+                                (msg) => !existingMessages.has(msg)
+                            ); // Filter out duplicates
+                            round.groups[existingGroupIndex].messages.push(...uniqueMessages);
                         }
                     } else {
                         // Add the new group if it doesn't exist

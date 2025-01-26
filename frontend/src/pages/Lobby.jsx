@@ -448,7 +448,7 @@ const Lobby = () => {
                                     <button className={`btn ${groupsLocked ? 'valid' : ''}`}
                                         id='start'
                                         onClick={handleSaveGroups}
-                                        disabled={!groupsLocked} // Disable if groups are not locked 
+                                        // disabled={!groupsLocked} // Disable if groups are not locked 
                                     >
                                         Start Game
                                     </button>

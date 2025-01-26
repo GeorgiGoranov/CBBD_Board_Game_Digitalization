@@ -87,7 +87,7 @@ const Results = () => {
                         ))}
                         {group.messages && group.messages.length > 0 && (
                             <div className="messages">
-                                <h5>Messages:</h5>
+                                <h5>Competency:</h5>
                                 <ul>
                                     {group.messages.map((msg, i) => (
                                         <li key={i}>{msg}</li>
