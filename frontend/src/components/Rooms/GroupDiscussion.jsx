@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import "../../SCSS/groupDiscussions.scss"
 
 
-const GroupDiscussion = ({ roomId, apiUrl, availableGroups, socket, playerID, role }) => {
+const GroupDiscussion = ({ roomId, apiUrl, availableGroups, socket, playerID, role, currentRound }) => {
 
     const [currentGroupIndex, setCurrentGroupIndex] = useState(0); // Track the current group
     const [groupData, setGroupData] = useState(null); // Data for the current group
@@ -15,11 +15,12 @@ const GroupDiscussion = ({ roomId, apiUrl, availableGroups, socket, playerID, ro
     });
     const [socketMessage, setSocketMessage] = useState(''); // This can be used to display socket events
     const [userSessionCode, setUserSessionCode] = useState(null);
-    
+
 
     useEffect(() => {
+
         // Fetch data for the current group
-        const fetchGroupData = async () => {
+        const fetchGroupDataRoundOne = async () => {
             if (availableGroups.length > 0) {
                 const currentGroupNumber = availableGroups[currentGroupIndex];
                 try {
@@ -55,7 +56,52 @@ const GroupDiscussion = ({ roomId, apiUrl, availableGroups, socket, playerID, ro
             }
         };
 
-        fetchGroupData();
+        const fetchGroupDataRoundTwo = async () => {
+            if (availableGroups.length > 0) {
+                const currentGroupNumber = availableGroups[currentGroupIndex];
+                try {
+                    const response = await fetch(`${apiUrl}/api/rounds/get-state-second-round/${roomId}`, {
+                        credentials: 'include', // Include JWT cookies
+                    });
+                    if (response.ok) {
+                        const data = await response.json();
+                        // Find the group data for the current group
+                        const matchingGroup = data.groups.find(
+                            (g) => String(g.groupNumber).trim() === String(currentGroupNumber).trim()
+                        );
+
+                        console.log(matchingGroup)
+                        if (matchingGroup) {
+                            setGroupData(matchingGroup);
+                            setDropZones(matchingGroup.dropZones || { priority1: [], priority2: [], priority3: [], priority4: [] });
+
+                            if (matchingGroup.messages && matchingGroup.messages.length > 0) {
+                                setSocketMessage(matchingGroup.messages[matchingGroup.messages.length - 1]);
+                            }
+                        } else {
+                            console.log('No matching group found.');
+                            setGroupData(null);
+                            setDropZones({ priority1: [], priority2: [], priority3: [], priority4: [] });
+                        }
+                    } else {
+                        console.error('Failed to fetch group data');
+                    }
+                } catch (error) {
+                    console.error('Error fetching group data:', error);
+                }
+            }
+        };
+
+
+        if (currentRound === 1) {
+            fetchGroupDataRoundOne();
+        }
+
+        if (currentRound === 2) {
+            fetchGroupDataRoundTwo();
+        }
+
+
     }, [currentGroupIndex, availableGroups, roomId, apiUrl]);
 
     // Handle receiving group change via socket

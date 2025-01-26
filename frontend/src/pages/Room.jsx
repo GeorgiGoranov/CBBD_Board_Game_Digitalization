@@ -203,6 +203,7 @@ const Room = () => {
                 group={group}
                 playerID={playerID} 
                 role={role}
+                currentRound={currentRound}
                 />
             ) : (
                 <>
