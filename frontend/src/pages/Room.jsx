@@ -135,7 +135,6 @@ const Room = () => {
         });
 
         socket.on('gameStopped', () => {
-            console.warn(role)
             // Force them back to the start or wherever you want
             if (role !== 'admin') {
                 navigate('/duser');

@@ -1,11 +1,17 @@
 import initSocket from '../../context/socket';
 import React, { useEffect, useState, useRef } from 'react';
 import "../../SCSS/moderatorLayout.scss"
+import { useSessionsContext } from '../../hooks/useSessionContext';
+
 
 const ModeratorRoomLayout = ({ roomId }) => {
     const socketRef = useRef();
     const [currentRound, setCurrentRound] = useState(0);
     const [inGroupDiscussion, setInGroupDiscussion] = useState(false); // New state for group discussion
+    const apiUrl = process.env.REACT_APP_BACK_END_URL_HOST;
+
+      const { sessions, dispatch } = useSessionsContext()
+
 
 
     if (!socketRef.current) {
@@ -83,6 +89,7 @@ const ModeratorRoomLayout = ({ roomId }) => {
         if (confirmed) {
             // Stop the game
             socket.emit('stopGame', { roomId });
+            handleActivityClick(roomId)
         }
 
     }
@@ -107,6 +114,32 @@ const ModeratorRoomLayout = ({ roomId }) => {
         if (confirmed) {
             setInGroupDiscussion(false); // End group discussion phase
             socket.emit('endGroupDiscussion', { roomId }); // Notify the room
+        }
+    };
+
+    // Function to toggle the activity status
+    const handleActivityClick = async (sessionCode) => {
+        try {
+            // Send request to backend to toggle activity
+            const response = await fetch(`${apiUrl}/api/routes/toggle-activity/${sessionCode}`, {
+                method: 'PATCH',
+                credentials: 'include', // Include JWT cookies
+                headers: { 'Content-Type': 'application/json' },
+            });
+            const updatedSession = await response.json();
+
+            if (response.ok) {
+                // Update state with the new session data
+                console.log("Session Status Changes Successfully")
+                dispatch({
+                    type: 'UPDATE_SESSION',
+                    payload: updatedSession
+                });
+            } else {
+                throw new Error('Error toggling activity');
+            }
+        } catch (error) {
+            console.log(error)
         }
     };
 
