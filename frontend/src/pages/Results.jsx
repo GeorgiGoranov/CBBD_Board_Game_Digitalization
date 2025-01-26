@@ -21,7 +21,7 @@ const Results = () => {
             const [firstRoundResult, secondRoundResult, thirdRoundResults] = await Promise.allSettled([
                 fetch(`${apiUrl}/api/rounds/get-state-first-round/${roomId}`),
                 fetch(`${apiUrl}/api/rounds/get-state-second-round/${roomId}`),
-                fetch(`${apiUrl}/api/rounds/get-state-third-round/${roomId}`),
+                fetch(`${apiUrl}/api/rounds/get-all-state-third-round-cards/${roomId}`),
 
             ]);
 
@@ -118,9 +118,11 @@ const Results = () => {
                                 Object.entries(cardData.votes).map(([option, voteData]) => (
                                     <div key={option}>
                                         <p>{option} Votes: {voteData.count}</p>
-                                        <p>German: {voteData.nationalities.german || 0}</p>
-                                        <p>Dutch: {voteData.nationalities.dutch || 0}</p>
-                                        <p>Other: {voteData.nationalities.other || 0}</p>
+                                        <div className='container-votes-options'>
+                                            <p className='votes-options'>German: {voteData.nationalities.german || 0}</p>
+                                            <p className='votes-options'>Dutch: {voteData.nationalities.dutch || 0}</p>
+                                            <p className='votes-options'>Other: {voteData.nationalities.other || 0}</p>
+                                        </div>
                                     </div>
                                 ))
                             ) : (

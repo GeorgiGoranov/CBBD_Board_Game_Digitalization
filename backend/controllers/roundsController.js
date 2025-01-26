@@ -235,7 +235,7 @@ const getCurrentStateThirdRound = (RoundModel) => {
                     votes: votes,
                 });
 
-                console.log(votes)
+
             } else {
                 res.status(404).json({ message: 'No card found for this room' });
             }
@@ -246,6 +246,41 @@ const getCurrentStateThirdRound = (RoundModel) => {
     };
 };
 
+const getAllCurrentStateThirdRoundCards = (RoundModel) => {
+    return async (req, res) => {
+        const { roomId } = req.params;
+
+        try {
+            // Find the room by roomId
+            const room = await RoundModel.findOne({ roomId });
+
+            if (!room) {
+                return res.status(404).json({ message: `Room with ID ${roomId} not found` });
+            }
+
+            if (room.cards.length > 0) {
+                // Normalize the cards to ensure votes are always an object
+                const normalizedCards = room.cards.map(cardEntry => ({
+                    card: cardEntry.card,
+                    votes: cardEntry.votes || {}, // Ensure votes are always an object
+                }));
+
+                // Return all cards with their votes
+                return res.status(200).json({
+                    cards: normalizedCards,
+                });
+            } else {
+                // If no cards exist
+                return res.status(404).json({ message: `No cards found in room with ID ${roomId}` });
+            }
+        } catch (error) {
+            console.error(`Error fetching room state for ID ${roomId}:`, error);
+            return res.status(500).json({ message: 'Error fetching room state', error: error.message });
+        }
+    };
+};
+
+
 
 module.exports = {
     getRoomStateMode,
@@ -253,6 +288,7 @@ module.exports = {
     getMessage,
     saveRoomStateMode,
     saveThirdRoomStateMode,
-    getCurrentStateThirdRound
+    getCurrentStateThirdRound,
+    getAllCurrentStateThirdRoundCards
 
 }

@@ -51,7 +51,7 @@ const RoundThree = ({ roomId, playerID, socket, role, nationality }) => {
                 if (currentVote) {
                     body.vote = currentVote;
                 }
-                console.log(body)
+      
                 const response = await fetch(`${apiUrl}/api/rounds/save-state-third-round`, {
                     method: 'POST',
                     credentials: 'include', // Include JWT cookies

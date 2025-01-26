@@ -20,6 +20,9 @@ const RoundOne = ({ roomId, playerID, socket, group }) => {
     const [socketMessageFeedback, setSocketMessageFeedback] = useState(''); // This can be used to display socket events
     const apiUrl = process.env.REACT_APP_BACK_END_URL_HOST;
 
+    const [messagesSent, setMessagesSent] = useState(new Set()); // Set to track unique messages
+
+
 
     const handleDragDrop = (results) => {
         const { source, destination } = results;
