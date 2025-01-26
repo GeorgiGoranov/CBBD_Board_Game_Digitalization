@@ -64,45 +64,54 @@ const Results = () => {
         fetchRoundData();
     }, [roomId]);
 
-    const renderDropZones = (groups, roundTitle) => (
-        <div>
-            <h3>{roundTitle} Decisions:</h3>
-            {groups.length > 0 ? (
-                groups.map((group, gIndex) => (
-                    <div key={gIndex} className="group-section">
-                        <h4>Group {group.groupNumber}</h4>
-                        {Object.entries(group.dropZones || {}).map(([zone, items]) => (
-                            <div key={zone} className="drop-zone">
-                                {/* Formating the zone to split "priority1" into "priority 1" */}
-                                <h5>{zone.replace(/(\D+)(\d+)/, '$1 $2')} :</h5>
-                                {items.length > 0 ? (
+    const renderDropZones = (groups, roundTitle) => {
+        // Ensures group numbers are sequentially mapped starting from 1
+        const remappedGroups = groups.map((group, index) => ({
+            ...group,
+            groupNumber: index + 1, // Forces group numbers to start from 1 and increment sequentially
+        }));
+
+        return (
+            <div>
+                <h3>{roundTitle} Decisions:</h3>
+                {remappedGroups.length > 0 ? (
+                    remappedGroups.map((group, gIndex) => (
+                        <div key={gIndex} className="group-section">
+                            <h4>Group {group.groupNumber}</h4>
+                            {Object.entries(group.dropZones || {}).map(([zone, items]) => (
+                                <div key={zone} className="drop-zone">
+                                    {/* Format the zone to split "priority1" into "priority 1" */}
+                                    <h5>{zone.replace(/(\D+)(\d+)/, '$1 $2')} :</h5>
+                                    {items.length > 0 ? (
+                                        <ul>
+                                            {items.map((item, index) => (
+                                                <li key={index}>{item.category || 'Unnamed Item'}</li>
+                                            ))}
+                                        </ul>
+                                    ) : (
+                                        <p>Empty</p>
+                                    )}
+                                </div>
+                            ))}
+                            {group.messages && group.messages.length > 0 && (
+                                <div className="messages">
+                                    <h5>Competency:</h5>
                                     <ul>
-                                        {items.map((item, index) => (
-                                            <li key={index}>{item.category || 'Unnamed Item'}</li>
+                                        {group.messages.map((msg, i) => (
+                                            <li key={i}>{msg}</li>
                                         ))}
                                     </ul>
-                                ) : (
-                                    <p>Empty</p>
-                                )}
-                            </div>
-                        ))}
-                        {group.messages && group.messages.length > 0 && (
-                            <div className="messages">
-                                <h5>Competency:</h5>
-                                <ul>
-                                    {group.messages.map((msg, i) => (
-                                        <li key={i}>{msg}</li>
-                                    ))}
-                                </ul>
-                            </div>
-                        )}
-                    </div>
-                ))
-            ) : (
-                <p>No groups found for {roundTitle}</p>
-            )}
-        </div>
-    );
+                                </div>
+                            )}
+                        </div>
+                    ))
+                ) : (
+                    <p>No groups found for {roundTitle}</p>
+                )}
+            </div>
+        );
+    };
+
 
 
 
