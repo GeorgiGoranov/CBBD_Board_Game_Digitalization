@@ -73,7 +73,8 @@ const Results = () => {
                         <h4>Group {group.groupNumber}</h4>
                         {Object.entries(group.dropZones || {}).map(([zone, items]) => (
                             <div key={zone} className="drop-zone">
-                                <h5>{zone}:</h5>
+                                {/* Formating the zone to split "priority1" into "priority 1" */}
+                                <h5>{zone.replace(/(\D+)(\d+)/, '$1 $2')} :</h5>
                                 {items.length > 0 ? (
                                     <ul>
                                         {items.map((item, index) => (

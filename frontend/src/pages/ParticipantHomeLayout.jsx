@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import initSocket from '../context/socket';
-import "../SCSS/pHomeLayout.scss"
 import Select from 'react-select';
+import "../SCSS/pHomeLayout.scss"
 
 
 const HomeDefautUser = () => {
@@ -61,6 +61,11 @@ const HomeDefautUser = () => {
         { value: 'other', label: 'Other' },
     ];
 
+    const loginPage = async (e) => {
+        navigate('/')
+    }
+
+
 
     return (
         <div className='duser-container'>
@@ -88,7 +93,10 @@ const HomeDefautUser = () => {
                 />
 
             </div>
-            <button onClick={joinLobbySession}>Join Session</button>
+            <div className='buttons-participant-home-page'>
+                <button className='join-btn' onClick={joinLobbySession}>Join Session</button>
+                <button className='login-btn' onClick={loginPage}>Go to Login Page</button>
+            </div>
             {message && <div className='error'>{message}</div>}
 
         </div>
