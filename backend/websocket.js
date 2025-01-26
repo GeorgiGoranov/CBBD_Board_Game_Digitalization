@@ -12,7 +12,7 @@ const roomVotes = {}; // Store votes per room: { [roomId]: { agree: number, disa
 
 // WebSocket setup
 function setupWebSocket(server) {
-  const io = new Server(server, {
+  const io = new Server(server, { 
     cors: {
       origin: `${process.env.FRONT_END_URL_HOST}`,
       methods: ["GET", "POST"],
@@ -78,7 +78,7 @@ function setupWebSocket(server) {
       console.log(`Navigating all players in room ${roomId} to game room`);
 
       // Broadcast the event to all players in the room
-      io.to(roomId).emit('navigateToRoom', { roomId });
+      io.to(roomId).emit('navigateToRoom', { roomId }); 
     });
 
     socket.on('updateTokens', ({ roomId, groupedPlayers }) => {
@@ -131,11 +131,11 @@ function setupWebSocket(server) {
     socket.on('sendMessage', async (data) => {
       const { message } = data;
 
-      const result = await saveMessage(message);
+      const result = await saveMessage(message); 
 
       if (result.success) {
         const { roomId, groupNumber } = result.message;
-
+ 
         // Find all players in this room with the same groupNumber
         const roomPlayers = rooms[roomId] || [];
         const targetPlayers = roomPlayers.filter(p => Number(p.group) === Number(groupNumber));
@@ -254,7 +254,7 @@ function setupWebSocket(server) {
           'updatePlayerList',
           rooms[roomCode].map(player => ({
             playerID: player.playerID,
-            nationality: player.nationality,
+            nationality: player.nationality, 
             group: player.group
           }))
         );

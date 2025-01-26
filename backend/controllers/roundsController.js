@@ -131,7 +131,7 @@ const saveThirdRoomStateMode = (RoundModel) => {
     };
 };
 
-
+ 
 const getRoomStateMode = (RoundModel) => {
     return async (req, res) => {
         const { roomId } = req.params;

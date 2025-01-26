@@ -12,10 +12,56 @@ const RoundThree = ({ roomId, playerID, socket, role, nationality }) => {
     const [userVote, setUserVote] = useState(null);
     const apiUrl = process.env.REACT_APP_BACK_END_URL_HOST;
 
- const fetchRandomCard = async () => {
+
+    const fetchCurrentState = useCallback(async () => {
+        try {
+            const response = await fetch(`${apiUrl}/api/rounds/get-state-third-round/${roomId}`, {
+                credentials: 'include', // Include JWT cookies
+            });
+            if (!response.ok) {
+                throw new Error('Failed to fetch the current state');
+            }
+            const data = await response.json();
+            setCard(data.card || []);
+            setVotes(data.votes || {});
+            if (data.votes && data.votes[playerID]) {
+                setUserVote(data.votes[playerID]);
+            }
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
+    }, [apiUrl, roomId, playerID]);
+
+    const saveState = useCallback(async (currentCard, currentVote) => {
+        try {
+            const body = { roomId, playerID, nationality };
+            if (currentCard) body.card = currentCard;
+            if (currentVote) body.vote = currentVote;
+
+            const response = await fetch(`${apiUrl}/api/rounds/save-state-third-round`, {
+                method: 'POST',
+                credentials: 'include',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body),
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                console.error('Error saving state:', errorData.message);
+            } else {
+                console.log('State saved successfully');
+            }
+        } catch (error) {
+            console.error('Error saving state:', error);
+        }
+    }, [apiUrl, roomId, playerID, nationality]);
+
+    const fetchRandomCard = useCallback(async () => {
         if (role === 'admin') {
             try {
-                const response = await fetch(`${apiUrl}/api/cards/dilemma/random/${roomId}`,{
+                const response = await fetch(`${apiUrl}/api/cards/dilemma/random/${roomId}`, {
                     credentials: 'include', // Include JWT cookies
                 });
                 if (!response.ok) {
@@ -29,75 +75,16 @@ const RoundThree = ({ roomId, playerID, socket, role, nationality }) => {
 
                 // Emit the card to all players in the room
                 socket.emit('newDilemmaCardData', { roomId, card: data });
-
             } catch (err) {
                 setError(err.message);
             } finally {
                 setLoading(false);
             }
         }
-
-    };
-
-    const saveState = useCallback(async (currentCard, currentVote) => {
-        
-            try {
-                const body = { roomId, playerID, nationality }
-
-                if (currentCard) {
-                    body.card = currentCard;
-                    console.warn(currentCard)
-                }
-                if (currentVote) {
-                    body.vote = currentVote;
-                }
-      
-                const response = await fetch(`${apiUrl}/api/rounds/save-state-third-round`, {
-                    method: 'POST',
-                    credentials: 'include', // Include JWT cookies
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(body),
-                });
-
-                if (response.ok) {
-                    console.log('State saved successfully');
-                } else {
-                    const errorData = await response.json();
-                    console.error('Error saving state:', errorData.message);
-                }
-            } catch (error) {
-                console.error('Error saving state:', error);
-            }
+    }, [role, apiUrl, roomId, saveState, socket]);
 
 
-    }, [roomId, playerID]);
 
-   
-
-    const fetchCurrentState = async () => {
-        try {
-            const response = await fetch(`${apiUrl}/api/rounds/get-state-third-round/${roomId}`,{
-                credentials: 'include', // Include JWT cookies
-            });
-            if (!response.ok) {
-                throw new Error('Failed to fetch the current state');
-            }
-            const data = await response.json();
-            console.log(data)
-            if (data.card) {
-                setCard(data.card);
-            }
-            setVotes(data.votes || {});
-            // If the user has already voted, set the userVote
-            if (data.votes && data.votes[playerID]) {
-                setUserVote(data.votes[playerID]);
-            }
-        } catch (err) {
-            setError(err.message);
-        } finally {
-            setLoading(false);
-        }
-    };
 
     const handleVote = (option) => {
         if (role === 'admin') {
@@ -111,20 +98,27 @@ const RoundThree = ({ roomId, playerID, socket, role, nationality }) => {
     };
 
     useEffect(() => {
-        fetchRandomCard()
-        fetchCurrentState()
-    }, [])
+        if (role === 'admin') {
+            fetchRandomCard();
+        } else {
+            setTimeout(()=>{
+
+                fetchCurrentState();
+            }, 2000)
+        }
+    }, [role, fetchRandomCard, fetchCurrentState]);
+
 
     useEffect(() => {
 
         socket.on('updateDilemmaCardData', (newCard) => {
             setCard(newCard);
             setUserVote(null);  // <--- Reset user's vote here so they can vote on the new card
-          });
+        });
         socket.on('updateVotes', setVotes);
         socket.on('next-card-3-go', () => {
             fetchRandomCard()
-           
+
         });
 
 
@@ -134,7 +128,7 @@ const RoundThree = ({ roomId, playerID, socket, role, nationality }) => {
             socket.off('updateDilemmaCardData');
             socket.off('updateVotes');
         };
-    }, [socket,fetchRandomCard]);
+    }, [socket, fetchRandomCard]);
 
 
     if (loading) return <div>Loading...</div>;
