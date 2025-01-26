@@ -43,4 +43,32 @@
   place-items: center;
 }
 
+.selected-groups {
+
+  .checkbox-input{
+    padding: 0;
+    margin: 0;
+    width: 10px;
+  }
+
+  .group-checkboxes {
+      display: flex; /* Arrange the checkboxes in a row */
+      flex-wrap: wrap; /* Allow wrapping to the next line if there's not enough space */
+      gap: 16px; /* Add spacing between checkboxes */
+      margin-top: 8px; /* Add spacing between the title and the checkboxes */
+      margin-bottom: 8px;
+     
+  }
+
+  .group-checkbox {
+      display: flex; /* Align the checkbox and label in a row */
+      align-items: center; /* Vertically center the checkbox and text */
+      gap: 8px; /* Add spacing between the checkbox and the label */
+      font-size: 14px; /* Adjust font size if needed */
+  }
+}
+
+
+
+
 

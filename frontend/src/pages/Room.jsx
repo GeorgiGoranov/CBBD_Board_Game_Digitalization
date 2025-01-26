@@ -33,6 +33,10 @@ const Room = () => {
     const apiUrl = process.env.REACT_APP_BACK_END_URL_HOST;
     const [nationality, setNationality] = useState('')
 
+    const [availableGroups, setAvailableGroups] = useState([]); // Unique group numbers
+    const [selectedGroups, setSelectedGroups] = useState([]); // Selected groups via checkboxes
+
+
 
     if (!socketRef.current) {
         socketRef.current = initSocket();
@@ -41,8 +45,30 @@ const Room = () => {
     const socket = socketRef.current;
 
     useEffect(() => {
+        // Extract unique groups dynamically from players, filtering out undefined or invalid values
+        const extractUniqueGroups = () => {
+            if (players.length > 0) {
+                const uniqueGroups = Array.from(
+                    new Set(players.map((player) => player.group).filter((group) => group !== 'undefined' && group !== null))
+                ); // Ensure groups are defined and not null
+                setAvailableGroups(uniqueGroups);
+            }
+        };
+
+        extractUniqueGroups();
+    }, [players]); // Re-run when players list changes
+
+    // Handle checkbox toggle for groups
+    const handleCheckboxChange = (groupNumber) => {
+        setSelectedGroups((prevSelected) =>
+            prevSelected.includes(groupNumber)
+                ? prevSelected.filter((g) => g !== groupNumber) // Remove if already selected
+                : [...prevSelected, groupNumber] // Add if not selected
+        );
+    };
 
 
+    useEffect(() => {
 
         const fetchUserRole = async () => {
             try {
@@ -79,7 +105,7 @@ const Room = () => {
             fetchUserRole()
         }
     }, [userSessionCode, navigate, roomId])
-    
+
     useEffect(() => {
         // Connect the socket if it's not already connected
         if (!socket.connected) {
@@ -109,9 +135,9 @@ const Room = () => {
         socket.on('gameStopped', () => {
             console.warn(role)
             // Force them back to the start or wherever you want
-            if(role != 'admin'){
+            if (role !== 'admin') {
                 navigate('/duser');
-            }else{
+            } else {
                 navigate('/muser');
             }
         });
@@ -124,10 +150,10 @@ const Room = () => {
             socket.off('roundChanged');
             socket.off('gameStopped');
         };
-    }, [socket,role, navigate]);
+    }, [socket, role, navigate]);
 
-    
-    
+
+
     useEffect(() => {
         if (playerID && roomId) {
             socket.emit('joinSession', { playerID, gameCode: roomId, group: String(group) });
@@ -138,18 +164,19 @@ const Room = () => {
 
     if (loading) return <div>Loading...</div>;
 
+    // Handle form submission for checkboxes
     const handleAdminFormSubmit = (e) => {
         e.preventDefault();
-        if (adminMessage.trim() && targetGroup) {
-            // Emit an event to the server to send a message to a specific group
+        if (adminMessage.trim() && selectedGroups.length > 0) {
+            // Emit an event to the server to send a message to the selected groups
             socket.emit('sendGroupMessage', {
                 roomId,
-                group: targetGroup,
-                message: adminMessage
+                groups: selectedGroups, // Send the array of selected groups
+                message: adminMessage,
             });
 
             setAdminMessage('');
-            setTargetGroup('');
+            setSelectedGroups([]); // Clear selected groups after sending the message
         }
     };
 
@@ -167,16 +194,23 @@ const Room = () => {
                                 onChange={(e) => setAdminMessage(e.target.value)}
                                 placeholder="Enter your Recruitment Job?"
                             />
-                            <select
-                                value={targetGroup}
-                                onChange={(e) => setTargetGroup(e.target.value)}
-                            >
-                                <option value="">Select a Group</option>
-                                <option value="1">G1</option>
-                                <option value="2">G2</option>
-                                <option value="3">G3</option>
-                                <option value="4">G4</option>
-                            </select>
+                            <div className="selected-groups">
+                                <h4>Select Groups:</h4>
+                                <div className="group-checkboxes">
+                                    {availableGroups.map((groupNumber) => (
+                                        <label key={groupNumber} className="group-checkbox">
+                                            <input
+                                                className='checkbox-input'
+                                                type="checkbox"
+                                                value={groupNumber}
+                                                checked={selectedGroups.includes(groupNumber)}
+                                                onChange={() => handleCheckboxChange(groupNumber)}
+                                            />
+                                            Group {groupNumber}
+                                        </label>
+                                    ))}
+                                </div>
+                            </div>
                             <button type="submit">Submit</button>
                         </form>
 

@@ -87,15 +87,21 @@ function setupWebSocket(server) {
     });
 
     socket.on('sendGroupMessage', (data) => {
-      const { roomId, group, message } = data;
+      const { roomId, groups, message } = data;
 
       if (!rooms[roomId]) return;
 
-      const targetPlayers = rooms[roomId].filter(player => String(player.group) === String(group));
+      // Ensure `groups` is an array
+      const targetGroups = Array.isArray(groups) ? groups : [groups];
 
-      targetPlayers.forEach(player => {
-        io.to(player.socketId).emit('receiveGroupMessage', { message });
+      // Loop through each group and send the message to its players
+      targetGroups.forEach((group) => {
+        const targetPlayers = rooms[roomId].filter(player => String(player.group) === String(group));
+        targetPlayers.forEach(player => {
+          io.to(player.socketId).emit('receiveGroupMessage', { message });
+        });
       });
+      
     });
 
     socket.on('dragDropUpdate', (data) => {
@@ -199,7 +205,7 @@ function setupWebSocket(server) {
     socket.on('sendFeedbackGroupMessage', ({ roomId, group, message }) => {
 
       if (!rooms[roomId]) return;
-      
+
 
       const targetPlayers = rooms[roomId].filter(player => String(player.group) === String(group));
 
