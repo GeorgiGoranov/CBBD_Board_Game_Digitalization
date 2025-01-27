@@ -5,7 +5,7 @@ Here I provide the different artefacts developed during the starting phase of th
 
 
 - [Artefacts](/artefacts)
-- [Project charter] Upcoming 
+- [Project charter](/artefacts) 
 ---
  ## Team Roles
 - **Product Owner:** Niklas N. Meisel
