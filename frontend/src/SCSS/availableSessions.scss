@@ -72,3 +72,11 @@ p.p-activity {
     margin: 0;
     padding: 0;
 }
+
+span.inactive {
+    color: red; /* This will make the text red if it's inactive */
+}
+
+span.active {
+    color: green; /* Optional: you can also style the active state */
+}

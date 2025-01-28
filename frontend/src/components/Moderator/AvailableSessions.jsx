@@ -115,7 +115,7 @@ const AvailableSessions = () => {
                             <p>Host: <span>{session.host}</span></p>
                             <p>Total Participants: <span>{session.players && session.players.length > 0 ? session.players.length : '0'}</span></p>
                             <div className="container-for-activity">
-                                <p className="p-activity">Active: <span>{session.isActive ? 'Yes' : 'No'}</span></p>
+                                <p className="p-activity">Active: <span className={session.isActive ? 'active' : 'inactive'}>{session.isActive ? 'Yes' : 'No' }</span></p>
                                 <i className="bi bi-sliders" onClick={() => handleActivityClick(session.code)}></i>
                                 <i class="bi bi-book-half" onClick={() => handleResultsClick(session.code)} ></i>
                             </div>

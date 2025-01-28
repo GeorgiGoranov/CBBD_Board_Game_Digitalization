@@ -14,7 +14,7 @@ const GroupDiscussion = ({ roomId, apiUrl, availableGroups, socket, playerID, ro
         priority4: [],
     });
     const [socketMessage, setSocketMessage] = useState(''); // This can be used to display socket events
-    const [userSessionCode, setUserSessionCode] = useState(null);
+   
 
 
     useEffect(() => {

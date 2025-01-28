@@ -261,7 +261,13 @@ const Room = () => {
                                 {currentRound === 2 && (
                                     <div>
                                         Round 2
-                                        <RoundTwo roomId={roomId} playerID={playerID} socket={socket} group={group} />
+                                        <RoundTwo 
+                                        roomId={roomId} 
+                                        playerID={playerID} 
+                                        socket={socket} 
+                                        group={group}
+                                        availableGroups={availableGroups}
+                                         />
 
                                     </div>
                                 )}

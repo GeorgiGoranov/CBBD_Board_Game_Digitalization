@@ -8,15 +8,26 @@ import { useLanguage } from '../../context/LanguageContext';
 import '../../SCSS/roundTwo.scss';
 
 
-const RoundTwo = ({ roomId, playerID, socket, group }) => {
+const RoundTwo = ({ roomId, playerID, socket, group, availableGroups }) => {
     const { language } = useLanguage(); // Access selected language
     const [categoriesData, setCategoriesData] = useState([]);
     const [collapsedCategories, setCollapsedCategories] = useState({});
+
+    const [currentGroupIndex, setCurrentGroupIndex] = useState(0); // Track the current group
+
+
     const [dropZones, setDropZones] = useState({
         priority1: [],
         priority2: [],
         priority3: [],
         priority4: [],
+
+    });
+    const [dropZonesInit, setDropZonesInit] = useState({
+        priority5: [],
+        priority6: [],
+        priority7: [],
+        priority8: [],
 
     });
 
@@ -171,6 +182,8 @@ const RoundTwo = ({ roomId, playerID, socket, group }) => {
             },
         }));
     };
+
+
 
 
     const saveState = useCallback(async () => {
@@ -382,122 +395,196 @@ const RoundTwo = ({ roomId, playerID, socket, group }) => {
         }
     }, [userActionOccurred, saveState]);
 
+    useEffect(() => {
+        // Fetch data for the current group
+        const fetchGroupDataRoundOne = async () => {
 
+            // const currentGroupNumber = availableGroups[currentGroupIndex];
+            try {
+                const response = await fetch(`${apiUrl}/api/rounds/get-state-first-round/${roomId}`, {
+                    credentials: 'include', // Include JWT cookies
+                });
+                if (response.ok) {
+                    const data = await response.json();
+
+                    // Find the group data for the current group
+                    const matchingGroup = data.groups.find(
+                        (g) => String(g.groupNumber).trim() === String(group).trim()
+                    );
+
+                    if (matchingGroup) {
+                        const renamedDropZones = {
+                            priority5: matchingGroup.dropZones.priority1 || [],
+                            priority6: matchingGroup.dropZones.priority2 || [],
+                            priority7: matchingGroup.dropZones.priority3 || [],
+                            priority8: matchingGroup.dropZones.priority4 || [],
+                        };
+                        setDropZonesInit(renamedDropZones);
+                    } else {
+                        console.log('No matching group found.');
+                        setDropZonesInit({ priority5: [], priority6: [], priority7: [], priority8: [] });
+                    }
+                } else {
+                    console.error('Failed to fetch group data');
+                }
+            } catch (error) {
+                console.error('Error fetching group data:', error);
+            }
+        }
+
+
+        fetchGroupDataRoundOne();
+
+    }, [group, roomId, apiUrl]);
 
 
 
     return (
-        <div>
-            {socketMessage && <p>{socketMessage}</p>}
+        <div className='container-layout-roun2'>
+            <div className="first-round-choices">
+                {availableGroups.length > 0 ? (
+                    <>
+                        <div className="group-decisions-round2">
+                            <h2>Decisions from Round 1</h2>
+                            <div className='priority-boxes-round2'>
 
-            <DragDropContext onDragEnd={handleDragDrop}>
-                <ul className="api-list categories-grid">
-                    {/* Iterate over categories */}
-                    {categoriesData.map((category, categoryIndex) => (
-                        <div key={`category-${categoryIndex}`} className="category-container">
-                            <h2
-                                onClick={() => toggleCategoryCollapse(category.category)}
-                                style={{ cursor: 'pointer' }}
-                            >
-                                {category.category}
-                            </h2>
-                            {!collapsedCategories[category.category] && (
-                                <Droppable droppableId={`category-${category.category}`}>
-                                    {(provided) => (
-                                        <div
-                                            {...provided.droppableProps}
-                                            ref={provided.innerRef}
-                                            className="options-container"
-                                        >
-                                            {category.options.map((option, index) => (
-                                                <Draggable
-                                                    draggableId={`category-${option.id}`}
-                                                    key={`category-${option.id}`}
-                                                    index={index}
-                                                >
-                                                    {(provided) => (
-                                                        <div
-                                                            ref={provided.innerRef}
-                                                            {...provided.draggableProps}
-                                                            {...provided.dragHandleProps}
-                                                            className="option-item"
-                                                        >
-                                                            <p>{option.text}</p>
-                                                        </div>
-                                                    )}
-                                                </Draggable>
-                                            ))}
-                                            {provided.placeholder}
+                                {['priority5', 'priority6', 'priority7', 'priority8'].map((priority, index) => (
+                                    <div className="droppable-box" key={priority}>
+                                        <h2 className="box-text">Priority {index + 5}</h2>
+                                        {dropZonesInit[priority] && dropZonesInit[priority].length > 0 ? (
+                                            dropZonesInit[priority].map((item, itemIndex) => (
+                                                <div key={`${item.category}-${itemIndex}`} className="draggable-item">
+                                                    {item.category}
+                                                </div>
+                                            ))
+                                        ) : (
+                                            <p className="empty-box">No items in this priority.</p>
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </>
+                ) : (
+                    <p>No groups available for discussion.</p>
+                )}
+            </div>
+
+
+            <div>
+
+
+                {socketMessage && <p>{socketMessage}</p>}
+                <DragDropContext onDragEnd={handleDragDrop}>
+                    <ul className="api-list categories-grid">
+                        {/* Iterate over categories */}
+                        {categoriesData.map((category, categoryIndex) => (
+                            <div key={`category-${categoryIndex}`} className="category-container">
+                                <h2
+                                    onClick={() => toggleCategoryCollapse(category.category)}
+                                    style={{ cursor: 'pointer' }}
+                                >
+                                    {category.category}
+                                </h2>
+                                {!collapsedCategories[category.category] && (
+                                    <Droppable droppableId={`category-${category.category}`}>
+                                        {(provided) => (
+                                            <div
+                                                {...provided.droppableProps}
+                                                ref={provided.innerRef}
+                                                className="options-container"
+                                            >
+                                                {category.options.map((option, index) => (
+                                                    <Draggable
+                                                        draggableId={`category-${option.id}`}
+                                                        key={`category-${option.id}`}
+                                                        index={index}
+                                                    >
+                                                        {(provided) => (
+                                                            <div
+                                                                ref={provided.innerRef}
+                                                                {...provided.draggableProps}
+                                                                {...provided.dragHandleProps}
+                                                                className="option-item"
+                                                            >
+                                                                <p>{option.text}</p>
+                                                            </div>
+                                                        )}
+                                                    </Draggable>
+                                                ))}
+                                                {provided.placeholder}
+                                            </div>
+                                        )}
+                                    </Droppable>
+                                )}
+                            </div>
+                        ))}
+                    </ul>
+
+                    <div className="droppable-box-b">
+                        {['priority1', 'priority2', 'priority3', 'priority4'].map((box, index) => (
+                            <Droppable droppableId={box} key={box}>
+                                {(provided) => (
+                                    <div
+                                        className="droppable-box"
+                                        ref={provided.innerRef}
+                                        {...provided.droppableProps}
+                                    >
+                                        <div className='box-description'>
+                                            <h2># {index + 1}</h2>
+                                            <h6>{boxMessages[language][box]}</h6>
                                         </div>
-                                    )}
-                                </Droppable>
-                            )}
+
+
+
+                                        {dropZones[box].map((item, itemIndex) => (
+                                            <Draggable
+                                                draggableId={item.id}
+                                                key={item.id}
+                                                index={itemIndex}
+                                            >
+                                                {(provided) => (
+                                                    <div
+                                                        ref={provided.innerRef}
+                                                        {...provided.draggableProps}
+                                                        {...provided.dragHandleProps}
+                                                        className="draggable-item"
+                                                    >
+                                                        {item.text}
+                                                    </div>
+                                                )}
+                                            </Draggable>
+                                        ))}
+                                        {provided.placeholder}
+                                    </div>
+                                )}
+                            </Droppable>
+                        ))}
+                    </div>
+
+                </DragDropContext>
+                {Object.entries(cursorPositions)
+                    .filter(([pid, pos]) => pos.group === group)
+                    .map(([playerID, position]) => (
+                        <div className='playerCursorID'
+                            key={playerID}
+                            style={{
+                                position: 'absolute',
+                                top: position.y,
+                                left: position.x,
+                                pointerEvents: 'none',
+                                transform: 'translate(-50%, -50%)',
+                                backgroundColor: 'rgba(0, 0, 255, 0.5)',
+                                width: '10px',
+                                height: '10px',
+                                borderRadius: '50%',
+                                zIndex: 1000,
+                            }}>
+                            <span style={{ fontSize: '10px', color: 'red' }}>{playerID}</span>
                         </div>
                     ))}
-                </ul>
 
-                <div className="droppable-box-b">
-                    {['priority1', 'priority2', 'priority3', 'priority4'].map((box, index) => (
-                        <Droppable droppableId={box} key={box}>
-                            {(provided) => (
-                                <div
-                                    className="droppable-box"
-                                    ref={provided.innerRef}
-                                    {...provided.droppableProps}
-                                >
-                                    <div className='box-description'>
-                                        <h2># {index + 1}</h2>
-                                        <h6>{boxMessages[language][box]}</h6>
-                                    </div>
-
-
-
-                                    {dropZones[box].map((item, itemIndex) => (
-                                        <Draggable
-                                            draggableId={item.id}
-                                            key={item.id}
-                                            index={itemIndex}
-                                        >
-                                            {(provided) => (
-                                                <div
-                                                    ref={provided.innerRef}
-                                                    {...provided.draggableProps}
-                                                    {...provided.dragHandleProps}
-                                                    className="draggable-item"
-                                                >
-                                                    {item.text}
-                                                </div>
-                                            )}
-                                        </Draggable>
-                                    ))}
-                                    {provided.placeholder}
-                                </div>
-                            )}
-                        </Droppable>
-                    ))}
-                </div>
-            </DragDropContext>
-            {Object.entries(cursorPositions)
-                .filter(([pid, pos]) => pos.group === group)
-                .map(([playerID, position]) => (
-                    <div className='playerCursorID'
-                        key={playerID}
-                        style={{
-                            position: 'absolute',
-                            top: position.y,
-                            left: position.x,
-                            pointerEvents: 'none',
-                            transform: 'translate(-50%, -50%)',
-                            backgroundColor: 'rgba(0, 0, 255, 0.5)',
-                            width: '10px',
-                            height: '10px',
-                            borderRadius: '50%',
-                            zIndex: 1000,
-                        }}>
-                        <span style={{ fontSize: '10px', color: 'red' }}>{playerID}</span>
-                    </div>
-                ))}
-
+            </div>
         </div>
     );
 };
