@@ -169,7 +169,7 @@ function setupWebSocket(server) {
     });
 
     socket.on('vote', (data) => {
-      const { vote, roomId } = data;
+      const { vote, roomId } = data; 
 
       if (!roomVotes[roomId]) roomVotes[roomId] = {};
 

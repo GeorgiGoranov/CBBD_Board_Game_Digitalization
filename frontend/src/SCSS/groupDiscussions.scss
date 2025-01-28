@@ -24,3 +24,13 @@
     cursor: pointer;
     color: var(--primary);
 }
+
+.group-discussion-container{
+    display: flex;
+    flex-direction: column;
+}
+
+.container-discussion{
+    display: flex;  
+}
+

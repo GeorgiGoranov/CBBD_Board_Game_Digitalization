@@ -156,44 +156,47 @@ const GroupDiscussion = ({ roomId, apiUrl, availableGroups, socket, playerID, ro
     // if (loading) return <div>Loading...</div>;
 
     return (
-        <div className="group-discussion-container">
-            <h2>Group Discussion</h2>
-            {availableGroups.length > 0 ? (
-                <>
-                    <div className="group-decisions">
-                        <h2>Decisions for Group {availableGroups[currentGroupIndex]}</h2>
-                        {socketMessage && <p>{socketMessage}</p>}
-                        <div className='priority-boxes'>
+        <div className='container-whole-class-discussion'>
+            <div className="group-discussion-container">
+                <h2>Group Discussion</h2>
+                {availableGroups.length > 0 ? (
+                    <>
+                        <div className="group-decisions">
+                            <h2>Decisions for Group {availableGroups[currentGroupIndex]}</h2>
+                            {socketMessage && <p>{socketMessage}</p>}
+                            <div className='priority-boxes'>
 
-                            {['priority1', 'priority2', 'priority3', 'priority4'].map((priority, index) => (
-                                <div className="droppable-box" key={priority}>
-                                    <h2 className="box-text">Priority {index + 1}</h2>
-                                    {dropZones[priority] && dropZones[priority].length > 0 ? (
-                                        dropZones[priority].map((item, itemIndex) => (
-                                            <div key={`${item.category}-${itemIndex}`} className="draggable-item">
-                                                {item.category}
-                                            </div>
-                                        ))
-                                    ) : (
-                                        <p className="empty-box">No items in this priority.</p>
-                                    )}
+                                {['priority1', 'priority2', 'priority3', 'priority4'].map((priority, index) => (
+                                    <div className="droppable-box" key={priority}>
+                                        <h2 className="box-text">Priority {index + 1}</h2>
+                                        {dropZones[priority] && dropZones[priority].length > 0 ? (
+                                            dropZones[priority].map((item, itemIndex) => (
+                                                <div key={`${item.category}-${itemIndex}`} className="draggable-item">
+                                                    {item.category}
+                                                </div>
+                                            ))
+                                        ) : (
+                                            <p className="empty-box">No items in this priority.</p>
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
+                            {role === 'admin' ? (
+                                <div className="group-navigation">
+                                    <i class="bi bi-caret-left-fill" onClick={handlePreviousGroup}></i>
+                                    <h3>Current Group: {availableGroups[currentGroupIndex]}</h3>
+                                    <i class="bi bi-caret-right-fill" onClick={handleNextGroup}></i>
                                 </div>
-                            ))}
+
+                            ) : (
+                                ""
+                            )}
                         </div>
-                    </div>
-                    {role === 'admin' ? (
-                        <div className="group-navigation">
-                            <i class="bi bi-caret-left-fill" onClick={handlePreviousGroup}></i>
-                            <h3>Current Group: {availableGroups[currentGroupIndex]}</h3>
-                            <i class="bi bi-caret-right-fill" onClick={handleNextGroup}></i>
-                        </div>
-                    ) : (
-                        "hello"
-                    )}
-                </>
-            ) : (
-                <p>No groups available for discussion.</p>
-            )}
+                    </>
+                ) : (
+                    <p>No groups available for discussion.</p>
+                )}
+            </div>
         </div>
     );
 }

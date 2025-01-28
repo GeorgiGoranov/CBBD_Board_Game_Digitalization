@@ -194,16 +194,20 @@ const Room = () => {
     return (
         <div className='room-container'>
             {showGroupDiscussion ? (
-                <GroupDiscussion 
-                roomId={roomId}
-                apiUrl={apiUrl}
-                availableGroups={availableGroups}
-                socket={socket}
-                group={group}
-                playerID={playerID} 
-                role={role}
-                currentRound={currentRound}
-                />
+                <div className='container-discussion'>
+                    <GroupDiscussion
+                        roomId={roomId}
+                        apiUrl={apiUrl}
+                        availableGroups={availableGroups}
+                        socket={socket}
+                        group={group}
+                        playerID={playerID}
+                        role={role}
+                        currentRound={currentRound}
+                    />
+                    <Chat playerID={playerID} socket={socket} group={group} />
+
+                </div>
             ) : (
                 <>
                     {role === 'admin' ? (
