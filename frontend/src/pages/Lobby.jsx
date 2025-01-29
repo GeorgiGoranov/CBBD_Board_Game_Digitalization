@@ -267,20 +267,30 @@ const Lobby = () => {
                     //    just keep them empty arrays/objects.
                     // ----------------------------------------------------------
 
-                    
+
 
                     console.log(categories)
 
                     const groupsForRound = groupedPlayers.map((grp) => {
-                        const uniqueNats = [
-                            ...new Set(grp.players.map((p) => p.nationality))
-                        ];
+                        // 1) Create a frequency map of nationalities
+                        const nationalityCounts = grp.players.reduce((acc, player) => {
+                            acc[player.nationality] = (acc[player.nationality] || 0) + 1;
+                            return acc;
+                        }, {});
+
+                        // // 2) Transform into an array of "nationality (count)" strings
+                        // //    e.g. { german: 2, other: 3 } => [ "german (2)", "other (3)" ]
+                        // const countedNationalities = Object.entries(nationalityCounts).map(
+                        //     ([nat, count]) => `${nat} (${count})`
+                        // );
+
+                        // 3) Return the group object
                         return {
                             groupNumber: grp.groupNumber,
                             categories,
                             dropZones: { priority1: [], priority2: [], priority3: [], priority4: [] },
                             messages: [],
-                            nationalities: uniqueNats
+                            nationalities: nationalityCounts,
                         };
                     });
 
@@ -361,7 +371,11 @@ const Lobby = () => {
     };
 
     const lockInGroups = () => {
+        /*
+        We do the fetch here so that in the upcoming round 1 we only need to fetch the saved state, a.k.a we do not wait until going to the round and just then tofetch the card data
+        */
         fetchCategories()
+
         // Filter out empty groups
         const nonEmptyGroups = groupedPlayers.filter(
             (group) => group.players.length > 0

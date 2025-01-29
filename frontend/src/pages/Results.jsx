@@ -77,7 +77,27 @@ const Results = () => {
                 {remappedGroups.length > 0 ? (
                     remappedGroups.map((group, gIndex) => (
                         <div key={gIndex} className="group-section">
+                            <div>
+
                             <h4>Group {group.groupNumber}</h4>
+                            {/* Display Nationalities if available */}
+                            {group.nationalities && group.nationalities.length > 0 && (
+                                <div className="nationalities">
+                                    {/* <h5>Nationalities:</h5> */}
+                                    {/* Each element is an object, so map over them */}
+                                    {group.nationalities.map((natObject, index) => (
+                                        <ul key={index}>
+                                            {/* natObject looks like { german: 2, dutch: 1, ... } */}
+                                            {Object.entries(natObject).map(([natKey, natCount]) => (
+                                                <li key={natKey}>
+                                                    {natKey} ({natCount})
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    ))}
+                                </div>
+                            )}
+                            </div>
                             {Object.entries(group.dropZones || {}).map(([zone, items]) => (
                                 <div key={zone} className="drop-zone">
                                     {/* Format the zone to split "priority1" into "priority 1" */}

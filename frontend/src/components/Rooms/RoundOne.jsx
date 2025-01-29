@@ -160,21 +160,6 @@ const RoundOne = ({ roomId, playerID, socket, group }) => {
     }, [roomId, categories, dropZones, group])
 
     useEffect(() => {
-        const fetchCategories = async () => {
-            try {
-                const response = await fetch(`${apiUrl}/api/cards/get-all-categories`, {
-                    credentials: 'include', // Include JWT cookies
-                });
-                if (response.ok) {
-                    const data = await response.json();
-                    setCategories(data); // Update categories state
-                } else {
-                    console.error('Error fetching categories');
-                }
-            } catch (error) {
-                console.error('Error fetching categories:', error);
-            }
-        }
 
         const fetchSavedRoomState = async () => {
             try {
@@ -208,7 +193,7 @@ const RoundOne = ({ roomId, playerID, socket, group }) => {
         };
 
         if (group) {
-            fetchCategories();
+            // fetchCategories();
             fetchSavedRoomState();
         }
     }, [roomId, group])
