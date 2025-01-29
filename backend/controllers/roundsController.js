@@ -123,7 +123,7 @@ const saveThirdRoomStateMode = (RoundModel) => {
                         }
                     };
                 }
-
+                
                 // Update nationality count
                 if (!lastCard.votes[vote].nationalities[nationality]) {
                     // If nationality doesn't match these three, categorize as 'other'

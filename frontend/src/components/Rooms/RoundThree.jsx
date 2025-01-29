@@ -8,8 +8,11 @@ const RoundThree = ({ roomId, playerID, socket, role, nationality }) => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const { language } = useLanguage();
-    const [votes, setVotes] = useState({});
+    //store separate counters for the two options
+    const [voteCounts, setVoteCounts] = useState({ option1: 0, option2: 0 });
+    // Track the user's own choice if needed
     const [userVote, setUserVote] = useState(null);
+
     const apiUrl = process.env.REACT_APP_BACK_END_URL_HOST;
 
 
@@ -23,9 +26,9 @@ const RoundThree = ({ roomId, playerID, socket, role, nationality }) => {
             }
             const data = await response.json();
             setCard(data.card || []);
-            setVotes(data.votes || {});
+            // setVotes(data.votes || {});
             if (data.votes && data.votes[playerID]) {
-                setUserVote(data.votes[playerID]);
+                setUserVote(data.votes[playerID]);// "option1" or "option2"
             }
         } catch (err) {
             setError(err.message);
@@ -38,7 +41,7 @@ const RoundThree = ({ roomId, playerID, socket, role, nationality }) => {
         try {
             const body = { roomId, playerID, nationality };
             if (currentCard) body.card = currentCard;
-            if (currentVote) body.vote = currentVote;
+            if (currentVote) body.vote = currentVote; // "option1" or "option2"
 
             const response = await fetch(`${apiUrl}/api/rounds/save-state-third-round`, {
                 method: 'POST',
@@ -73,7 +76,10 @@ const RoundThree = ({ roomId, playerID, socket, role, nationality }) => {
                 // Save the new card to the backend
                 await saveState(data, null);
 
-                // Emit the card to all players in the room
+                // 1. Emit the new card
+                socket.emit('newDilemmaCardData', { roomId, card: data });
+
+                // 2. Emit reset votes **after** the new card arrives
                 socket.emit('newDilemmaCardData', { roomId, card: data });
             } catch (err) {
                 setError(err.message);
@@ -92,8 +98,8 @@ const RoundThree = ({ roomId, playerID, socket, role, nationality }) => {
             alert('Admins are not allowed to vote');
             return;
         }
-        socket.emit('vote', { vote: option, roomId });
         setUserVote(option); // Store the user's selected option
+        socket.emit('vote', { vote: option, roomId });
         saveState(null, option); // Save the selected option
     };
 
@@ -101,10 +107,10 @@ const RoundThree = ({ roomId, playerID, socket, role, nationality }) => {
         if (role === 'admin') {
             fetchRandomCard();
         } else {
-            setTimeout(()=>{
+            setTimeout(() => {
 
                 fetchCurrentState();
-            }, 2000)
+            }, 1500)
         }
     }, [role, fetchRandomCard, fetchCurrentState]);
 
@@ -114,14 +120,21 @@ const RoundThree = ({ roomId, playerID, socket, role, nationality }) => {
         socket.on('updateDilemmaCardData', (newCard) => {
             setCard(newCard);
             setUserVote(null);  // <--- Reset user's vote here so they can vote on the new card
+            // Also reset local counters if needed
+            setVoteCounts({ option1: 0, option2: 0 });
         });
-        socket.on('updateVotes', setVotes);
+        // This event returns something like { option1: X, option2: Y }
+        socket.on('updateVotes', (roomVotes) => {
+            setVoteCounts({
+                option1: roomVotes.option1 || 0,
+                option2: roomVotes.option2 || 0
+            });
+        });
 
 
 
         // Cleanup listener on component unmount
         return () => {
-            socket.off('nextDilemmaCard');
             socket.off('updateDilemmaCardData');
             socket.off('updateVotes');
         };
@@ -131,8 +144,9 @@ const RoundThree = ({ roomId, playerID, socket, role, nationality }) => {
     if (loading) return <div>Loading...</div>;
     if (error) return <div>Error: {error}</div>;
 
-    const options = card?.options?.[language]; // Extract options for the selected language
-    if (!options) return <div>No card or options available</div>;
+    const cardOptions = card?.options?.[language]; // Extract options for the selected language
+    if (!cardOptions) return <div>No card or options available</div>;
+
 
     return (
         <div className="round-three-container">
@@ -142,21 +156,39 @@ const RoundThree = ({ roomId, playerID, socket, role, nationality }) => {
                 <p>Subcategory: {card.subcategory || "Unknown"}</p>
 
                 <div className="options-container-dilemma">
-                    {options.map((option, index) => (
-                        <div
-                            key={index}
-                            className={`option-item-dilemma ${userVote === option ? 'voted' : ''}`}
-                            onClick={() => userVote === null && role !== 'admin' && handleVote(option)}
-                            style={{
-                                cursor: userVote === null && role !== 'admin' ? "pointer" : "not-allowed",
-                                backgroundColor: userVote === option ? "#cce5ff" : ""
-                            }}
-                        >
-                            {option} {votes[option] ? `- Votes: ${votes[option]}` : ''}
-                        </div>
-                    ))}
+                    {cardOptions.map((cardOptions, index) => {
+                        // If userVote is 'option1' and index = 0 => highlight
+                        // If userVote is 'option2' and index = 1 => highlight
+                        const isVoted =
+                            (userVote === 'option1' && index === 0) ||
+                            (userVote === 'option2' && index === 1);
+
+                        return (
+                            <div
+                                key={index}
+                                className={`option-item-dilemma ${isVoted ? 'voted' : ''}`}
+                                onClick={() =>
+                                    userVote === null && role !== 'admin' && handleVote(`option${index + 1}`)
+                                }
+                                style={{
+                                    cursor: userVote === null && role !== 'admin' ? 'pointer' : 'not-allowed',
+                                    backgroundColor: isVoted ? '#cce5ff' : ''
+                                }}
+                            >
+                                {cardOptions}
+                            </div>
+                        );
+                    })}
                 </div>
 
+            </div>
+            <div className="score-keepers">
+                <h3>Separate Voting Buttons</h3>
+
+                <div className="score-display">
+                    <p>{voteCounts.option1}</p>
+                    <p>{voteCounts.option2}</p>
+                </div>
             </div>
             {role === 'admin' && (
                 <div className='moderator-container-layout'>

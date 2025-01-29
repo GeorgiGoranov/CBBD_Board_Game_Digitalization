@@ -12,7 +12,7 @@ const roomVotes = {}; // Store votes per room: { [roomId]: { agree: number, disa
 
 // WebSocket setup
 function setupWebSocket(server) {
-  const io = new Server(server, { 
+  const io = new Server(server, {
     cors: {
       origin: `${process.env.FRONT_END_URL_HOST}`,
       methods: ["GET", "POST"],
@@ -78,7 +78,7 @@ function setupWebSocket(server) {
       console.log(`Navigating all players in room ${roomId} to game room`);
 
       // Broadcast the event to all players in the room
-      io.to(roomId).emit('navigateToRoom', { roomId }); 
+      io.to(roomId).emit('navigateToRoom', { roomId });
     });
 
     socket.on('updateTokens', ({ roomId, groupedPlayers }) => {
@@ -131,11 +131,11 @@ function setupWebSocket(server) {
     socket.on('sendMessage', async (data) => {
       const { message } = data;
 
-      const result = await saveMessage(message); 
+      const result = await saveMessage(message);
 
       if (result.success) {
         const { roomId, groupNumber } = result.message;
- 
+
         // Find all players in this room with the same groupNumber
         const roomPlayers = rooms[roomId] || [];
         const targetPlayers = roomPlayers.filter(p => Number(p.group) === Number(groupNumber));
@@ -162,16 +162,25 @@ function setupWebSocket(server) {
     socket.on('newDilemmaCardData', (data) => {
       const { roomId, card } = data;
 
+      // 1. Reset the server-side votes for this room
+      roomVotes[roomId] = { option1: 0, option2: 0 };
+
       // Broadcast the new card data to all users in the room
       io.to(roomId).emit('updateDilemmaCardData', card);
+
+      // 3. Broadcast the reset counts (optional, to ensure all clients see 0 immediately)
+      io.to(roomId).emit('updateVotes', roomVotes[roomId]);
 
       console.log(`Broadcasted new dilemma card data for room: ${roomId}`);
     });
 
     socket.on('vote', (data) => {
-      const { vote, roomId } = data; 
+      const { vote, roomId } = data;
 
-      if (!roomVotes[roomId]) roomVotes[roomId] = {};
+      if (!roomVotes[roomId]) {
+        // Initialize counters specifically as option1: 0, option2: 0
+        roomVotes[roomId] = { option1: 0, option2: 0 };
+      }
 
       // Increment vote count for the selected option
       if (!roomVotes[roomId][vote]) {
@@ -184,8 +193,10 @@ function setupWebSocket(server) {
 
     // Handle resetting votes when a new dilemma card is selected
     socket.on('resetVotes', () => {
-      votes = { agree: 0, disagree: 0 }; // Reset vote counts
-      io.emit('updateVotes', votes); // Notify all clients to reset their vote counts
+      // Reset the vote counts for this room
+      roomVotes[roomId] = { option1: 0, option2: 0 };
+      // Notify all clients with the updated votes
+      io.to(roomId).emit('updateVotes', roomVotes[roomId]);
     });
 
     socket.on('stopGame', (data) => {
@@ -247,7 +258,7 @@ function setupWebSocket(server) {
           'updatePlayerList',
           rooms[roomCode].map(player => ({
             playerID: player.playerID,
-            nationality: player.nationality, 
+            nationality: player.nationality,
             group: player.group
           }))
         );
