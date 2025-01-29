@@ -241,6 +241,47 @@ const Lobby = () => {
                         alert('Failed to update token.');
                     }
 
+                    // ----------------------------------------------------------
+                    // 4. Build the array of groups to save to the "first-round" DB
+                    //    so each group has a pre-filled `nationalities` array.
+                    //    If you do not want to set categories or dropZones yet, 
+                    //    just keep them empty arrays/objects.
+                    // ----------------------------------------------------------
+
+                    const groupsForRound = groupedPlayers.map((grp) => {
+                        const uniqueNats = [
+                            ...new Set(grp.players.map((p) => p.nationality))
+                        ];
+                        return {
+                            groupNumber: grp.groupNumber,
+                            categories: [],
+                            dropZones: { priority1: [], priority2: [], priority3: [], priority4: [] },
+                            messages: [],
+                            nationalities: uniqueNats
+                        };
+                    });
+
+                    // 5. Save these groups to your RoundOne DB
+                    //    (i.e. "first-round" collection)
+                    const roundSaveResponse = await fetch(`${apiUrl}/api/rounds/save-state-first-round`, {
+                        method: 'POST',
+                        credentials: 'include',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            roomId,
+                            groups: groupsForRound
+                        }),
+                    });
+
+                    if (!roundSaveResponse.ok) {
+                        const errorData = await roundSaveResponse.json();
+                        console.error('Error saving round data:', errorData.message);
+                        alert('Failed to save round data.');
+                        return;
+                    }
+
+                    console.log('Groups and round data saved successfully!');
+
                     // Navigate players to the room
                     socket.emit('navigateToRoom', { roomId });
                 } else {
@@ -448,7 +489,7 @@ const Lobby = () => {
                                     <button className={`btn ${groupsLocked ? 'valid' : ''}`}
                                         id='start'
                                         onClick={handleSaveGroups}
-                                        // disabled={!groupsLocked} // Disable if groups are not locked 
+                                    // disabled={!groupsLocked} // Disable if groups are not locked 
                                     >
                                         Start Game
                                     </button>

@@ -22,8 +22,6 @@ const RoundOne = ({ roomId, playerID, socket, group }) => {
     const [socketMessageFeedback, setSocketMessageFeedback] = useState(''); // This can be used to display socket events
     const apiUrl = process.env.REACT_APP_BACK_END_URL_HOST;
 
-    const [messagesSent, setMessagesSent] = useState(new Set()); // Set to track unique messages
-
 
 
     const handleDragDrop = (results) => {
@@ -133,18 +131,14 @@ const RoundOne = ({ roomId, playerID, socket, group }) => {
 
     };
 
-
     const saveState = useCallback(async () => {
         try {
-            
             const groups = [{
                 groupNumber: group, // If you know the group number from props or context
                 categories,
                 dropZones,
                 messages: socketMessage ? [socketMessage] : [] // put the message in the messages array
-
             }];
-            console.log(socketMessage)
 
             const response = await fetch(`${apiUrl}/api/rounds/save-state-first-round`, {
                 method: 'POST',
@@ -251,7 +245,7 @@ const RoundOne = ({ roomId, playerID, socket, group }) => {
             socket.off('cursorUpdate');
             socket.off('dragDropUpdate');
             socket.off('receiveGroupMessage');
-            socket.off('receiveFeedbackGroupMessage'); 
+            socket.off('receiveFeedbackGroupMessage');
         }
     }, [socket])
 

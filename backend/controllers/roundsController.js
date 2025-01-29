@@ -41,6 +41,21 @@ const saveRoomStateMode = (RoundModel) => {
                             ); // Filter out duplicates
                             round.groups[existingGroupIndex].messages.push(...uniqueMessages);
                         }
+
+                        // ----- Handle NATIONALITIES -----
+                        if (Array.isArray(newGroup.nationalities)) {
+                            // Option A: Replace existing nationalities
+                            // round.groups[existingGroupIndex].nationalities = newGroup.nationalities;
+
+                            // Option B: Append only unique new nationalities
+                            const existingNationalities = new Set(
+                                round.groups[existingGroupIndex].nationalities || []
+                            );
+                            for (const nat of newGroup.nationalities) {
+                                existingNationalities.add(nat);
+                            }
+                            round.groups[existingGroupIndex].nationalities = Array.from(existingNationalities);
+                        }
                     } else {
                         // Add the new group if it doesn't exist
                         round.groups.push(newGroup);
@@ -131,7 +146,7 @@ const saveThirdRoomStateMode = (RoundModel) => {
     };
 };
 
- 
+
 const getRoomStateMode = (RoundModel) => {
     return async (req, res) => {
         const { roomId } = req.params;

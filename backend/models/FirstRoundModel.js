@@ -15,16 +15,21 @@ const GroupSchema = new Schema({
     type: Map,
     of: Array,
     default: {
-      box1: [],
-      box2: [],
-      box3: [],
-      box4: [],
+      priority1: [],
+      priority2: [],
+      priority3: [],
+      priority4: [],
     }
   },
   messages: {
     type: Array,
     default: []
-  }
+  },
+  nationalities: {
+    type: Array,
+    default: []
+  },
+
 }, { _id: false });
 
 const FirstRoomSchema = new Schema({
