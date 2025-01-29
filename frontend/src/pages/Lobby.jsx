@@ -254,9 +254,6 @@ const Lobby = () => {
                         ];
                         return {
                             groupNumber: grp.groupNumber,
-                            categories: [],
-                            dropZones: { priority1: [], priority2: [], priority3: [], priority4: [] },
-                            messages: [],
                             nationalities: uniqueNats
                         };
                     });
