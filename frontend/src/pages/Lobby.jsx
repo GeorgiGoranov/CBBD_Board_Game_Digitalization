@@ -25,6 +25,9 @@ const Lobby = () => {
 
     const [groupsLocked, setGroupsLocked] = useState(false);
 
+    const [categories, setCategories] = useState([]);
+
+
 
 
     if (!socketRef.current) {
@@ -183,6 +186,22 @@ const Lobby = () => {
         };
     }, [socket, roomId, playerID, nationality]);
 
+    const fetchCategories = async () => {
+        try {
+            const response = await fetch(`${apiUrl}/api/cards/get-all-categories`, {
+                credentials: 'include', // Include JWT cookies
+            });
+            if (response.ok) {
+                const data = await response.json();
+                setCategories(data); // Update categories state
+            } else {
+                console.error('Error fetching categories');
+            }
+        } catch (error) {
+            console.error('Error fetching categories:', error);
+        }
+    }
+
     const handleSaveGroups = async () => {
         const confirmed = window.confirm('You are about to save the groups! Are you sure?');
         if (confirmed) {
@@ -248,12 +267,19 @@ const Lobby = () => {
                     //    just keep them empty arrays/objects.
                     // ----------------------------------------------------------
 
+                    
+
+                    console.log(categories)
+
                     const groupsForRound = groupedPlayers.map((grp) => {
                         const uniqueNats = [
                             ...new Set(grp.players.map((p) => p.nationality))
                         ];
                         return {
                             groupNumber: grp.groupNumber,
+                            categories,
+                            dropZones: { priority1: [], priority2: [], priority3: [], priority4: [] },
+                            messages: [],
                             nationalities: uniqueNats
                         };
                     });
@@ -335,6 +361,7 @@ const Lobby = () => {
     };
 
     const lockInGroups = () => {
+        fetchCategories()
         // Filter out empty groups
         const nonEmptyGroups = groupedPlayers.filter(
             (group) => group.players.length > 0
