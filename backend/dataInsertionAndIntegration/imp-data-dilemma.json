@@ -12,6 +12,10 @@
                     "de": [
                         "Mitarbeiter folgen den Anweisungen des Managers ohne weitere Erläuterung, da er der Experte ist.",
                         "Anweisungen werden vom Vorgesetzten erläutert, damit die Mitarbeiter die Gründe für eine Tätigkeit verstehen."
+                    ],
+                    "en": [
+                        "Employees follow the manager’s instructions without further explanation, as the manager is the expert.",
+                        "Employees receive an explanation of the given instruction so they understand the reason for the task."
                     ]
                 }
             },
@@ -25,6 +29,10 @@
                     "de": [
                         "Hierarchien sind relativ hoch. Viele interne Regeln sorgen dafür, dass Struktur erschaffen wird.",
                         "Hierarchien sind relativ flach. Nur wenige interne Regeln existieren damit Raum für Kreativität geschaffen wird."
+                    ],
+                    "en": [
+                        "Hierarchies are relatively steep. Many internal rules exist to create structure.",
+                        "Hierarchies are relatively flat. There are few rules to allow space for creativity."
                     ]
                 }
             },
@@ -33,11 +41,15 @@
                 "options": {
                     "nl": [
                         "De teamleider/manager kan men herkennen aan zijn eigen kantoor, parkeerplaats etc.",
-                        " De teamleider/manager werkt vaak tussen de medewerkers en heeft geen speciale benefits."
+                        "De teamleider/manager werkt vaak tussen de medewerkers en heeft geen speciale benefits."
                     ],
                     "de": [
-                        "Der Vorgesetzte ist daran zu erkennen, dass er ein eigenes Büro, einen eigenen Parkplatz etc.",
-                        "Hat. Der Vorgesetzte arbeitet häufig im gleichen Raum wie die Mitarbeiter und genießt keine besonderen Vorzüge."
+                        "Der Vorgesetzte ist daran zu erkennen, dass er ein eigenes Büro, einen eigenen Parkplatz etc. hat.",
+                        "Der Vorgesetzte arbeitet häufig im gleichen Raum wie die Mitarbeiter und genießt keine besonderen Vorzüge."
+                    ],
+                    "en": [
+                        "The team leader/manager is recognizable by their private office, parking space, etc.",
+                        "The team leader/manager often works among employees and has no special benefits."
                     ]
                 }
             },
@@ -51,6 +63,10 @@
                     "de": [
                         "Der Teamleiter kontrolliert die Arbeit der Mitarbeiter, um sicherzustellen, dass keine Fehler gemacht werden.",
                         "Der Teamleiter überträgt seinen Mitarbeitern Verantwortung und kann sich auf sie verlassen."
+                    ],
+                    "en": [
+                        "The team leader checks employees' work to prevent mistakes.",
+                        "The team leader delegates responsibility to employees and trusts them."
                     ]
                 }
             },
@@ -64,6 +80,10 @@
                     "de": [
                         "Mitarbeiter dürfen gerne ihre Ideen äußern. Der Manager weiß jedoch am besten, welche Entscheidung die richtige ist.",
                         "Mitarbeiter sind in die Entscheidungsfindung involviert. Der Teamleiter zieht jede Idee in Betracht, jede Meinung ist gleich wichtig, wenn Entscheidungen getroffen werden."
+                    ],
+                    "en": [
+                        "Employees may propose ideas, but the manager knows best which decision is correct.",
+                        "Employees are involved in decision-making. The team leader considers every idea, and every opinion is equally important in the process."
                     ]
                 }
             }
@@ -82,6 +102,10 @@
                     "de": [
                         "Die Kommunikation folgt der gegebenen Hierarchie. Wenn nicht anderweitig festgelegt, werden Personen mit dem Nachnamen angesprochen.",
                         "Es ist respektlos, direkt zum „Du“ und zum Vornamen zu wechseln. Es ist am effizientesten, auch mal zu telefonieren und Small Talk zu führen, um auch einen persönlichen Kontakt herzustellen."
+                    ],
+                    "en": [
+                        "Communication follows the hierarchical line. Unless agreed otherwise, people are addressed by their last name.",
+                        "It is disrespectful to immediately use first names. It is most efficient to occasionally call and engage in small talk to build personal connections."
                     ]
                 }
             },
@@ -89,12 +113,16 @@
                 "name": "communication-medium",
                 "options": {
                     "nl": [
-                        "Het is het meest efficiënt om per E-mail te communiceren en direct de reden voor het contact te noemen. ",
+                        "Het is het meest efficiënt om per E-mail te communiceren en direct de reden voor het contact te noemen.",
                         "Het is het meest efficiënt als je ook eens de telefoon pakt en over koetjes en kalfjes te praten, om zo een persoonlijk contact op te bouwen."
                     ],
                     "de": [
-                        "Es ist am effizientesten, per E-Mail zu kommunizieren und direkt den Grund für die Kontaktaufnahme zu nennen. ",
+                        "Es ist am effizientesten, per E-Mail zu kommunizieren und direkt den Grund für die Kontaktaufnahme zu nennen.",
                         "Es ist am effizientesten, auch mal zu telefonieren und Small Talk zu führen, um auch einen persönlichen Kontakt herzustellen."
+                    ],
+                    "en": [
+                        "It is most efficient to communicate via email and state the reason for contact directly.",
+                        "It is most efficient to occasionally call and engage in small talk to build a personal connection."
                     ]
                 }
             }
@@ -104,28 +132,36 @@
         "category": "conflict-management",
         "subcategories": [
             {
-                "name": "Confrontation Style",
+                "name": "confrontation-style",
                 "options": {
                     "nl": [
                         "Ik sta open voor confrontatie en heb er geen probleem mee een discussie te beginnen.",
-                        " Ik spreek alleen zaken aan om een probleem op te lossen. Ik vermijd confrontatie als het niet perse nodig is."
+                        "Ik spreek alleen zaken aan om een probleem op te lossen. Ik vermijd confrontatie als het niet perse nodig is."
                     ],
                     "de": [
                         "Ich bin offen für Konfrontationen und habe kein Problem damit, eine Diskussion zu beginnen.",
                         "Ich diskutiere nur, um Probleme zu lösen. Ich vermeide unnötige Diskussionen."
+                    ],
+                    "en": [
+                        "I am open to confrontation and have no problem initiating a discussion.",
+                        "I only address issues to solve a problem. I avoid confrontation unless absolutely necessary."
                     ]
                 }
             },
             {
-                "name": "Feedback Delivery",
+                "name": "feedback-delivery",
                 "options": {
                     "nl": [
                         "Negative feedback wordt direct gegeven en gezien als een kans voor verbetering.",
-                        " Negative feedback wordt gecombineerd met positieve feedback zodat het constructief blijft."
+                        "Negative feedback wordt gecombineerd met positieve feedback zodat het constructief blijft."
                     ],
                     "de": [
                         "Negatives Feedback wird direkt gegeben und wird als Chance zur Verbesserung angesehen.",
                         "Negatives Feedback wird mit positivem Feedback kombiniert, um konstruktiv zu sein."
+                    ],
+                    "en": [
+                        "Negative feedback is given directly and seen as an opportunity for improvement.",
+                        "Negative feedback is combined with positive feedback to keep it constructive."
                     ]
                 }
             }
@@ -138,12 +174,16 @@
                 "name": "work-relationships",
                 "options": {
                     "nl": [
-                        "Werkrelaties worden relatief snel opgebouwd, maar ook makkelijker losgelaten. ",
+                        "Werkrelaties worden relatief snel opgebouwd, maar ook makkelijker losgelaten.",
                         "Werkrelaties worden langzaam opgebouwd, maar zijn langer vastgehouden."
                     ],
                     "de": [
                         "Berufliche Beziehungen werden schnell aufgebaut, aber auch schnell fallen gelassen.",
                         "Berufliche Beziehungen werden eher langsam aufgebaut, jedoch hält man an ihnen fest."
+                    ],
+                    "en": [
+                        "Work relationships are built relatively quickly but are also easily let go.",
+                        "Work relationships develop slowly but are maintained for a longer time."
                     ]
                 }
             },
@@ -151,12 +191,16 @@
                 "name": "work-life-balance",
                 "options": {
                     "nl": [
-                        "Lange werkdagen zijn normaal. Waarbij het bedrijf diverse extra’s biedt zoals kinderopvang, lidmaatschap van sportclubs etc. ",
+                        "Lange werkdagen zijn normaal. Waarbij het bedrijf diverse extra’s biedt zoals kinderopvang, lidmaatschap van sportclubs etc.",
                         "Het bedrijf biedt niet veel extra’s aan. De arbeidstijden zijn ‘normaal’."
                     ],
                     "de": [
-                        "Lange Arbeitstage sind normal. Im Gegenzug bieten Firmen verschiedene Zusatzleistungen an, z.B. ",
-                        "Kinderbetreuung oder Mitgliedschaften bei Sportvereinen/ -clubs. Firmen bieten weniger Zusatzleistungen an, dafür sind die Arbeitszeiten normal."
+                        "Lange Arbeitstage sind normal. Im Gegenzug bieten Firmen verschiedene Zusatzleistungen an, z.B. Kinderbetreuung oder Sportclub-Mitgliedschaften.",
+                        "Firmen bieten weniger Zusatzleistungen an, dafür sind die Arbeitszeiten normal."
+                    ],
+                    "en": [
+                        "Long working hours are normal, with companies offering benefits like childcare or sports club memberships.",
+                        "The company offers fewer benefits, but working hours are 'normal'."
                     ]
                 }
             }

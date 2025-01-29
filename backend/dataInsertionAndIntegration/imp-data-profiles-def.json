@@ -1,0 +1,38 @@
+[
+    {
+        "name": "Business Analyst",
+        "options": {
+            "en": "As a business analyst, you handle and analyse digital data, use programming and digital tools, and design and supervise systems and processes to optimize business operations. You demonstrate strong IT affinity while independently solving problems and working collaboratively with external partners. Additionally, you focus on solution-oriented working and effective communication to address challenges and drive improvements."
+        }
+    },
+    {
+        "name": "Controller & Finance Specialist",
+        "options": {
+            "en": "As a controller and finance specialist, you manage accounting, finance, and controlling processes, ensuring compliance with laws, regulations, and tax standards. You handle budgeting, forecasting, and reporting to streamline financial operations. Additionally, you organize and coordinate tasks, work independently, collaborate with external partners, and provide support and information effectively."
+        }
+    },
+    {
+        "name": "General Manager",
+        "options": {
+            "en": "As a general manager, you oversee administrative activities, write reports, and manage sales operations while ensuring a thorough understanding of business processes. You supervise and support staff, collaborate with external partners, and organize and coordinate tasks effectively. Additionally, you adapt flexibly to various challenges, communicate and collaborate with stakeholders, and take initiative to address issues pragmatically."
+        }
+    },
+    {
+        "name": "Human Resources Specialist",
+        "options": {
+            "en": "As a human resources specialist, you manage organisational change, ensure compliance with laws and standards, and oversee performance management and personnel planning. You handle talent acquisition and onboarding while fostering cultural awareness and collaboration. Additionally, you provide support, work with external partners, and proactively address workforce challenges."
+        }
+    },
+    {
+        "name": "Marketing & Sales Specialist",
+        "options": {
+            "en": "As a marketing and sales specialist, you conduct market research to identify customer needs and design products or systems that meet those needs. You develop promotion and distribution strategies, close deals, and analyse data to improve marketing performance. Additionally, you collaborate with stakeholders to provide solutions and support while maintaining a proactive and pragmatic approach."
+        }
+    },
+    {
+        "name": "Supply Chain & Operations Manager",
+        "options": {
+            "en": "As a supply chain and operations manager, you oversee the processes involved in the production, distribution, and delivery of goods or services to ensure efficiency and compliance with organizational goals. You coordinate activities like process optimization, data analysis, logistics, and collaboration with internal and external partners. Additionally, you manage resources and implement project management methodologies to maintain quality and streamline operations."
+        }
+    }
+]

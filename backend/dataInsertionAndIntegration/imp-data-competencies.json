@@ -1,75 +1,85 @@
 [
     {
-        "category": "methodical-competence ",
+        "category": "methodical-competence",
         "subcategories": [
             {
                 "name": "critical-thinking",
                 "options": {
                     "nl": "ANALYTISCH DENKEN",
-                    "de": "ANALYTISCHES DENKEN"
+                    "de": "ANALYTISCHES DENKEN",
+                    "en": "ANALYTICAL THINKING"
                 }
             },
             {
                 "name": "project-management-skills",
                 "options": {
                     "nl": "ORGANISEREN",
-                    "de": "ORGANISATIONSFÄHIGKEIT"
+                    "de": "ORGANISATIONSFÄHIGKEIT",
+                    "en": "ORGANIZATIONAL SKILLS"
                 }
             },
             {
                 "name": "problem-solving",
                 "options": {
                     "nl": "PROBLEEMOPLOSSEND VERMOGEN",
-                    "de": "PROBLEMLÖSEMENTALITÄT"
+                    "de": "PROBLEMLÖSEMENTALITÄT",
+                    "en": "PROBLEM-SOLVING ABILITY"
                 }
             },
             {
                 "name": "adaptability",
                 "options": {
                     "nl": "VERANDERVAARDIGHEID",
-                    "de": "VERÄNDERUNGSFÄHIGKEIT"
+                    "de": "VERÄNDERUNGSFÄHIGKEIT",
+                    "en": "ADAPTABILITY"
                 }
             },
             {
                 "name": "time-management",
                 "options": {
                     "nl": "TIJDMANAGEMENT",
-                    "de": "ZEITMANAGEMENT"
+                    "de": "ZEITMANAGEMENT",
+                    "en": "TIME MANAGEMENT"
                 }
             },
             {
                 "name": "personal-development",
                 "options": {
                     "nl": "ZELFONTWIKKELING",
-                    "de": "EIGENENTWICKLUNG"
+                    "de": "EIGENENTWICKLUNG",
+                    "en": "PERSONAL DEVELOPMENT"
                 }
             },
             {
                 "name": "decision-making",
                 "options": {
                     "nl": "BESLUITVAARDIGHEID",
-                    "de": "ENTSCHEIDUNGSFÄHIGKEIT"
+                    "de": "ENTSCHEIDUNGSFÄHIGKEIT",
+                    "en": "DECISION-MAKING"
                 }
             },
             {
                 "name": "project-coordination",
                 "options": {
                     "nl": "PROJECTMANAGEMENT",
-                    "de": "PROJEKTMANAGEMENT"
+                    "de": "PROJEKTMANAGEMENT",
+                    "en": "PROJECT MANAGEMENT"
                 }
             },
             {
                 "name": "holistic-thinking",
                 "options": {
                     "nl": "HOLISTISCH DENKEN",
-                    "de": "GANZHEITLICHES DENKEN"
+                    "de": "GANZHEITLICHES DENKEN",
+                    "en": "HOLISTIC THINKING"
                 }
             },
             {
                 "name": "perceptiveness",
                 "options": {
                     "nl": "MENINGSVORMING",
-                    "de": "AUFFASSUNGSFÄHIGKEIT"
+                    "de": "AUFFASSUNGSFÄHIGKEIT",
+                    "en": "PERCEPTIVENESS"
                 }
             }
         ]
@@ -81,84 +91,96 @@
                 "name": "integrity",
                 "options": {
                     "nl": "INTEGRITEIT",
-                    "de": "RECHTSCHAFFENHEIT"
+                    "de": "RECHTSCHAFFENHEIT",
+                    "en": "INTEGRITY"
                 }
             },
             {
                 "name": "reliability",
                 "options": {
                     "nl": "BETROUWBAARHEID",
-                    "de": "ZUVERLÄSSIGKEIT"
+                    "de": "ZUVERLÄSSIGKEIT",
+                    "en": "RELIABILITY"
                 }
             },
             {
                 "name": "flexibility",
                 "options": {
                     "nl": "FLEXIBILITEIT",
-                    "de": "FLEXIBILITÄT"
+                    "de": "FLEXIBILITÄT",
+                    "en": "FLEXIBILITY"
                 }
             },
             {
                 "name": "precision",
                 "options": {
                     "nl": "NAUWKEURIGHEID",
-                    "de": "SORGFALT"
+                    "de": "SORGFALT",
+                    "en": "PRECISION"
                 }
             },
             {
                 "name": "creative-thinking",
                 "options": {
                     "nl": "CREATIEF DENKEN",
-                    "de": "KREATIVES DENKEN"
+                    "de": "KREATIVES DENKEN",
+                    "en": "CREATIVE THINKING"
                 }
             },
             {
                 "name": "energy-enthusiasm",
                 "options": {
                     "nl": "ENERGIE",
-                    "de": "ENERGIE"
+                    "de": "ENERGIE",
+                    "en": "ENERGY & ENTHUSIASM"
                 }
             },
             {
                 "name": "loyalty",
                 "options": {
                     "nl": "LOYALITEIT",
-                    "de": "LOYALITÄT"
+                    "de": "LOYALITÄT",
+                    "en": "LOYALTY"
                 }
             },
             {
-                "name": "willingness-to-Learn",
+                "name": "willingness-to-learn",
                 "options": {
                     "nl": "LEERGIERIGHEID",
-                    "de": "LERNBEREITSCHAFT"
+                    "de": "LERNBEREITSCHAFT",
+                    "en": "WILLINGNESS TO LEARN"
                 }
             },
             {
                 "name": "courage",
                 "options": {
                     "nl": "DURF",
-                    "de": "MUT"
+                    "de": "MUT",
+                    "en": "COURAGE"
                 }
             },
             {
                 "name": "ambition",
                 "options": {
                     "nl": "AMBITIEUS",
-                    "de": "EHRGEIZIG"
+                    "de": "EHRGEIZIG",
+                    "en": "AMBITION"
                 }
             },
             {
                 "name": "persistence",
                 "options": {
                     "nl": "VASTHOUDENDHEID",
-                    "de": "BEHARRLICHKEIT"
+                    "de": "BEHARRLICHKEIT",
+                    "en": "PERSISTENCE"
                 }
             },
             {
                 "name": "inspirational-leadership",
                 "options": {
                     "nl": "INSPIRATOR",
-                    "de": "INSPIRATOR"
+                    "de": "INSPIRATOR",
+                    "en": "INSPIRATIONAL LEADERSHIP"
                 }
             }
         ]
@@ -170,77 +192,88 @@
                 "name": "empathy",
                 "options": {
                     "nl": "EMPATHIE",
-                    "de": "EINFÜHLUNGSVERMÖGEN"
+                    "de": "EINFÜHLUNGSVERMÖGEN",
+                    "en": "EMPATHY"
                 }
             },
             {
                 "name": "persuasion",
                 "options": {
                     "nl": "OVERTUIGINGSKRACHT",
-                    "de": "ÜBERZEUGUNGSKRAFT"
+                    "de": "ÜBERZEUGUNGSKRAFT",
+                    "en": "PERSUASION"
                 }
             },
             {
                 "name": "conflict-management",
                 "options": {
                     "nl": "CONFLICTBEHEERSEN",
-                    "de": "KONFLIKTFÄHIGKEIT"
+                    "de": "KONFLIKTFÄHIGKEIT",
+                    "en": "CONFLICT MANAGEMENT"
                 }
             },
             {
                 "name": "teamwork",
                 "options": {
                     "nl": "SAMENWERKEN",
-                    "de": "TEAMFÄHIGKEIT"
+                    "de": "TEAMFÄHIGKEIT",
+                    "en": "TEAMWORK"
                 }
             },
             {
                 "name": "negotiation-skills",
                 "options": {
                     "nl": "ONDERHANDELEN",
-                    "de": "VERHANDLUNGSGESCHICK"
+                    "de": "VERHANDLUNGSGESCHICK",
+                    "en": "NEGOTIATION SKILLS"
                 }
             },
             {
                 "name": "oral-communication",
                 "options": {
                     "nl": "MONDELINGE UITDRUKKINGSVAARDIGHEID",
-                    "de": "MÜNDLICHE AUSDRUCKSFÄHIGKEIT"
+                    "de": "MÜNDLICHE AUSDRUCKSFÄHIGKEIT",
+                    "en": "ORAL COMMUNICATION"
                 }
             },
             {
                 "name": "written-communication",
                 "options": {
                     "nl": "SCHRIFTELIJKE UITDRUKKINGSVAARDIGHEID",
-                    "de": "SCHRIFTLICHE AUSDRUCKSFÄHIGKEIT"
+                    "de": "SCHRIFTLICHE AUSDRUCKSFÄHIGKEIT",
+                    "en": "WRITTEN COMMUNICATION"
                 }
             },
             {
                 "name": "leadership",
                 "options": {
                     "nl": "LEIDERSCHAP",
-                    "de": "FÜHRUNGSFÄHIGKEIT"
+                    "de": "FÜHRUNGSFÄHIGKEIT",
+                    "en": "LEADERSHIP"
                 }
             },
             {
                 "name": "customer-orientation",
                 "options": {
                     "nl": "KLANTGERICHT",
-                    "de": "KUNDENORIENTIERUNG"
+                    "de": "KUNDENORIENTIERUNG",
+                    "en": "CUSTOMER ORIENTATION"
                 }
             },
             {
                 "name": "handling-criticism",
                 "options": {
                     "nl": "OMGAAN MET KRITIEK",
-                    "de": "KRITIKFÄHIGKEIT"
+                    "de": "KRITIKFÄHIGKEIT",
+                    "en": "HANDLING CRITICISM"
                 }
             },
             {
                 "name": "feedback-skills",
                 "options": {
                     "nl": "FEEDBACK GEVEN",
-                    "de": "FEEDBACK GEBEN"
+                    "de": "FEEDBACK GEBEN",
+                    "en": "FEEDBACK SKILLS"
                 }
             }
         ]
@@ -252,51 +285,58 @@
                 "name": "financial-business-awareness",
                 "options": {
                     "nl": "FINANCIEEL BEWUSTZIJN",
-                    "de": "BETRIEBSWIRTSCHAFTLICHES KNOW-HOW"
+                    "de": "BETRIEBSWIRTSCHAFTLICHES KNOW-HOW",
+                    "en": "FINANCIAL BUSINESS AWARENESS"
                 }
             },
             {
                 "name": "independent-work",
                 "options": {
                     "nl": "ZELFSTANDIG WERKEN",
-                    "de": "SELBSTÄNDIGES ARBEITEN"
+                    "de": "SELBSTÄNDIGES ARBEITEN",
+                    "en": "INDEPENDENT WORK"
                 }
             },
             {
                 "name": "motivation-skills",
                 "options": {
                     "nl": "MOTIVEREN",
-                    "de": "BEGEISTERN"
+                    "de": "BEGEISTERN",
+                    "en": "MOTIVATION SKILLS"
                 }
             },
             {
                 "name": "stress-resistance",
                 "options": {
                     "nl": "STRESSBESTENDIGHEID",
-                    "de": "BELASTBARKEIT"
+                    "de": "BELASTBARKEIT",
+                    "en": "STRESS RESISTANCE"
                 }
             },
             {
                 "name": "proactivity",
                 "options": {
                     "nl": "PROACTIEF",
-                    "de": "EIGENINITIATIVE"
+                    "de": "EIGENINITIATIVE",
+                    "en": "PROACTIVITY"
                 }
             },
             {
                 "name": "goal-orientation",
                 "options": {
                     "nl": "RESULTAATGERICHT",
-                    "de": "ZIELSTREBIGKEIT"
+                    "de": "ZIELSTREBIGKEIT",
+                    "en": "GOAL ORIENTATION"
                 }
             },
             {
                 "name": "performance-orientation",
                 "options": {
                     "nl": "PRESTATIEGERICHT",
-                    "de": "LEISTUNGSBEREITSCHAFT"
+                    "de": "LEISTUNGSBEREITSCHAFT",
+                    "en": "PERFORMANCE ORIENTATION"
                 }
             }
         ]
-    }
+    }    
 ]
