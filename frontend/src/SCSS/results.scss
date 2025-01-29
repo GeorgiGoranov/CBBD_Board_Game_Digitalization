@@ -25,6 +25,8 @@
     padding: 16px; // Padding inside the card
     margin-bottom: 16px; // Spacing between cards
     transition: transform 0.2s, box-shadow 0.2s; // Smooth animation for hover effect
+    // display: flex;
+    // align-items: center;
 
     &:hover {
         transform: translateY(-5px); // Slight lift on hover

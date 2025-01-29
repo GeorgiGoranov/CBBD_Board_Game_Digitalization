@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import '../SCSS/results.scss'
+import { useLanguage } from '../context/LanguageContext';
+
 
 const Results = () => {
     const [searchParams] = useSearchParams();
@@ -10,6 +12,9 @@ const Results = () => {
     const [firstRoundDropZones, setFirstRoundDropZones] = useState(null);
     const [secondRoundDropZones, setSecondRoundDropZones] = useState(null);
     const [thirdRoundDropZones, setThirdRoundDropZones] = useState(null);
+    const { language } = useLanguage();
+
+
 
 
     const [error, setError] = useState(null);
@@ -79,24 +84,24 @@ const Results = () => {
                         <div key={gIndex} className="group-section">
                             <div>
 
-                            <h4>Group {group.groupNumber}</h4>
-                            {/* Display Nationalities if available */}
-                            {group.nationalities && group.nationalities.length > 0 && (
-                                <div className="nationalities">
-                                    {/* <h5>Nationalities:</h5> */}
-                                    {/* Each element is an object, so map over them */}
-                                    {group.nationalities.map((natObject, index) => (
-                                        <ul key={index}>
-                                            {/* natObject looks like { german: 2, dutch: 1, ... } */}
-                                            {Object.entries(natObject).map(([natKey, natCount]) => (
-                                                <li key={natKey}>
-                                                    {natKey} ({natCount})
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    ))}
-                                </div>
-                            )}
+                                <h4>Group {group.groupNumber}</h4>
+                                {/* Display Nationalities if available */}
+                                {group.nationalities && group.nationalities.length > 0 && (
+                                    <div className="nationalities">
+                                        {/* <h5>Nationalities:</h5> */}
+                                        {/* Each element is an object, so map over them */}
+                                        {group.nationalities.map((natObject, index) => (
+                                            <ul key={index}>
+                                                {/* natObject looks like { german: 2, dutch: 1, ... } */}
+                                                {Object.entries(natObject).map(([natKey, natCount]) => (
+                                                    <li key={natKey}>
+                                                        {natKey} ({natCount})
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
                             {Object.entries(group.dropZones || {}).map(([zone, items]) => (
                                 <div key={zone} className="drop-zone">
@@ -132,9 +137,6 @@ const Results = () => {
         );
     };
 
-
-
-
     const renderThirdRoundCards = (cards) => (
         <div>
             <h3>Third Round Decisions:</h3>
@@ -147,7 +149,7 @@ const Results = () => {
                             {Object.keys(cardData.votes).length > 0 ? (
                                 Object.entries(cardData.votes).map(([option, voteData]) => (
                                     <div key={option}>
-                                        <p>{option} Votes: {voteData.count}</p>
+                                        <p> Vote Count: {voteData.count}</p>
                                         <div className='container-votes-options'>
                                             <p className='votes-options'>German: {voteData.nationalities.german || 0}</p>
                                             <p className='votes-options'>Dutch: {voteData.nationalities.dutch || 0}</p>
@@ -159,20 +161,47 @@ const Results = () => {
                                 <p>No votes recorded.</p>
                             )}
                         </div>
+
                         <div className="options">
-                            <h5>Options (NL):</h5>
+
+                            <h5>Options ({language.toUpperCase()}):</h5>
                             <ul>
-                                {(cardData.card.options?.nl || []).map((option, nlIndex) => (
+                                {(cardData.card.options?.[language] || []).map((option, nlIndex) => (
                                     <li key={`nl-${nlIndex}`}>{option}</li>
                                 ))}
                             </ul>
-                            <h5>Options (DE):</h5>
-                            <ul>
-                                {(cardData.card.options?.de || []).map((option, deIndex) => (
-                                    <li key={`de-${deIndex}`}>{option}</li>
-                                ))}
-                            </ul>
                         </div>
+
+
+                        {/* {Object.keys(cardData.votes).length > 0 ? (
+                            (cardData.card.options?.[language] || []).map((optionText, index) => {
+                                // Dynamically get the corresponding vote key based on the index
+                                const voteKey = `option${index + 1}`;
+                                const voteData = cardData.votes[voteKey];
+
+                                return (
+                                    <div key={index} className="votes">
+                                        <h3>{optionText}</h3> {/* Display the option text */}
+                                        {/* {voteData ? (
+                                            <>
+                                                <p>Votes: {voteData.count}</p>
+                                                <ul>
+                                                    <li className='votes-options'>German: {voteData.nationalities.german || 0}</li>
+                                                    <li className='votes-options'>Dutch: {voteData.nationalities.dutch || 0}</li>
+                                                    <li className='votes-options'>Other: {voteData.nationalities.other || 0}</li>
+                                                </ul>
+                                            </>
+                                        ) : (
+                                            <p>No votes for this option.</p>
+                                        )}
+                                    </div>
+                                );
+                            })
+                        ) : (
+                            <p>No votes recorded.</p>
+                        )} */}
+
+
                     </div>
                 ))
             ) : (
