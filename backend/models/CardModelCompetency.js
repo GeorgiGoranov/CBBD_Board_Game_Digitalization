@@ -28,4 +28,4 @@ const CompetencyCardSchema = new Schema({
 });
 
 // Specify the collection name and use the secondary `cbbdConnection`
-module.exports = mongoose.model('competencies-cards', CompetencyCardSchema);
+module.exports = mongoose.model('competency-cards', CompetencyCardSchema);
