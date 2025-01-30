@@ -204,7 +204,7 @@ function setupWebSocket(server) {
 
       // Broadcast 'gameStopped' to all sockets in roomId
       io.to(roomId).emit('gameStopped');
-    });
+    }); 
 
     socket.on('sendFeedbackGroupMessage', ({ roomId, group, message }) => {
 
@@ -212,7 +212,7 @@ function setupWebSocket(server) {
  
 
       const targetPlayers = rooms[roomId].filter(player => String(player.group) === String(group));
-
+ 
       targetPlayers.forEach(player => {
         io.to(player.socketId).emit('receiveFeedbackGroupMessage', { message });
       });

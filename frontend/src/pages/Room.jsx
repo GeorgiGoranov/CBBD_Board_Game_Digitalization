@@ -31,21 +31,12 @@ const Room = () => {
     const [group, setGroup] = useState('');
     const [showGroupDiscussion, setShowGroupDiscussion] = useState(false); // New state
 
-    const [adminMessage, setAdminMessage] = useState('');
     const apiUrl = process.env.REACT_APP_BACK_END_URL_HOST;
     const [nationality, setNationality] = useState('')
 
     const [availableGroups, setAvailableGroups] = useState([]); // Unique group numbers
     const [selectedGroups, setSelectedGroups] = useState([]); // Selected groups via checkboxes
-    // const [selectedProfileId, setSelectedProfileId] = useState(null);  // Currently selected profile ID
-    // const [selectedProfileName, setSelectedProfileName] = useState(null);  // Currently selected profile ID\
-    // const [selectedProfileDesc, setSelectedProfileDesc] = useState(null);  // Currently selected profile ID
     const [selectedProfile, setSelectedProfile] = useState(null);
-
-    const [profiles, setProfiles] = useState([]);  // Add profiles array state
-
-
-
 
 
     if (!socketRef.current) {
@@ -76,7 +67,7 @@ const Room = () => {
                 : [...prevSelected, groupNumber] // Add if not selected
         );
     };
-    
+
     useEffect(() => {
 
         const fetchUserRole = async () => {
@@ -177,39 +168,8 @@ const Room = () => {
 
     }, [playerID, roomId, socket, group])
 
-    // useEffect(() => {
-    //     // Fetch profiles from the API
-    //     const fetchProfiles = async () => {
-    //         try {
-    //             const response = await fetch(`${apiUrl}/api/cards/profiles`, {
-    //                 credentials: 'include'
-    //             });  // Replace with your correct endpoint
-    //             if (!response.ok) {
-    //                 throw new Error('Failed to fetch profiles');
-    //             }
 
-    //             const data = await response.json();
 
-    //             setProfiles(data);  // Store profiles in state
-    //             setLoading(false);
-    //         } catch (err) {
-    //             console.error('Error fetching profiles:', err);
-
-    //             setLoading(false);
-    //         }
-    //     };
-
-    //     fetchProfiles();
-    // }, [apiUrl]);  // Run only once on component mount
-
-    // // Handle profile selection when a profile div is clicked
-    // const handleProfileClick = (profileId, profileName, profileDesc) => {
-    //     setSelectedProfileId(profileId);
-    //     setSelectedProfileName(profileName)
-    //     setSelectedProfileDesc(profileDesc)
-    // };
-  
-    
     const handleProfileSelect = (profile) => {
         setSelectedProfile(profile);
         console.log(profile)
@@ -234,21 +194,6 @@ const Room = () => {
         setSelectedGroups([]);       // Clear selected groups
     };
 
-    // Handle form submission for checkboxes
-    const handleAdminFormSubmit = (e) => {
-        e.preventDefault();
-        if (adminMessage.trim() && selectedGroups.length > 0) {
-            // Emit an event to the server to send a message to the selected groups
-            socket.emit('sendGroupMessage', {
-                roomId,
-                groups: selectedGroups, // Send the array of selected groups
-                message: adminMessage,
-            });
-
-            setAdminMessage('');
-            setSelectedGroups([]); // Clear selected groups after sending the message
-        }
-    };
 
     if (loading) return <div>Loading...</div>;
 
@@ -277,51 +222,30 @@ const Room = () => {
 
                                 <div className='question-by-moderator'>
 
-                                    <form onSubmit={handleAdminFormSubmit}>
-                                        <input
-                                            type="text"
-                                            value={adminMessage}
-                                            onChange={(e) => setAdminMessage(e.target.value)}
-                                            placeholder="Enter your Recruitment Job?"
-                                        />
-                                        <div className="selected-groups">
-                                            <h4>Select Groups:</h4>
-                                            <div className="group-checkboxes">
-                                                {availableGroups.map((groupNumber) => (
-                                                    <label key={groupNumber} className="group-checkbox">
-                                                        <input
-                                                            className='checkbox-input'
-                                                            type="checkbox"
-                                                            value={groupNumber}
-                                                            checked={selectedGroups.includes(groupNumber)}
-                                                            onChange={() => handleCheckboxChange(groupNumber)}
-                                                        />
-                                                        Group {groupNumber}
-                                                    </label>
-                                                ))}
-                                            </div>
+                                    <div className="selected-groups">
+                                        <h4>Select Groups:</h4>
+                                        <div className="group-checkboxes">
+                                            {availableGroups.map((groupNumber) => (
+                                                <label key={groupNumber} className="group-checkbox">
+                                                    <input
+                                                        className='checkbox-input'
+                                                        type="checkbox"
+                                                        value={groupNumber}
+                                                        checked={selectedGroups.includes(groupNumber)}
+                                                        onChange={() => handleCheckboxChange(groupNumber)}
+                                                    />
+                                                    Group {groupNumber}
+                                                </label>
+                                            ))}
                                         </div>
-                                        <button type="submit">Submit</button>
-                                    </form>
-                                    <button onClick={handleSendProfileToGroups}>Send Profile to Groups</button>
-                                    {message && <p>{message}</p>}
-
+                                <button onClick={handleSendProfileToGroups}>Send Profile to Groups</button>
+                                    </div>
                                 </div>
 
+                                {message && <p>{message}</p>}
                                 <div className='container-profiles'>
                                     <h2>Select a Profile</h2>
-                                    {/* {profiles.map((profile) => (
-                                        <div
-                                            key={profile._id}
-                                            className={`profile-card ${selectedProfileId === profile._id ? 'selected' : ''}`}
-                                            onClick={() => handleProfileClick(profile._id, profile.name, profile.options.en)}
-
-                                        >
-                                            <h3>{profile.name}</h3>
-                                            <p>{profile.options.en}</p>
-                                        </div>
-                                    ))} */}
-                                    <CreateNewProfiles onProfileSelect={handleProfileSelect }/>
+                                    <CreateNewProfiles onProfileSelect={handleProfileSelect} />
                                 </div>
 
 

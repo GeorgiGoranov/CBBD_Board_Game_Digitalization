@@ -136,7 +136,7 @@ const CreateNewProfiles = ({onProfileSelect  }) => {
             </form>
             <ul>
                 {sessions.map((profile, index) => (
-                    <li key={index} onClick={() => onProfileSelect(profile)}>
+                    <li key={index} className='profile-card' onClick={() => onProfileSelect(profile)}>
                         <h3>{profile.name}</h3>
                         <p>{profile.options.en}</p>
                         <button onClick={() => deleteProfile(profile._id)}>Delete</button>

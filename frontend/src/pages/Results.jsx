@@ -120,13 +120,14 @@ const Results = () => {
                                     <ul>
                                         {group.messages.map((msg, i) => (
                                             <li key={i} className="message-item">
-                                                <p><strong>Profile Name:</strong> {msg.profileName}</p>
-                                                <p><strong>Description:</strong> {msg.profileDesc}</p>
+                                                <p><strong>Profile Name:</strong> {msg.profile.name || 'Unnamed Profile'}</p>
+                                                {/* <p><strong>Description:</strong> {msg.profile.options?.en || 'Description not available'}</p> */}
                                             </li>
                                         ))}
                                     </ul>
                                 </div>
                             )}
+
                         </div>
                     ))
                 ) : (

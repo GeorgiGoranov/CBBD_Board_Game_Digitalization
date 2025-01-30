@@ -1,4 +1,4 @@
-.container-input-add-new-profile{
+.container-input-add-new-profile {
     display: flex;
     flex-direction: column;
     gap: 15px;
@@ -7,19 +7,49 @@
 
 }
 
-.input-add-new-profile, .input-add-new-profile-description{
+.input-add-new-profile,
+.input-add-new-profile-description {
     margin: 0;
 }
 
-.input-add-new-profile-description{
+.input-add-new-profile-description {
     height: 200px;
-    width: 40%;                 /* Adjust width as needed */
-    white-space: pre-wrap;        /* Preserves white space and allows wrapping */
-    word-wrap: break-word;        /* Break long words to wrap */
-    overflow-y: auto;             /* Enable vertical scrolling if needed */
-    vertical-align: top;          /* Not necessary for textarea */
-    resize: none;                 /* Prevent resizing if not wanted */
-    padding: 10px;                /* Optional: Add padding for better appearance */
-    box-sizing: border-box;       /* Include padding and border in width/height */
-    font-size: 14px;              /* Adjust font size if necessary */
+    width: 40%;
+    /* Adjust width as needed */
+    white-space: pre-wrap;
+    /* Preserves white space and allows wrapping */
+    word-wrap: break-word;
+    /* Break long words to wrap */
+    overflow-y: auto;
+    /* Enable vertical scrolling if needed */
+    vertical-align: top;
+    /* Not necessary for textarea */
+    resize: none;
+    /* Prevent resizing if not wanted */
+    padding: 10px;
+    /* Optional: Add padding for better appearance */
+    box-sizing: border-box;
+    /* Include padding and border in width/height */
+    font-size: 14px;
+    /* Adjust font size if necessary */
+}
+
+
+.profile-card {
+    border: 1px solid #ccc;
+    padding: 16px;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    cursor: pointer;
+    margin: 8px 0;
+    transition: background-color 0.3s;
+}
+
+.profile-card:hover {
+    background-color: #eaeaea;
+}
+
+.profile-card.selected {
+    background-color: #d1e7fd;
+    border-color: #007bff;
 }

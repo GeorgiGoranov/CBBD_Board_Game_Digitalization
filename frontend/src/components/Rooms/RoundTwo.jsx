@@ -230,13 +230,8 @@ const RoundTwo = ({ roomId, playerID, socket, group, availableGroups }) => {
                         if (currentGroup.messages && currentGroup.messages.length > 0) {
                             const lastMessage = currentGroup.messages[currentGroup.messages.length - 1];
 
-                            // Update the socket message to display profile information
-                            setReceivedProfile({
-                                profileId: lastMessage.profileId,
-                                profileName: lastMessage.profileName,
-                                profileDesc: lastMessage.profileDesc,
-                                groups: lastMessage.groups
-                            });
+                            // Update the state to store the profile data exactly as received from the backend
+                            setReceivedProfile(lastMessage);
                         }
                         console.log('Room state Message loaded successfully');
                     } else {
@@ -484,11 +479,11 @@ const RoundTwo = ({ roomId, playerID, socket, group, availableGroups }) => {
                 {socketMessage && <p>{socketMessage}</p>}
                 {receivedProfile && (
                     <div className='profile-display'>
-                        <h2>Profile:</h2>
-                        <h3>{receivedProfile.profileName}</h3>
-                        <p>{receivedProfile.profileDesc}</p>
+                    <h2>Profile:</h2>
+                    <h3>{receivedProfile.profile.name}</h3>
+                    <p>{receivedProfile.profile.options?.en || 'Description not available'}</p>
 
-                    </div>
+                </div>
                 )}
                 <DragDropContext onDragEnd={handleDragDrop}>
                     <ul className="api-list categories-grid">

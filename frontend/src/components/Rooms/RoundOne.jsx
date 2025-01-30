@@ -182,13 +182,8 @@ const RoundOne = ({ roomId, playerID, socket, group }) => {
                         if (currentGroup.messages && currentGroup.messages.length > 0) {
                             const lastMessage = currentGroup.messages[currentGroup.messages.length - 1];
 
-                            // Update the socket message to display profile information
-                            setReceivedProfile({
-                                profileId: lastMessage.profileId,
-                                profileName: lastMessage.profileName,
-                                profileDesc: lastMessage.profileDesc,
-                                groups: lastMessage.groups
-                            });
+                            // Update the state to store the profile data exactly as received from the backend
+                            setReceivedProfile(lastMessage);
                         }
                         console.log('Room state loaded successfully');
                     } else {

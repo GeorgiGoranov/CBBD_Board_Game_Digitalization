@@ -73,34 +73,6 @@
 }
 
 
-.profile-card {
-  border: 1px solid #ccc;
-  padding: 16px;
-  border-radius: 8px;
-  background-color: #f9f9f9;
-  cursor: pointer;
-  margin: 8px 0;
-  transition: background-color 0.3s;
-}
-
-.profile-card:hover {
-  background-color: #eaeaea;
-}
-
-.profile-card.selected {
-  background-color: #d1e7fd;
-  border-color: #007bff;
-}
-
-.group-checkbox {
-  display: block;
-  margin: 8px 0;
-}
-
-.group-selection {
-  margin-top: 20px;
-}
-
 
 
 
