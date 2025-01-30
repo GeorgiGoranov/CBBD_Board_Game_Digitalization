@@ -1,0 +1,25 @@
+.container-input-add-new-profile{
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    align-items: center;
+    justify-content: center;
+
+}
+
+.input-add-new-profile, .input-add-new-profile-description{
+    margin: 0;
+}
+
+.input-add-new-profile-description{
+    height: 200px;
+    width: 40%;                 /* Adjust width as needed */
+    white-space: pre-wrap;        /* Preserves white space and allows wrapping */
+    word-wrap: break-word;        /* Break long words to wrap */
+    overflow-y: auto;             /* Enable vertical scrolling if needed */
+    vertical-align: top;          /* Not necessary for textarea */
+    resize: none;                 /* Prevent resizing if not wanted */
+    padding: 10px;                /* Optional: Add padding for better appearance */
+    box-sizing: border-box;       /* Include padding and border in width/height */
+    font-size: 14px;              /* Adjust font size if necessary */
+}

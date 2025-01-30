@@ -306,7 +306,24 @@ const Lobby = () => {
                         }),
                     });
 
+                    const roundSaveResponse2 = await fetch(`${apiUrl}/api/rounds/save-state-second-round`, {
+                        method: 'POST',
+                        credentials: 'include',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            roomId,
+                            groups: groupsForRound
+                        }),
+                    });
+
                     if (!roundSaveResponse.ok) {
+                        const errorData = await roundSaveResponse.json();
+                        console.error('Error saving round data:', errorData.message);
+                        alert('Failed to save round data.');
+                        return;
+                    }
+
+                    if (!roundSaveResponse2.ok) {
                         const errorData = await roundSaveResponse.json();
                         console.error('Error saving round data:', errorData.message);
                         alert('Failed to save round data.');

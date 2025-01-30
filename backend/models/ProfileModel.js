@@ -5,7 +5,7 @@ const profileSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    options: {
+    options: { 
         en: {
             type: String,
             required: true,

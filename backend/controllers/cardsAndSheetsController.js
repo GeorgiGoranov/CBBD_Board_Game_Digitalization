@@ -173,11 +173,64 @@ const getAllDefaultProfiles = (model) => {
     }
 }
 
+const createProfile = (model) => {
+    return async (req, res) => {
+        try {
+            const { name, options } = req.body;
+
+            // Validate request data
+            if (!name || !options || !options.en) {
+                return res.status(400).json({ message: "Invalid data. 'name' and 'options.en' are required." });
+            }
+
+            // Create and save the new profile
+            const newProfile = new model({
+                name,
+                options
+            });
+
+            await newProfile.save();
+
+            // Send the saved profile as a response
+            res.status(201).json(newProfile);
+        } catch (error) {
+            console.error('Error creating profile:', error);
+            res.status(500).json({ message: "Failed to create profile", error });
+        }
+    };
+};
+
+
+const deleteProfile = (model) => {
+    return async (req, res) => {
+        try {
+            const { id } = req.params;  // Extract the profile ID from the request parameters
+
+            // Find and delete the profile from the database
+            const deletedProfile = await model.findByIdAndDelete(id);
+
+            // If no profile is found, return a 404 error
+            if (!deletedProfile) {
+                return res.status(404).json({ message: 'Profile not found' });
+            }
+
+            // Return a success response
+            res.status(200).json({ message: 'Profile deleted successfully', deletedProfile });
+        } catch (error) {
+            console.error('Error deleting profile:', error);
+            res.status(500).json({ message: 'Failed to delete profile', error });
+        }
+    };
+};
+
+
 
 module.exports = {
     createCards,
     getOneCardPerCategory,
     getAllCategories,
     getAllCards,
-    getAllDefaultProfiles
+    getAllDefaultProfiles,
+    createProfile,
+    deleteProfile
 };
