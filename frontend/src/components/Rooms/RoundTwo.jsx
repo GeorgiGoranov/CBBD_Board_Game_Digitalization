@@ -315,10 +315,7 @@ const RoundTwo = ({ roomId, playerID, socket, group, availableGroups }) => {
                             priority4: []
                         });
 
-                        if (currentGroup.messages && currentGroup.messages.length > 0) {
-                            setSocketMessage(currentGroup.messages[currentGroup.messages.length - 1]);
-                        }
-
+                        
                         console.log('Room state loaded successfully');
                     } else {
                         console.log('No matching group found in room state');
@@ -352,20 +349,10 @@ const RoundTwo = ({ roomId, playerID, socket, group, availableGroups }) => {
             updateCursorDisplay(data);
         });
 
-        // Listen for group messages
-        socket.on('receiveGroupMessage', ({ message }) => {
-
-            // Only the targeted group members will get this
-            console.log("Group message received:", message);
-            // You can display it in the UI as needed
-            setSocketMessage(`${message}`);
-        });
-
-
+    
         return () => {
             socket.off('cursorUpdate');
             socket.off('dragDropUpdate');
-            socket.off('receiveGroupMessage');
         };
     }, [socket]);
 
@@ -475,15 +462,14 @@ const RoundTwo = ({ roomId, playerID, socket, group, availableGroups }) => {
 
             <div>
 
-
                 {socketMessage && <p>{socketMessage}</p>}
                 {receivedProfile && (
                     <div className='profile-display'>
-                    <h2>Profile:</h2>
-                    <h3>{receivedProfile.profile.name}</h3>
-                    <p>{receivedProfile.profile.options?.en || 'Description not available'}</p>
+                        <h2>Profile:</h2>
+                        <h3>{receivedProfile.profile.name}</h3>
+                        <p>{receivedProfile.profile.options?.en || 'Description not available'}</p>
 
-                </div>
+                    </div>
                 )}
                 <DragDropContext onDragEnd={handleDragDrop}>
                     <ul className="api-list categories-grid">

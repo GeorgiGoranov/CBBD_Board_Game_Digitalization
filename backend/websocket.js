@@ -209,7 +209,7 @@ function setupWebSocket(server) {
     socket.on('sendFeedbackGroupMessage', ({ roomId, group, message }) => {
 
       if (!rooms[roomId]) return;
- 
+  
 
       const targetPlayers = rooms[roomId].filter(player => String(player.group) === String(group));
  
