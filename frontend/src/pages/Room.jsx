@@ -14,6 +14,7 @@ import GroupDiscussion from '../components/Rooms/GroupDiscussion';
 
 
 
+
 const Room = () => {
     const { roomId } = useParams(); // Fetch roomId from the URL
     const [playerID, setPlayerID] = useState('');
@@ -27,17 +28,23 @@ const Room = () => {
     const [userSessionCode, setUserSessionCode] = useState(null);
     const [currentRound, setCurrentRound] = useState(0); // Start at round 0
     const [group, setGroup] = useState('');
+    const [showGroupDiscussion, setShowGroupDiscussion] = useState(false); // New state
 
     const [adminMessage, setAdminMessage] = useState('');
-    const [targetGroup, setTargetGroup] = useState('');
-    // const [socketMessage, setSocketMessage] = useState(''); // This can be used to display socket events
     const apiUrl = process.env.REACT_APP_BACK_END_URL_HOST;
     const [nationality, setNationality] = useState('')
 
     const [availableGroups, setAvailableGroups] = useState([]); // Unique group numbers
     const [selectedGroups, setSelectedGroups] = useState([]); // Selected groups via checkboxes
+    const [selectedProfileId, setSelectedProfileId] = useState(null);  // Currently selected profile ID
+    const [selectedProfileName, setSelectedProfileName] = useState(null);  // Currently selected profile ID\
+    const [selectedProfileDesc, setSelectedProfileDesc] = useState(null);  // Currently selected profile ID
 
-    const [showGroupDiscussion, setShowGroupDiscussion] = useState(false); // New state
+
+    const [profiles, setProfiles] = useState([]);  // Add profiles array state
+
+
+
 
 
     if (!socketRef.current) {
@@ -163,8 +170,6 @@ const Room = () => {
         };
     }, [socket, role, navigate]);
 
-
-
     useEffect(() => {
         if (playerID && roomId) {
             socket.emit('joinSession', { playerID, gameCode: roomId, group: String(group) });
@@ -172,8 +177,58 @@ const Room = () => {
 
     }, [playerID, roomId, socket, group])
 
+    useEffect(() => {
+        // Fetch profiles from the API
+        const fetchProfiles = async () => {
+            try {
+                const response = await fetch(`${apiUrl}/api/cards/profiles`, {
+                    credentials: 'include'
+                });  // Replace with your correct endpoint
+                if (!response.ok) {
+                    throw new Error('Failed to fetch profiles');
+                }
 
-    if (loading) return <div>Loading...</div>;
+                const data = await response.json();
+
+                setProfiles(data);  // Store profiles in state
+                setLoading(false);
+            } catch (err) {
+                console.error('Error fetching profiles:', err);
+
+                setLoading(false);
+            }
+        };
+
+        fetchProfiles();
+    }, [apiUrl]);  // Run only once on component mount
+
+    // Handle profile selection when a profile div is clicked
+    const handleProfileClick = (profileId, profileName, profileDesc) => {
+        setSelectedProfileId(profileId);
+        setSelectedProfileName(profileName)
+        setSelectedProfileDesc(profileDesc)
+    };
+
+    // Send the selected profile to the selected groups
+    const handleSendProfileToGroups = () => {
+        if (!selectedProfileId || selectedGroups.length === 0) {
+            alert('Please select a profile and at least one group.');
+            return;
+        }
+
+        // Emit a socket event to send the profile to the groups
+        socket.emit('sendProfileToGroups', {
+            roomId,
+            profileId: selectedProfileId,
+            profileName: selectedProfileName,
+            profileDesc: selectedProfileDesc,
+            groups: selectedGroups
+        });
+
+        setMessage('Profile sent successfully!');
+        setSelectedProfileId(null);  // Clear selection
+        setSelectedGroups([]);       // Clear selected groups
+    };
 
     // Handle form submission for checkboxes
     const handleAdminFormSubmit = (e) => {
@@ -190,6 +245,8 @@ const Room = () => {
             setSelectedGroups([]); // Clear selected groups after sending the message
         }
     };
+
+    if (loading) return <div>Loading...</div>;
 
     return (
         <div className='room-container'>
@@ -212,34 +269,55 @@ const Room = () => {
                 <>
                     {role === 'admin' ? (
                         <>
-                            <div className='question-by-moderator'>
+                            <div className='outer-container-mod'>
 
-                                <form onSubmit={handleAdminFormSubmit}>
-                                    <input
-                                        type="text"
-                                        value={adminMessage}
-                                        onChange={(e) => setAdminMessage(e.target.value)}
-                                        placeholder="Enter your Recruitment Job?"
-                                    />
-                                    <div className="selected-groups">
-                                        <h4>Select Groups:</h4>
-                                        <div className="group-checkboxes">
-                                            {availableGroups.map((groupNumber) => (
-                                                <label key={groupNumber} className="group-checkbox">
-                                                    <input
-                                                        className='checkbox-input'
-                                                        type="checkbox"
-                                                        value={groupNumber}
-                                                        checked={selectedGroups.includes(groupNumber)}
-                                                        onChange={() => handleCheckboxChange(groupNumber)}
-                                                    />
-                                                    Group {groupNumber}
-                                                </label>
-                                            ))}
+                                <div className='question-by-moderator'>
+
+                                    <form onSubmit={handleAdminFormSubmit}>
+                                        <input
+                                            type="text"
+                                            value={adminMessage}
+                                            onChange={(e) => setAdminMessage(e.target.value)}
+                                            placeholder="Enter your Recruitment Job?"
+                                        />
+                                        <div className="selected-groups">
+                                            <h4>Select Groups:</h4>
+                                            <div className="group-checkboxes">
+                                                {availableGroups.map((groupNumber) => (
+                                                    <label key={groupNumber} className="group-checkbox">
+                                                        <input
+                                                            className='checkbox-input'
+                                                            type="checkbox"
+                                                            value={groupNumber}
+                                                            checked={selectedGroups.includes(groupNumber)}
+                                                            onChange={() => handleCheckboxChange(groupNumber)}
+                                                        />
+                                                        Group {groupNumber}
+                                                    </label>
+                                                ))}
+                                            </div>
                                         </div>
-                                    </div>
-                                    <button type="submit">Submit</button>
-                                </form>
+                                        <button type="submit">Submit</button>
+                                    </form>
+                                    <button onClick={handleSendProfileToGroups}>Send Profile to Groups</button>
+                                    {message && <p>{message}</p>}
+
+                                </div>
+
+                                <div className='container-profiles'>
+                                    <h2>Select a Profile</h2>
+                                    {profiles.map((profile) => (
+                                        <div
+                                            key={profile._id}
+                                            className={`profile-card ${selectedProfileId === profile._id ? 'selected' : ''}`}
+                                            onClick={() => handleProfileClick(profile._id, profile.name, profile.options.en)}
+
+                                        >
+                                            <h3>{profile.name}</h3>
+                                            <p>{profile.options.en}</p>
+                                        </div>
+                                    ))}
+                                </div>
 
 
                             </div>
@@ -261,13 +339,13 @@ const Room = () => {
                                 {currentRound === 2 && (
                                     <div>
                                         Round 2
-                                        <RoundTwo 
-                                        roomId={roomId} 
-                                        playerID={playerID} 
-                                        socket={socket} 
-                                        group={group}
-                                        availableGroups={availableGroups}
-                                         />
+                                        <RoundTwo
+                                            roomId={roomId}
+                                            playerID={playerID}
+                                            socket={socket}
+                                            group={group}
+                                            availableGroups={availableGroups}
+                                        />
 
                                     </div>
                                 )}

@@ -17,10 +17,12 @@ const RoundOne = ({ roomId, playerID, socket, group }) => {
     const [userActionOccurred, setUserActionOccurred] = useState(false);
 
     const [socketMessage, setSocketMessage] = useState(''); // This can be used to display socket events
-    const [savedMessages, setSavedMessages] = useState([]); // Track messages that are already saved
 
     const [socketMessageFeedback, setSocketMessageFeedback] = useState(''); // This can be used to display socket events
     const apiUrl = process.env.REACT_APP_BACK_END_URL_HOST;
+
+    const [receivedProfile, setReceivedProfile] = useState(null);  // Add state to store the profile data
+
 
 
 
@@ -225,12 +227,17 @@ const RoundOne = ({ roomId, playerID, socket, group }) => {
         socket.on('receiveFeedbackGroupMessage', ({ message }) => {
             setSocketMessageFeedback(message); // Display the received message
         });
+        socket.on('receiveProfileData', (data) => {
+            console.log('Received profile data:', data);
+            setReceivedProfile(data);  // Store the received profile data
+        });
 
         return () => {
             socket.off('cursorUpdate');
             socket.off('dragDropUpdate');
             socket.off('receiveGroupMessage');
             socket.off('receiveFeedbackGroupMessage');
+            socket.off('receiveProfileData');  // Clean up the listener on unmount
         }
     }, [socket])
 
@@ -266,6 +273,15 @@ const RoundOne = ({ roomId, playerID, socket, group }) => {
     return (
         <div className='round-one-container'>
             {socketMessage && <p>{socketMessage}</p>}
+
+            {receivedProfile && (
+                <div className='profile-display'>
+                    <h2>Profile:</h2>
+                    <h3>{receivedProfile.profileName}</h3>
+                    <p>{receivedProfile.profileDesc}</p>
+
+                </div>
+            )}
 
             <div className='dragdrop-container-1' >
                 <DragDropContext onDragEnd={handleDragDrop}   >

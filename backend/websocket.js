@@ -224,13 +224,31 @@ function setupWebSocket(server) {
 
     socket.on('endGroupDiscussion', ({ roomId }) => {
       io.in(roomId).emit('groupDiscussionEnded', { message: 'Group discussion has ended. Proceeding to the next round.' });
-    });
+    }); 
 
     // Listen for group change events from clients
     socket.on('groupChange', (newGroupNumber) => {
       console.log(`Group change to: ${newGroupNumber} by ${socket.id}`);
       // Broadcast the new group number to all connected clients
       io.emit('nextGroupUnderDiscussion', newGroupNumber);
+    });
+
+    socket.on('sendProfileToGroups', ({ roomId, profileId, profileName, profileDesc, groups }) => {
+      if (!rooms[roomId]) return;
+
+      const targetGroups = Array.isArray(groups) ? groups : [groups];
+
+      // Find the profile data (if needed)
+      // You might need a separate function to get the profile details from your database
+      const profileData = { profileId, profileName, profileDesc, groups  }; // Example data
+
+      // Loop through each group and send the profile data to its players
+      targetGroups.forEach((group) => {
+        const targetPlayers = rooms[roomId].filter(player => String(player.group) === String(group));
+        targetPlayers.forEach(player => {
+          io.to(player.socketId).emit('receiveProfileData', profileData);
+        });
+      });
     });
 
     socket.on('disconnect', () => {

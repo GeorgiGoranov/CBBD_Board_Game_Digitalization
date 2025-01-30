@@ -5,7 +5,7 @@ import { useSessionsContext } from '../../hooks/useSessionContext'; // Adjust th
 
 
 const CreateNewProfiles = () => {
-    const [profiles, setProfiles] = useState([]);
+    
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const apiUrl = process.env.REACT_APP_BACK_END_URL_HOST;
