@@ -13,8 +13,9 @@ const GroupDiscussion = ({ roomId, apiUrl, availableGroups, socket, playerID, ro
         priority3: [],
         priority4: [],
     });
-    const [socketMessage, setSocketMessage] = useState(''); // This can be used to display socket events
-   
+    const [receivedProfile, setReceivedProfile] = useState(null);  // Add state to store the profile data
+
+
 
 
     useEffect(() => {
@@ -40,7 +41,10 @@ const GroupDiscussion = ({ roomId, apiUrl, availableGroups, socket, playerID, ro
                             setDropZones(matchingGroup.dropZones || { priority1: [], priority2: [], priority3: [], priority4: [] });
 
                             if (matchingGroup.messages && matchingGroup.messages.length > 0) {
-                                setSocketMessage(matchingGroup.messages[matchingGroup.messages.length - 1]);
+                                const lastMessage = matchingGroup.messages[matchingGroup.messages.length - 1];
+
+                                // Update the state to store the profile data exactly as received from the backend
+                                setReceivedProfile(lastMessage);
                             }
                         } else {
                             console.log('No matching group found.');
@@ -76,7 +80,10 @@ const GroupDiscussion = ({ roomId, apiUrl, availableGroups, socket, playerID, ro
                             setDropZones(matchingGroup.dropZones || { priority1: [], priority2: [], priority3: [], priority4: [] });
 
                             if (matchingGroup.messages && matchingGroup.messages.length > 0) {
-                                setSocketMessage(matchingGroup.messages[matchingGroup.messages.length - 1]);
+                                const lastMessage = matchingGroup.messages[matchingGroup.messages.length - 1];
+
+                                // Update the state to store the profile data exactly as received from the backend
+                                setReceivedProfile(lastMessage);
                             }
                         } else {
                             console.log('No matching group found.');
@@ -163,7 +170,14 @@ const GroupDiscussion = ({ roomId, apiUrl, availableGroups, socket, playerID, ro
                     <>
                         <div className="group-decisions">
                             <h2>Decisions for Group {availableGroups[currentGroupIndex]}</h2>
-                            {socketMessage && <p>{socketMessage}</p>}
+                            {receivedProfile && (
+                                <div className='profile-display'>
+                                    <h2>Profile:</h2>
+                                    <h3>{receivedProfile.profile.name}</h3>
+                                    <p>{receivedProfile.profile.options?.en || 'Description not available'}</p>
+
+                                </div>
+                            )}
                             <div className='priority-boxes'>
 
                                 {['priority1', 'priority2', 'priority3', 'priority4'].map((priority, index) => (
@@ -172,7 +186,11 @@ const GroupDiscussion = ({ roomId, apiUrl, availableGroups, socket, playerID, ro
                                         {dropZones[priority] && dropZones[priority].length > 0 ? (
                                             dropZones[priority].map((item, itemIndex) => (
                                                 <div key={`${item.category}-${itemIndex}`} className="draggable-item">
-                                                    {item.category}
+                                                    {currentRound === 1 ? (
+                                                        item.category
+                                                    ) : (
+                                                        item.text || 'Unnamed Option'
+                                                    )}
                                                 </div>
                                             ))
                                         ) : (

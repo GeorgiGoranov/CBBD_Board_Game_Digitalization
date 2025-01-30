@@ -158,7 +158,7 @@ function setupWebSocket(server) {
 
       console.log(`Round changed to ${roundNumber} in room ${roomId}`);
     });
-
+  
     socket.on('newDilemmaCardData', (data) => {
       const { roomId, card } = data;
 

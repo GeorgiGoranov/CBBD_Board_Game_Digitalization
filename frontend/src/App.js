@@ -9,7 +9,7 @@ import Room from './pages/Room';
 import ProtectedRoute from './components/ProtectedRoute';
 import { AuthProvider } from './auth/authContext';
 import AvailableSessions from "./components/Moderator/AvailableSessions"
-import Cards from "./components/Moderator/Cards"
+
 import Additions from './pages/Additions';
 import ModeratorRoomLayout from './components/Moderator/ModeratorRoomLayout';
 import { LanguageProvider } from './context/LanguageContext';
@@ -44,7 +44,6 @@ function App() {
                 <Route path="/results" element={<ProtectedRoute allowedRoles={['admin']} ><Results /></ProtectedRoute>} />
                 {/* component routes below*/}
                 <Route path="/av" element={<ProtectedRoute allowedRoles={['admin']} ><AvailableSessions /></ProtectedRoute>} />
-                <Route path="/cards" element={<ProtectedRoute allowedRoles={['admin']} ><Cards /></ProtectedRoute>} />
 
                 <Route path="/mlayout" element={<ProtectedRoute allowedRoles={['admin']} ><ModeratorRoomLayout /></ProtectedRoute>} />
                 <Route path="/chat/:roomId" element={<ProtectedRoute allowedRoles={['admin']} ><Chat /></ProtectedRoute>} />

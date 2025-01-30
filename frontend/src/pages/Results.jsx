@@ -11,6 +11,7 @@ const Results = () => {
     const [firstRoundDropZones, setFirstRoundDropZones] = useState(null);
     const [secondRoundDropZones, setSecondRoundDropZones] = useState(null);
     const [thirdRoundDropZones, setThirdRoundDropZones] = useState(null);
+
     const { language } = useLanguage();
 
     const [error, setError] = useState(null);
@@ -66,6 +67,8 @@ const Results = () => {
     }, [roomId]);
 
     const renderDropZones = (groups, roundTitle) => {
+        const isFirstRound = roundTitle.includes('First Round');
+        const isSecondRound = roundTitle.includes('Second Round');
         // Ensures group numbers are sequentially mapped starting from 1
         const remappedGroups = groups.map((group, index) => ({
             ...group,
@@ -106,7 +109,15 @@ const Results = () => {
                                     {items.length > 0 ? (
                                         <ul>
                                             {items.map((item, index) => (
-                                                <li key={index}>{item.category || 'Unnamed Item'}</li>
+                                                <>
+                                                    {isFirstRound ? (
+                                                        item.category || 'Unnamed Item'
+                                                    ) : isSecondRound ? (
+                                                        item.text || 'Unnamed Option'
+                                                    ) : (
+                                                        'Invalid Round Data'
+                                                    )}
+                                                </>
                                             ))}
                                         </ul>
                                     ) : (
