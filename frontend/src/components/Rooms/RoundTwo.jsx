@@ -12,8 +12,7 @@ const RoundTwo = ({ roomId, playerID, socket, group, availableGroups }) => {
     const { language } = useLanguage(); // Access selected language
     const [categoriesData, setCategoriesData] = useState([]);
     const [collapsedCategories, setCollapsedCategories] = useState({});
-
-    const [currentGroupIndex, setCurrentGroupIndex] = useState(0); // Track the current group
+    const [receivedProfile, setReceivedProfile] = useState(null);  // Add state to store the profile data
 
 
     const [dropZones, setDropZones] = useState({
@@ -192,7 +191,7 @@ const RoundTwo = ({ roomId, playerID, socket, group, availableGroups }) => {
             const groups = [{
                 groupNumber: group, // If you know the group number from props or context
                 dropZones,
-                messages: socketMessage ? [socketMessage] : [] // put the message in the messages array
+                messages: receivedProfile ? [receivedProfile] : [] // put the message in the messages array
 
             }];
             const response = await fetch(`${apiUrl}/api/rounds/save-state-second-round`, {
@@ -229,7 +228,15 @@ const RoundTwo = ({ roomId, playerID, socket, group, availableGroups }) => {
                     if (currentGroup) {
                         // If you need to restore messages or socketMessage:
                         if (currentGroup.messages && currentGroup.messages.length > 0) {
-                            setSocketMessage(currentGroup.messages[currentGroup.messages.length - 1]);
+                            const lastMessage = currentGroup.messages[currentGroup.messages.length - 1];
+
+                            // Update the socket message to display profile information
+                            setReceivedProfile({
+                                profileId: lastMessage.profileId,
+                                profileName: lastMessage.profileName,
+                                profileDesc: lastMessage.profileDesc,
+                                groups: lastMessage.groups
+                            });
                         }
                         console.log('Room state Message loaded successfully');
                     } else {
@@ -475,6 +482,14 @@ const RoundTwo = ({ roomId, playerID, socket, group, availableGroups }) => {
 
 
                 {socketMessage && <p>{socketMessage}</p>}
+                {receivedProfile && (
+                    <div className='profile-display'>
+                        <h2>Profile:</h2>
+                        <h3>{receivedProfile.profileName}</h3>
+                        <p>{receivedProfile.profileDesc}</p>
+
+                    </div>
+                )}
                 <DragDropContext onDragEnd={handleDragDrop}>
                     <ul className="api-list categories-grid">
                         {/* Iterate over categories */}

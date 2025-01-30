@@ -8,14 +8,10 @@ const Results = () => {
     const [searchParams] = useSearchParams();
     const roomId = searchParams.get('sessionCode');
 
-
     const [firstRoundDropZones, setFirstRoundDropZones] = useState(null);
     const [secondRoundDropZones, setSecondRoundDropZones] = useState(null);
     const [thirdRoundDropZones, setThirdRoundDropZones] = useState(null);
     const { language } = useLanguage();
-
-
-
 
     const [error, setError] = useState(null);
     const apiUrl = process.env.REACT_APP_BACK_END_URL_HOST;
@@ -123,7 +119,10 @@ const Results = () => {
                                     <h5>Competency:</h5>
                                     <ul>
                                         {group.messages.map((msg, i) => (
-                                            <li key={i}>{msg}</li>
+                                            <li key={i} className="message-item">
+                                                <p><strong>Profile Name:</strong> {msg.profileName}</p>
+                                                <p><strong>Description:</strong> {msg.profileDesc}</p>
+                                            </li>
                                         ))}
                                     </ul>
                                 </div>
@@ -182,7 +181,7 @@ const Results = () => {
                                 return (
                                     <div key={index} className="votes">
                                         <h3>{optionText}</h3> {/* Display the option text */}
-                                        {/* {voteData ? (
+                        {/* {voteData ? (
                                             <>
                                                 <p>Votes: {voteData.count}</p>
                                                 <ul>

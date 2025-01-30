@@ -139,7 +139,7 @@ const RoundOne = ({ roomId, playerID, socket, group }) => {
                 groupNumber: group, // If you know the group number from props or context
                 categories,
                 dropZones,
-                messages: socketMessage ? [socketMessage] : [] // put the message in the messages array
+                messages: receivedProfile ? [receivedProfile] : [] // put the message in the messages array
             }];
 
             const response = await fetch(`${apiUrl}/api/rounds/save-state-first-round`, {
@@ -180,7 +180,15 @@ const RoundOne = ({ roomId, playerID, socket, group }) => {
                         setDropZones(currentGroup.dropZones || { priority1: [], priority2: [], priority3: [], priority4: [] });
                         // If you need to restore messages or socketMessage:
                         if (currentGroup.messages && currentGroup.messages.length > 0) {
-                            setSocketMessage(currentGroup.messages[currentGroup.messages.length - 1]);
+                            const lastMessage = currentGroup.messages[currentGroup.messages.length - 1];
+
+                            // Update the socket message to display profile information
+                            setReceivedProfile({
+                                profileId: lastMessage.profileId,
+                                profileName: lastMessage.profileName,
+                                profileDesc: lastMessage.profileDesc,
+                                groups: lastMessage.groups
+                            });
                         }
                         console.log('Room state loaded successfully');
                     } else {

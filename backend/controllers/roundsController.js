@@ -28,17 +28,22 @@ const saveRoomStateMode = (RoundModel) => {
                         round.groups[existingGroupIndex].dropZones = newGroup.dropZones;
 
                         // For messages, you can either replace them or append:
-                        // Replace existing messages:
+                        // Replace existing messages:~
                         // round.groups[existingGroupIndex].messages = newGroup.messages;
 
                         // Or append new messages to existing:
+
                         if (Array.isArray(newGroup.messages)) {
-                            const existingMessages = new Set(
-                                round.groups[existingGroupIndex].messages
-                            ); // Use a Set for quick lookup
+                            const existingMessages = round.groups[existingGroupIndex].messages || [];
+
+                            // Filter out messages with duplicate profileId
                             const uniqueMessages = newGroup.messages.filter(
-                                (msg) => !existingMessages.has(msg)
-                            ); // Filter out duplicates
+                                (newMsg) => !existingMessages.some(
+                                    (existingMsg) => existingMsg.profileId === newMsg.profileId
+                                )
+                            );
+
+                            // Append only unique messages to the existing ones
                             round.groups[existingGroupIndex].messages.push(...uniqueMessages);
                         }
 
@@ -123,7 +128,7 @@ const saveThirdRoomStateMode = (RoundModel) => {
                         }
                     };
                 }
-                
+
                 // Update nationality count
                 if (!lastCard.votes[vote].nationalities[nationality]) {
                     // If nationality doesn't match these three, categorize as 'other'

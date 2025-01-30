@@ -209,7 +209,7 @@ function setupWebSocket(server) {
     socket.on('sendFeedbackGroupMessage', ({ roomId, group, message }) => {
 
       if (!rooms[roomId]) return;
-
+ 
 
       const targetPlayers = rooms[roomId].filter(player => String(player.group) === String(group));
 
@@ -217,11 +217,11 @@ function setupWebSocket(server) {
         io.to(player.socketId).emit('receiveFeedbackGroupMessage', { message });
       });
     });
-
+ 
     socket.on('startGroupDiscussion', ({ roomId }) => {
       io.to(roomId).emit('groupDiscussionStarted', { message: 'Group discussion has started.' });
     });
-
+ 
     socket.on('endGroupDiscussion', ({ roomId }) => {
       io.in(roomId).emit('groupDiscussionEnded', { message: 'Group discussion has ended. Proceeding to the next round.' });
     }); 
@@ -240,7 +240,7 @@ function setupWebSocket(server) {
 
       // Find the profile data (if needed)
       // You might need a separate function to get the profile details from your database
-      const profileData = { profileId, profileName, profileDesc, groups  }; // Example data
+      const profileData = { profileId, profileName, profileDesc  }; // Example data
 
       // Loop through each group and send the profile data to its players
       targetGroups.forEach((group) => {
