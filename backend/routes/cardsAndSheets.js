@@ -5,9 +5,10 @@ const CardModelC = require('../models/CardModelCompetency');
 const CardModelD = require('../models/CardModelDilemma');
 const CardModelOT = require('../models/CardModelOther');
 const ThirdRoundModel = require('../models/ThirdRoundModel')
+const ProfileModel = require('../models/ProfileModel')
 
 const { requireAuth } = require('../middleware/authMiddleware');
-const { createCards, getOneCardPerCategory,getAllCategories,getAllCards} = require('../controllers/cardsAndSheetsController');
+const { createCards, getOneCardPerCategory,getAllCategories,getAllCards,getAllDefaultProfiles} = require('../controllers/cardsAndSheetsController');
 
 // Use the updated functions
 router.post('/competency', requireAuth, createCards(CardModelC));
@@ -17,6 +18,7 @@ router.post('/other', requireAuth, createCards(CardModelOT));
 // router.get('/competency/random', getOneCardPerCategory(CardModelC));
 router.get('/dilemma/random/:roomId', getOneCardPerCategory(CardModelD,ThirdRoundModel));
 // router.get('/other/random', getOneCardPerCategory(CardModelOT));
+router.get('/profiles', getAllDefaultProfiles(ProfileModel));
 
 
 

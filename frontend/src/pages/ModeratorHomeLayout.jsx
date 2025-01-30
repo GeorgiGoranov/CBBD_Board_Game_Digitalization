@@ -40,7 +40,15 @@ const Home = () => {
 
   const goToCardAndSheetCreation = () => {
     socket.connect()
-    navigate('/additions')
+    navigate('/additions/1')
+  }
+
+  const createNewProfile = () =>{
+    navigate('/additions/2')
+  }
+
+  const addNewCompetencies = () =>{
+    navigate('/additions/3')
   }
 
   return (
@@ -48,7 +56,10 @@ const Home = () => {
       <div className="create-session">
         <h2>Create a Game Session</h2>
         <button onClick={createGameSession}>Create Session</button>
-        <button onClick={goToCardAndSheetCreation}>Create new Cards and Sheets</button>
+        <button onClick={goToCardAndSheetCreation}>Create new Cards</button>
+        <button onClick={createNewProfile}>Create New Profiles</button>
+        <button onClick={addNewCompetencies}>Create New Competencies</button>
+
 
         {sessionCode && (
           <div className='container'>

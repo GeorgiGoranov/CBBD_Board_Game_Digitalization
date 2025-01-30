@@ -40,7 +40,7 @@ function App() {
                 <Route path="/duser" element={<ParticipantHomeLayout/>} />
                 <Route path="/room/:roomId" element={<Room />} />
                 <Route path="/muser" element={<ProtectedRoute allowedRoles={['admin']}><ModeratorHomeLayout /></ProtectedRoute>} />
-                <Route path="/additions" element={<ProtectedRoute allowedRoles={['admin']} ><Additions /></ProtectedRoute>} />
+                <Route path="/additions/:number" element={<ProtectedRoute allowedRoles={['admin']} ><Additions /></ProtectedRoute>} />
                 <Route path="/results" element={<ProtectedRoute allowedRoles={['admin']} ><Results /></ProtectedRoute>} />
                 {/* component routes below*/}
                 <Route path="/av" element={<ProtectedRoute allowedRoles={['admin']} ><AvailableSessions /></ProtectedRoute>} />

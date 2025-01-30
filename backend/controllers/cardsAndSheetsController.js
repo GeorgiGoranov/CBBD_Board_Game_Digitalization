@@ -156,10 +156,28 @@ const getAllCards = (models) => {
     };
 };
 
+const getAllDefaultProfiles = (model) => {
+    return async (req, res) => {
+        try {
+            // Fetch all documents from the provided model
+            const profiles = await model.find();
+
+            // Send the data as a response
+            res.status(200).json(profiles);
+        } catch (error) {
+            console.error("Error fetching profiles:", error);
+
+            // Send an error response
+            res.status(500).json({ message: "Failed to fetch profiles", error });
+        }
+    }
+}
+
 
 module.exports = {
     createCards,
     getOneCardPerCategory,
     getAllCategories,
-    getAllCards
+    getAllCards,
+    getAllDefaultProfiles
 };
