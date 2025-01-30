@@ -58,24 +58,7 @@ const getOneCardPerCategory = (CardModel, RoundModel) => {
             //    Then remove subcategories that were used
             const allCards = await CardModel.find({}).lean();
 
-            // allCards is an array of documents, each doc looks like:
-            // {
-            //   category: "...",
-            //   subcategories: [
-            //     {
-            //       name: "...",
-            //       options: { nl: "...", de: "..." }
-            //     },
-            //     ...
-            //   ]
-            // }
 
-            // 4) Filter out subcategories we already used
-            //    Build an array of possible picks of the form:
-            //    {
-            //       category: 'foo',
-            //       subcategory: subcatDoc,
-            //    }
             const possiblePicks = [];
             for (const doc of allCards) {
                 const { category, subcategories } = doc;
@@ -223,6 +206,49 @@ const deleteProfile = (model) => {
     };
 };
 
+const addNewSubcategory = (models) => {
+    return async (req, res) => {
+        const { category, subcategory } = req.body;
+
+        // Validate the request body
+        if (!category || !subcategory || !subcategory.name || !subcategory.options) {
+            return res.status(400).json({ message: 'Invalid data. Please provide a category, subcategory name, and options.' });
+        }
+
+        try {
+            for (const model of models) {
+                const existingDocument = await model.findOne({ category });
+
+                if (existingDocument) {
+                    // Check if the subcategory already exists
+                    const subcategoryExists = existingDocument.subcategories.some(
+                        (sub) => sub.name === subcategory.name
+                    );
+
+                    if (subcategoryExists) {
+                        return res.status(400).json({ message: 'Subcategory already exists in this category.' });
+                    }
+
+                    // Add the new subcategory to the subcategories array
+                    existingDocument.subcategories.push(subcategory);
+
+                    // Save the updated document
+                    const updatedDocument = await existingDocument.save();
+
+                    return res.status(200).json({
+                        message: 'Subcategory added successfully',
+                        data: updatedDocument
+                    });
+                }
+            }
+
+            res.status(404).json({ message: 'Category not found in any model' });
+        } catch (error) {
+            console.error('Error adding subcategory:', error);
+            res.status(500).json({ message: 'Internal server error', error: error.message });
+        }
+    };
+};
 
 
 module.exports = {
@@ -232,5 +258,6 @@ module.exports = {
     getAllCards,
     getAllDefaultProfiles,
     createProfile,
-    deleteProfile
+    deleteProfile,
+    addNewSubcategory
 };
