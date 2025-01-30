@@ -4,7 +4,7 @@ import { useSessionsContext } from '../../hooks/useSessionContext'; // Adjust th
 
 
 
-const CreateNewProfiles = () => {
+const CreateNewProfiles = ({onProfileSelect  }) => {
     
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -12,7 +12,6 @@ const CreateNewProfiles = () => {
     const [titleOfProfile, setTitleOfProfile] = useState('');
     const [descriptionOfProfile, setdescriptionOfProfile] = useState('');
     const { sessions, dispatch } = useSessionsContext();  // Use the custom hook to access context
-
 
     // Save new profile to the backend
     const saveNewProfile = async (e) => {
@@ -137,7 +136,7 @@ const CreateNewProfiles = () => {
             </form>
             <ul>
                 {sessions.map((profile, index) => (
-                    <li key={index}>
+                    <li key={index} onClick={() => onProfileSelect(profile)}>
                         <h3>{profile.name}</h3>
                         <p>{profile.options.en}</p>
                         <button onClick={() => deleteProfile(profile._id)}>Delete</button>

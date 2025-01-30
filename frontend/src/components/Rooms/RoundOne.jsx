@@ -285,8 +285,9 @@ const RoundOne = ({ roomId, playerID, socket, group }) => {
             {receivedProfile && (
                 <div className='profile-display'>
                     <h2>Profile:</h2>
-                    <h3>{receivedProfile.profileName}</h3>
-                    <p>{receivedProfile.profileDesc}</p>
+                    <h3>{receivedProfile.profile.name}</h3>
+                    <p>{receivedProfile.profile.options?.en || 'Description not available'}</p>
+
 
                 </div>
             )}

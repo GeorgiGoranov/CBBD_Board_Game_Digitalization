@@ -233,14 +233,16 @@ function setupWebSocket(server) {
       io.emit('nextGroupUnderDiscussion', newGroupNumber);
     });
 
-    socket.on('sendProfileToGroups', ({ roomId, profileId, profileName, profileDesc, groups }) => {
+    socket.on('sendProfileToGroups', ({ roomId, profile, groups }) => {
       if (!rooms[roomId]) return;
 
       const targetGroups = Array.isArray(groups) ? groups : [groups];
 
       // Find the profile data (if needed)
       // You might need a separate function to get the profile details from your database
-      const profileData = { profileId, profileName, profileDesc  }; // Example data
+      const profileData = { profile }; // Example data
+
+      console.log(profile)
 
       // Loop through each group and send the profile data to its players
       targetGroups.forEach((group) => {

@@ -11,6 +11,7 @@ import RoundOne from '../components/Rooms/RoundOne';
 import RoundTwo from '../components/Rooms/RoundTwo';
 import RoundThree from '../components/Rooms/RoundThree';
 import GroupDiscussion from '../components/Rooms/GroupDiscussion';
+import CreateNewProfiles from '../components/Moderator/CreateNewProfiles';
 
 
 
@@ -36,10 +37,10 @@ const Room = () => {
 
     const [availableGroups, setAvailableGroups] = useState([]); // Unique group numbers
     const [selectedGroups, setSelectedGroups] = useState([]); // Selected groups via checkboxes
-    const [selectedProfileId, setSelectedProfileId] = useState(null);  // Currently selected profile ID
-    const [selectedProfileName, setSelectedProfileName] = useState(null);  // Currently selected profile ID\
-    const [selectedProfileDesc, setSelectedProfileDesc] = useState(null);  // Currently selected profile ID
-
+    // const [selectedProfileId, setSelectedProfileId] = useState(null);  // Currently selected profile ID
+    // const [selectedProfileName, setSelectedProfileName] = useState(null);  // Currently selected profile ID\
+    // const [selectedProfileDesc, setSelectedProfileDesc] = useState(null);  // Currently selected profile ID
+    const [selectedProfile, setSelectedProfile] = useState(null);
 
     const [profiles, setProfiles] = useState([]);  // Add profiles array state
 
@@ -75,8 +76,7 @@ const Room = () => {
                 : [...prevSelected, groupNumber] // Add if not selected
         );
     };
-
-
+    
     useEffect(() => {
 
         const fetchUserRole = async () => {
@@ -177,41 +177,47 @@ const Room = () => {
 
     }, [playerID, roomId, socket, group])
 
-    useEffect(() => {
-        // Fetch profiles from the API
-        const fetchProfiles = async () => {
-            try {
-                const response = await fetch(`${apiUrl}/api/cards/profiles`, {
-                    credentials: 'include'
-                });  // Replace with your correct endpoint
-                if (!response.ok) {
-                    throw new Error('Failed to fetch profiles');
-                }
+    // useEffect(() => {
+    //     // Fetch profiles from the API
+    //     const fetchProfiles = async () => {
+    //         try {
+    //             const response = await fetch(`${apiUrl}/api/cards/profiles`, {
+    //                 credentials: 'include'
+    //             });  // Replace with your correct endpoint
+    //             if (!response.ok) {
+    //                 throw new Error('Failed to fetch profiles');
+    //             }
 
-                const data = await response.json();
+    //             const data = await response.json();
 
-                setProfiles(data);  // Store profiles in state
-                setLoading(false);
-            } catch (err) {
-                console.error('Error fetching profiles:', err);
+    //             setProfiles(data);  // Store profiles in state
+    //             setLoading(false);
+    //         } catch (err) {
+    //             console.error('Error fetching profiles:', err);
 
-                setLoading(false);
-            }
-        };
+    //             setLoading(false);
+    //         }
+    //     };
 
-        fetchProfiles();
-    }, [apiUrl]);  // Run only once on component mount
+    //     fetchProfiles();
+    // }, [apiUrl]);  // Run only once on component mount
 
-    // Handle profile selection when a profile div is clicked
-    const handleProfileClick = (profileId, profileName, profileDesc) => {
-        setSelectedProfileId(profileId);
-        setSelectedProfileName(profileName)
-        setSelectedProfileDesc(profileDesc)
+    // // Handle profile selection when a profile div is clicked
+    // const handleProfileClick = (profileId, profileName, profileDesc) => {
+    //     setSelectedProfileId(profileId);
+    //     setSelectedProfileName(profileName)
+    //     setSelectedProfileDesc(profileDesc)
+    // };
+  
+    
+    const handleProfileSelect = (profile) => {
+        setSelectedProfile(profile);
+        console.log(profile)
     };
 
     // Send the selected profile to the selected groups
     const handleSendProfileToGroups = () => {
-        if (!selectedProfileId || selectedGroups.length === 0) {
+        if (!selectedProfile || selectedGroups.length === 0) {
             alert('Please select a profile and at least one group.');
             return;
         }
@@ -219,14 +225,12 @@ const Room = () => {
         // Emit a socket event to send the profile to the groups
         socket.emit('sendProfileToGroups', {
             roomId,
-            profileId: selectedProfileId,
-            profileName: selectedProfileName,
-            profileDesc: selectedProfileDesc,
+            profile: selectedProfile,
             groups: selectedGroups
         });
 
         setMessage('Profile sent successfully!');
-        setSelectedProfileId(null);  // Clear selection
+        setSelectedProfile(null);  // Clear selection
         setSelectedGroups([]);       // Clear selected groups
     };
 
@@ -306,7 +310,7 @@ const Room = () => {
 
                                 <div className='container-profiles'>
                                     <h2>Select a Profile</h2>
-                                    {profiles.map((profile) => (
+                                    {/* {profiles.map((profile) => (
                                         <div
                                             key={profile._id}
                                             className={`profile-card ${selectedProfileId === profile._id ? 'selected' : ''}`}
@@ -316,7 +320,8 @@ const Room = () => {
                                             <h3>{profile.name}</h3>
                                             <p>{profile.options.en}</p>
                                         </div>
-                                    ))}
+                                    ))} */}
+                                    <CreateNewProfiles onProfileSelect={handleProfileSelect }/>
                                 </div>
 
 
