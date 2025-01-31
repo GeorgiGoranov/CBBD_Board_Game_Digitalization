@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import '../SCSS/results.scss'
 import { useLanguage } from '../context/LanguageContext';
+import Papa from 'papaparse';
 
 
 const Results = () => {
@@ -65,6 +66,141 @@ const Results = () => {
     useEffect(() => {
         fetchRoundData();
     }, [roomId]);
+
+    // -----------------------------
+    //  CSV Export Functions
+    // -----------------------------
+    // Pseudocode to illustrate the concept
+    const handleExportCsv = () => {
+        // 1) Flatten data for Rounds 1 & 2
+        const round12Data = flattenRounds1And2(firstRoundDropZones, secondRoundDropZones);
+        console.log(round12Data)
+        const csvRound12 = convertArrayOfObjectsToCSV(round12Data);
+
+        // 2) Flatten data for Round 3
+        const round3Data = flattenRound3(thirdRoundDropZones);
+        const csvRound3 = convertArrayOfObjectsToCSV(round3Data);
+
+        // 3) Concatenate
+        // Insert a blank line (or a labeled line) between them
+        // Example also adds a text row "THIRD ROUND STARTS" for clarity
+        const finalCsv =
+            csvRound12
+            + '\n\nTHIRD ROUND\n'
+            + csvRound3;
+
+        // 4) Download as single .csv
+        downloadCSV(finalCsv, 'all_rounds.csv');
+    };
+
+    // Example flatten function for Rounds 1 & 2:
+    function flattenRounds1And2(firstRound, secondRound) {
+        // Return an array of objects with columns:
+        // [round, group, zone, item, nationalityInfo]
+        const data = [];
+
+        // Flatten first round
+        firstRound?.forEach(group => {
+            const gNum = group.groupNumber ?? 0;
+            Object.entries(group.dropZones || {}).forEach(([zone, items]) => {
+                items.forEach(item => {
+                    data.push({
+                        round: 'First Round',
+                        group: gNum,
+                        zone: zone,
+                        item: item.category || item.text || 'Unnamed',
+                        nationalityInfo: JSON.stringify(group.nationalities || []),
+                    });
+                });
+            });
+        });
+
+        // Flatten second round
+        secondRound?.forEach(group => {
+            const gNum = group.groupNumber ?? 0;
+            Object.entries(group.dropZones || {}).forEach(([zone, items]) => {
+                items.forEach(item => {
+                    data.push({
+                        round: 'Second Round',
+                        group: gNum,
+                        zone: zone,
+                        item: item.text || item.category || 'Unnamed',
+                        nationalityInfo: JSON.stringify(group.nationalities || []),
+                    });
+                });
+            });
+        });
+
+        return data;
+    }
+
+    // Example flatten function for Round 3:
+    function flattenRound3(thirdRound) {
+        // Return an array of objects with columns:
+        // [category, subcategory, optionKey, optionText, voteCount, german, dutch, other]
+        const data = [];
+        thirdRound?.forEach(cardData => {
+            const category = cardData.card?.category ?? '';
+            const subcategory = cardData.card?.subcategory ?? '';
+
+            Object.entries(cardData.votes ?? {}).forEach(([optionKey, voteData]) => {
+                const { german = 0, dutch = 0, other = 0 } = voteData?.nationalities || {};
+                // You might map "option1" to the actual text, or just store "option1"
+                // If you want to retrieve the text from cardData.card.options, do so here:
+                const optionIndex = parseInt(optionKey.replace(/[^\d]/g, '')) - 1;
+                const optionText = cardData.card?.options?.en?.[optionIndex] || '';
+
+                data.push({
+                    category,
+                    subcategory,
+                    optionText,
+                    voteCount: voteData.count || 0,
+                    german,
+                    dutch,
+                    other
+                });
+            });
+        });
+        return data;
+    }
+
+    // The same CSV conversion and download logic as before:
+    function convertArrayOfObjectsToCSV(dataArray) {
+        if (!dataArray || !dataArray.length) return '';
+
+        // 1) Figure out the headers by scanning *all* keys
+        const allKeys = new Set();
+        dataArray.forEach((obj) => {
+            Object.keys(obj).forEach((key) => allKeys.add(key));
+        });
+        const headers = Array.from(allKeys);
+
+        // 2) Build CSV lines
+        const lines = [headers.join(',')]; // header row
+        dataArray.forEach((row) => {
+            const rowValues = headers.map((header) => {
+                const val = String(row[header] ?? '').replace(/"/g, '""');
+                return val.search(/("|,|\n)/g) >= 0 ? `"${val}"` : val;
+            });
+            lines.push(rowValues.join(','));
+        });
+
+        return lines.join('\n');
+    }
+
+    function downloadCSV(csvString, filename) {
+        const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        const url = URL.createObjectURL(blob);
+
+        link.setAttribute('href', url);
+        link.setAttribute('download', filename);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
+
 
     const renderDropZones = (groups, roundTitle) => {
         const isFirstRound = roundTitle.includes('First Round');
@@ -222,11 +358,15 @@ const Results = () => {
     );
 
 
+
+
     return (
         <div className="results-container">
             <h2>Results Page</h2>
             <p>Game Session Results for Room ID: {roomId}</p>
             {error && <p style={{ color: 'red' }}>{error}</p>}
+            {/* Button to trigger CSV download */}
+            <button onClick={handleExportCsv}>Download Results as CSV</button>
             <div className='results'>
                 {/* First Round */}
                 {firstRoundDropZones ? renderDropZones(firstRoundDropZones, 'First Round') : <p>Loading first round data...</p>}

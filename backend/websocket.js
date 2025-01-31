@@ -133,7 +133,7 @@ function setupWebSocket(server) {
 
       const result = await saveMessage(message);
 
-      if (result.success) {
+      if (result.success) { 
         const { roomId, groupNumber } = result.message;
 
         // Find all players in this room with the same groupNumber
@@ -146,7 +146,8 @@ function setupWebSocket(server) {
       } else {
         socket.emit('errorMessage', { error: 'Could not save message' });
       }
-    });
+    }); 
+    
 
     socket.on('changeRound', (data) => {
       const { roomId, roundNumber } = data;
@@ -157,7 +158,7 @@ function setupWebSocket(server) {
       io.in(roomId).emit('roundChanged', { roundNumber });
 
       console.log(`Round changed to ${roundNumber} in room ${roomId}`);
-    });
+    }); 
   
     socket.on('newDilemmaCardData', (data) => {
       const { roomId, card } = data;
