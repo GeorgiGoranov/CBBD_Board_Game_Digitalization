@@ -1,7 +1,9 @@
 .role-based-layout{
-  position: fixed;
+  position: relative;
   bottom: 0;
-  margin-bottom: 20px;
+  display: flex;
+ align-items: center;
+ justify-content: center;
 
 }
 
@@ -72,9 +74,9 @@
 .outer-container-mod{
   display: grid;
   grid-template-columns: repeat(2, 1fr);
+  padding-left: 15px;
+  padding-right: 15px;
 
 }
-
-
 
 

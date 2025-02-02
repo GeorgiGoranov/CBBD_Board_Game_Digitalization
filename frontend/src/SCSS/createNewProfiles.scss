@@ -1,5 +1,6 @@
 .container-input-add-new-profile {
     display: flex;
+    min-width: 60vw;
     flex-direction: column;
     gap: 15px;
     align-items: center;
@@ -13,8 +14,8 @@
 }
 
 .input-add-new-profile-description {
-    height: 200px;
-    width: 40%;
+    height: 100px;
+    width: 80%;
     /* Adjust width as needed */
     white-space: pre-wrap;
     /* Preserves white space and allows wrapping */
@@ -43,13 +44,34 @@
     cursor: pointer;
     margin: 8px 0;
     transition: background-color 0.3s;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.05);
 }
 
 .profile-card:hover {
     background-color: #eaeaea;
+    
 }
 
 .profile-card.selected {
     background-color: #d1e7fd;
     border-color: #007bff;
+}
+
+
+.profile-list{
+    max-width: 60vw;
+    max-height: 37vh;
+    overflow-y: auto;
+    
+}
+
+.container-button-text{
+    display: flex;
+    gap: 25px;
+}
+
+.title-profiles{
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }

@@ -225,8 +225,11 @@ const Room = () => {
                                     <div className="selected-groups">
                                         <h4>Select Groups:</h4>
                                         <div className="group-checkboxes">
-                                            {availableGroups.map((groupNumber) => (
+                                            {availableGroups
+                                            .sort((a, b) => a - b) 
+                                            .map((groupNumber) => (
                                                 <label key={groupNumber} className="group-checkbox">
+                                                    <div></div>
                                                     <input
                                                         className='checkbox-input'
                                                         type="checkbox"
@@ -244,7 +247,6 @@ const Room = () => {
 
                                 {/* {message && <p>{message}</p>} */}
                                 <div className='container-profiles'>
-                                    <h2>Select a Profile</h2>
                                     <CreateNewProfiles onProfileSelect={handleProfileSelect} />
                                 </div>
 
@@ -304,7 +306,7 @@ const Room = () => {
             {/* Role-based layout */}
             <div className='role-based-layout'>
                 {role === 'admin' ? (
-                    <div className='moderator-container-layout'> Moderator Layout for Room {roomId}
+                    <div className='moderator-container-layout'>
                         <ModeratorRoomLayout roomId={roomId} />
                     </div>
                 ) : (

@@ -130,16 +130,23 @@ const CreateNewProfiles = ({ onProfileSelect }) => {
     }
 
     return (
-        <div>
+        <div className='profiles-outer-contianer'>
+            <div className='title-profiles'>
+
             <h2>Profiles</h2>
+            </div>
             <form className="container-input-add-new-profile" onSubmit={saveNewProfile}>
-                <input
-                    type="text"
-                    value={titleOfProfile}
-                    onChange={(e) => setTitleOfProfile(e.target.value)}
-                    placeholder="Title of the Profile"
-                    className='input-add-new-profile'
-                />
+                <div className='container-button-text'>
+                    <input
+                        type="text"
+                        value={titleOfProfile}
+                        onChange={(e) => setTitleOfProfile(e.target.value)}
+                        placeholder="Title of the Profile"
+                        className='input-add-new-profile'
+                    />
+                    <button type="submit">Add</button>
+
+                </div>
                 <textarea
                     type="text"
                     value={descriptionOfProfile}
@@ -147,12 +154,11 @@ const CreateNewProfiles = ({ onProfileSelect }) => {
                     placeholder="Description of the Profile"
                     className='input-add-new-profile-description'
                 />
-                <button type="submit">Add</button>
             </form>
             <ul className="profile-list">
                 {sessions.map((profile) => (
-                    <li key={profile._id} className="profile-card"onClick={() => toggleProfileCollapse(profile._id)} >
-                        <div className="profile-header"onClick={() => onProfileSelect(profile)} >
+                    <li key={profile._id} className="profile-card" onClick={() => toggleProfileCollapse(profile._id)} >
+                        <div className="profile-header" onClick={() => onProfileSelect && onProfileSelect(profile)} >
                             <h3>{profile.name}</h3>
                         </div>
                         <AnimatePresence>
