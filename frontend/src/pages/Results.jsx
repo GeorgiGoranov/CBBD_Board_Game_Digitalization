@@ -95,44 +95,49 @@ const Results = () => {
 
     // Example flatten function for Rounds 1 & 2:
     function flattenRounds1And2(firstRound, secondRound) {
-        // Return an array of objects with columns:
-        // [round, group, zone, item, nationalityInfo]
-        const data = [];
-
-        // Flatten first round
+        const groupedData = {};
+    
+        // Helper to group by group number
+        const addToGroup = (groupNum, round, zone, item, nationalityInfo) => {
+            if (!groupedData[groupNum]) groupedData[groupNum] = [];
+            groupedData[groupNum].push({
+                round,
+                zone,
+                item,
+                nationalityInfo,
+            });
+        };
+    
+        // Process first round data
         firstRound?.forEach(group => {
-            const gNum = group.groupNumber ?? 0;
+            const groupNum = group.groupNumber ?? 0;
             Object.entries(group.dropZones || {}).forEach(([zone, items]) => {
                 items.forEach(item => {
-                    data.push({
-                        round: 'First Round',
-                        group: gNum,
-                        zone: zone,
-                        item: item.category || item.text || 'Unnamed',
-                        nationalityInfo: JSON.stringify(group.nationalities || []),
-                    });
+                    addToGroup(groupNum, 'First Round', zone, item.category || 'Unnamed Item', JSON.stringify(group.nationalities || []));
                 });
             });
         });
-
-        // Flatten second round
+    
+        // Process second round data
         secondRound?.forEach(group => {
-            const gNum = group.groupNumber ?? 0;
+            const groupNum = group.groupNumber ?? 0;
             Object.entries(group.dropZones || {}).forEach(([zone, items]) => {
                 items.forEach(item => {
-                    data.push({
-                        round: 'Second Round',
-                        group: gNum,
-                        zone: zone,
-                        item: item.text || item.category || 'Unnamed',
-                        nationalityInfo: JSON.stringify(group.nationalities || []),
-                    });
+                    addToGroup(groupNum, 'Second Round', zone, item.text || 'Unnamed Item', JSON.stringify(group.nationalities || []));
                 });
             });
         });
-
-        return data;
+    
+        // Return sorted data by group number
+        return Object.entries(groupedData).flatMap(([groupNum, groupItems]) => {
+            return groupItems.map(item => ({
+                group: groupNum,
+                ...item,
+            }));
+        });
     }
+    
+
 
     // Example flatten function for Round 3:
     function flattenRound3(thirdRound) {
@@ -167,26 +172,39 @@ const Results = () => {
     // The same CSV conversion and download logic as before:
     function convertArrayOfObjectsToCSV(dataArray) {
         if (!dataArray || !dataArray.length) return '';
-
-        // 1) Figure out the headers by scanning *all* keys
+    
+        // 1) Collect headers dynamically
         const allKeys = new Set();
-        dataArray.forEach((obj) => {
-            Object.keys(obj).forEach((key) => allKeys.add(key));
+        dataArray.forEach(obj => {
+            Object.keys(obj).forEach(key => allKeys.add(key));
         });
         const headers = Array.from(allKeys);
-
-        // 2) Build CSV lines
-        const lines = [headers.join(',')]; // header row
-        dataArray.forEach((row) => {
-            const rowValues = headers.map((header) => {
+    
+        // 2) Create CSV rows
+        const lines = [headers.join(',')];  // CSV header row
+        let currentGroup = null;
+    
+        dataArray.forEach(row => {
+            // Add a blank line between groups
+            if (currentGroup !== row.group) {
+                if (currentGroup !== null) {
+                    lines.push('');  // Add a blank line between groups
+                }
+                currentGroup = row.group;
+            }
+    
+            // Convert row to CSV-friendly format
+            const rowValues = headers.map(header => {
                 const val = String(row[header] ?? '').replace(/"/g, '""');
                 return val.search(/("|,|\n)/g) >= 0 ? `"${val}"` : val;
             });
             lines.push(rowValues.join(','));
         });
-
+    
         return lines.join('\n');
     }
+    
+
 
     function downloadCSV(csvString, filename) {
         const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
