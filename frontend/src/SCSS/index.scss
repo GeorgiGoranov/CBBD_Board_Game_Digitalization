@@ -7,9 +7,11 @@
   --error: #e7195a;
   --lighter-pr: rgba(167, 107, 167, 0.322);
   --green: #155724;
+  --l-green: #36c056;
   --important: #EB005E;
   --purple: #9E00EB;
   --lighter-purple: #B74EEB;
+  --blue: #0056b3;
 }
 
 
@@ -18,6 +20,7 @@ body {
   margin: 0;
   font-family: "Poppins";
   height: 100%;
+
 }
 textarea{
   font-family: "Poppins";
@@ -71,6 +74,7 @@ header .input{
   display: block;
   margin: 0 auto; 
   min-height: 82vh;   
+
 
 }
 

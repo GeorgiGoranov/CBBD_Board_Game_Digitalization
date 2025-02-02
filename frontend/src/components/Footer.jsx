@@ -15,7 +15,7 @@ const Footer = () => {
 
     return (
         <footer>
-            <i onClick={openInformationTab} className="bi bi-cookie"></i>
+            <i onClick={openInformationTab} className="bi bi-info-square"></i>
 
             {/* Popup */}
             <AnimatePresence>

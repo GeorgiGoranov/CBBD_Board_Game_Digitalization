@@ -4,7 +4,7 @@ footer {
    
     margin-left: 15px;
 
-    .bi.bi-cookie {
+    .bi.bi-info-square {
         font-size: 35px;
         cursor: pointer;
         color: var(--primary);
@@ -49,13 +49,13 @@ footer {
     }
 }
 
-.popup-content span{
+.popup-content-footer span{
     font-weight: bold;
     font-size: 18px;
     color: #0056b3;
 }
 
-.popup-content h3{
+.popup-content-footer h3{
     font-size: 25px;
     color: var(--primary);
 }

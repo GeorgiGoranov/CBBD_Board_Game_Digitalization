@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import initSocket from '../context/socket';
 import "../SCSS/lobby.scss"
+import { motion, AnimatePresence } from 'framer-motion';
 
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 
@@ -13,7 +14,7 @@ const Lobby = () => {
 
     const socketRef = useRef();
     const [loading, setLoading] = useState(true);
-    const [message, setMessage] = useState('');
+    const [messages, setMessages] = useState([]);
     const [userSessionCode, setUserSessionCode] = useState(null);
     const [role, setRole] = useState(null); // Role state to determine layout
     const navigate = useNavigate()
@@ -26,6 +27,11 @@ const Lobby = () => {
     const [groupsLocked, setGroupsLocked] = useState(false);
 
     const [categories, setCategories] = useState([]);
+
+    const [showPopup, setShowPopup] = useState(false);  // New state for popup
+
+    const [totalPlayers, setTotalPlayers] = useState(0);
+
 
 
 
@@ -97,7 +103,7 @@ const Lobby = () => {
         // Listen for new players joining the session
         socket.on('playerJoined', (data) => {
             // setPlayers(players);  // Update the players state with the updated list
-            setMessage(`${data.playerID} joined the game!`);
+            addMessage(`${data.playerID} joined the game!`);
         });
 
         // Listen for updates to the player list
@@ -128,10 +134,11 @@ const Lobby = () => {
             });
 
             setGroupedPlayers(allGroups);
+            setTotalPlayers(playerList.length - 1); // - 1 becasue we do not want to count the moderator
         });
 
         socket.on('playerLeftRoom', (playerIDWhoLeft) => {
-            setMessage(`${playerIDWhoLeft} left the game!`);
+            addMessage(`${playerIDWhoLeft} left the game!`);
         });
 
         // Cleanup listener when the component unmounts
@@ -143,6 +150,14 @@ const Lobby = () => {
 
         };
     }, [socket, role, playerID]);
+
+    // Function to add a new message and limit the number of messages to 10
+    const addMessage = (newMessage) => {
+        setMessages((prevMessages) => {
+            const updatedMessages = [...prevMessages, newMessage];
+            return updatedMessages.length > 10 ? updatedMessages.slice(-10) : updatedMessages;
+        });
+    };
 
     useEffect(() => {
         socket.on('updateTokens', async ({ groupedPlayers }) => {
@@ -203,147 +218,54 @@ const Lobby = () => {
     }
 
     const handleSaveGroups = async () => {
-        const confirmed = window.confirm('You are about to save the groups! Are you sure?');
-        if (confirmed) {
-            try {
-                // Prepare the data to send to the backend
-                const groupedPlayersData = groupedPlayers.map((group) => ({
-                    groupNumber: group.groupNumber,
-                    players: group.players.map((player) => ({
-                        name: player.playerID,
-                        nationality: player.nationality,
-                    })),
-                }));
-
-                // Send the data to the backend
-                const response = await fetch(`${apiUrl}/api/routes/join-game-session`, {
-                    method: 'POST',
-                    credentials: 'include', // Include JWT cookies
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ roomId, groupedPlayers: groupedPlayersData }),
-                });
-
-                if (response.ok) {
-                    console.log('Groups saved successfully!');
-
-                    // Emit an event to update all players' tokens
-                    socket.emit('updateTokens', {
-                        roomId,
-                        groupedPlayers,
-                    });
-
-                    // Send the data to the backend
-                    const updateResponse = await fetch(`${apiUrl}/api/routes/update-token-group`, {
-                        method: 'POST',
-                        credentials: 'include', // Include JWT cookies
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            code: roomId,
-                            playerUsername: playerID,
-                            nationality,
-                            role,
-                            group: groupedPlayers.find((group) =>
-                                group.players.some((player) => player.playerID === playerID)
-                            )?.groupNumber,
-                        }),
-                    });
-                    if (updateResponse.ok) {
-                        const data = await updateResponse.json();
-                        console.log('Token updated successfully:', data);
-                    } else {
-                        const errorData = await updateResponse.json();
-                        console.error('Error updating token:', errorData.message);
-                        alert('Failed to update token.');
-                    }
-
-                    // ----------------------------------------------------------
-                    // 4. Build the array of groups to save to the "first-round" DB
-                    //    so each group has a pre-filled `nationalities` array.
-                    //    If you do not want to set categories or dropZones yet, 
-                    //    just keep them empty arrays/objects.
-                    // ----------------------------------------------------------
-
-
-
-                    console.log(categories)
-
-                    const groupsForRound = groupedPlayers.map((grp) => {
-                        // 1) Create a frequency map of nationalities
-                        const nationalityCounts = grp.players.reduce((acc, player) => {
-                            acc[player.nationality] = (acc[player.nationality] || 0) + 1;
-                            return acc;
-                        }, {});
-
-                        // // 2) Transform into an array of "nationality (count)" strings
-                        // //    e.g. { german: 2, other: 3 } => [ "german (2)", "other (3)" ]
-                        // const countedNationalities = Object.entries(nationalityCounts).map(
-                        //     ([nat, count]) => `${nat} (${count})`
-                        // );
-
-                        // 3) Return the group object
-                        return {
-                            groupNumber: grp.groupNumber,
-                            categories,
-                            dropZones: { priority1: [], priority2: [], priority3: [], priority4: [] },
-                            messages: [],
-                            nationalities: nationalityCounts,
-                        };
-                    });
-
-                    // 5. Save these groups to your RoundOne DB
-                    //    (i.e. "first-round" collection)
-                    const roundSaveResponse = await fetch(`${apiUrl}/api/rounds/save-state-first-round`, {
-                        method: 'POST',
-                        credentials: 'include',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            roomId,
-                            groups: groupsForRound
-                        }),
-                    });
-
-                    const roundSaveResponse2 = await fetch(`${apiUrl}/api/rounds/save-state-second-round`, {
-                        method: 'POST',
-                        credentials: 'include',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            roomId,
-                            groups: groupsForRound
-                        }),
-                    });
-
-                    if (!roundSaveResponse.ok) {
-                        const errorData = await roundSaveResponse.json();
-                        console.error('Error saving round data:', errorData.message);
-                        alert('Failed to save round data.');
-                        return;
-                    }
-
-                    if (!roundSaveResponse2.ok) {
-                        const errorData = await roundSaveResponse.json();
-                        console.error('Error saving round data:', errorData.message);
-                        alert('Failed to save round data.');
-                        return;
-                    }
-
-                    console.log('Groups and round data saved successfully!');
-
-                    // Navigate players to the room
-                    socket.emit('navigateToRoom', { roomId });
-                } else {
-                    const errorData = await response.json();
-                    console.error('Error saving groups:', errorData.message);
-                    alert('Failed to save groups.');
-                }
-            } catch (error) {
-                console.error('Error saving groups:', error);
-                alert('An error occurred while saving groups.');
-            }
+        if (players.length < 16) {
+            setShowPopup(true);  // Show popup if there are fewer than 3 players
+            return;
         }
+
+        // Proceed with saving groups if the player count is valid
+        saveGroupsData();
+    };
+
+    const saveGroupsData = async () => {
+        try {
+            // Prepare grouped player data
+            // Prepare the data to send to the backend
+            const groupedPlayersData = groupedPlayers.map((group) => ({
+                groupNumber: group.groupNumber,
+                players: group.players.map((player) => ({
+                    name: player.playerID,
+                    nationality: player.nationality,
+                })),
+            }));
+
+            // Save to backend
+            const response = await fetch(`${apiUrl}/api/routes/join-game-session`, {
+                method: 'POST',
+                credentials: 'include',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ roomId, groupedPlayers: groupedPlayersData }),
+            });
+
+            if (response.ok) {
+                console.log('Groups saved successfully!');
+                socket.emit('navigateToRoom', { roomId });
+            } else {
+                const errorData = await response.json();
+                console.error('Error saving groups:', errorData.message);
+            }
+        } catch (error) {
+            console.error('Error saving groups:', error);
+        }
+    };
+
+    const onContinueAnyway = () => {
+        setShowPopup(false);
+        saveGroupsData();  // Continue even with fewer than 3 players
+    };
+
+    const onCancelPopup = () => {
+        setShowPopup(false);
     };
 
 
@@ -353,6 +275,16 @@ const Lobby = () => {
         }
 
     }, [playerID, roomId, socket])
+
+    // Function to create a new empty group manually
+    const handleCreateNewGroup = () => {
+        setGroupsLocked(false); // Mark groups as not locked
+        const newGroupNumber = groupedPlayers.length + 1;
+        setGroupedPlayers(prevGroups => [
+            ...prevGroups,
+            { groupNumber: newGroupNumber, players: [] }
+        ]);
+    };
 
     // Function to handle drag end event
     const onDragEnd = (result) => {
@@ -385,13 +317,10 @@ const Lobby = () => {
         updatedGroups[destinationGroupIndex] = destinationGroup;
 
         setGroupedPlayers(updatedGroups);
+        setGroupsLocked(false); // Mark groups as not locked
     };
 
     const lockInGroups = () => {
-        /*
-        We do the fetch here so that in the upcoming round 1 we only need to fetch the saved state, a.k.a we do not wait until going to the round and just then tofetch the card data
-        */
-        fetchCategories()
 
         // Filter out empty groups
         const nonEmptyGroups = groupedPlayers.filter(
@@ -405,19 +334,21 @@ const Lobby = () => {
         if (invalidGroups.length > 0) {
             // Set an error message if there are invalid groups
             setCheckMessage("Some groups do not have at least 3 players. Please adjust and CHECK again!");
-            setGroupsLocked(false); // Mark groups as not locked
+            setGroupsLocked(true); // Mark groups as not locked
         } else {
-            // Reassign group numbers dynamically if groups are valid
-            const reindexedGroups = nonEmptyGroups.map((group, index) => ({
-                ...group,
-                groupNumber: index + 1, // Reassign group numbers starting from 1
-            }));
-
-            // Update the state with the cleaned-up and reordered groups
-            setGroupedPlayers(reindexedGroups);
             setCheckMessage("Groups are good! You can continue!");
-            setGroupsLocked(true); // Mark groups as locked and valid
+
         }
+        // Reassign group numbers dynamically if groups are valid
+        const reindexedGroups = nonEmptyGroups.map((group, index) => ({
+            ...group,
+            groupNumber: index + 1, // Reassign group numbers starting from 1
+        }));
+
+        // Update the state with the cleaned-up and reordered groups
+        setGroupedPlayers(reindexedGroups);
+        setGroupsLocked(true); // Mark groups as locked and valid
+
     };
 
     const resetGroups = () => {
@@ -464,7 +395,7 @@ const Lobby = () => {
                             {players
                                 .filter(player => player.nationality === 'other')
                                 .map((player, index) => (
-                                    <li key={index}>{player.playerID} ({player.nationality === 'other' ? 'eu' : player.nationality})</li>
+                                    <li key={index}>{player.playerID} ({player.nationality === 'other' ? 'en' : player.nationality})</li>
                                 ))}
                         </ul>
                     </div>
@@ -476,10 +407,12 @@ const Lobby = () => {
                 {role === 'admin' ? (
                     <div className='lobby-container'>
                         <div className='test-layout'>
-
-                            <h2>Players in the Room:</h2>
+                            <div className='addnew-group'>
+                                <h2>Groups in the Room:</h2>
+                                <i class="bi bi-plus-square-fill" onClick={handleCreateNewGroup}></i>
+                            </div>
                             <DragDropContext onDragEnd={onDragEnd}>
-                                <div className="player-columns">
+                                <div className="player-columns-moderator">
                                     {groupedPlayers.map((group) => (
                                         <Droppable droppableId={group.groupNumber.toString()} key={group.groupNumber}>
                                             {(provided) => (
@@ -513,7 +446,7 @@ const Lobby = () => {
                                                                             const nationalityMap = {
                                                                                 german: 'de',
                                                                                 dutch: 'nl',
-                                                                                other: 'eu'
+                                                                                other: 'en'
                                                                             };
                                                                             // Return the corresponding abbreviation for the nationality
                                                                             return nationalityMap[player.nationality] || player.nationality;
@@ -544,21 +477,56 @@ const Lobby = () => {
                                     <button className={`btn ${groupsLocked ? 'valid' : ''}`}
                                         id='start'
                                         onClick={handleSaveGroups}
-                                    // disabled={!groupsLocked} // Disable if groups are not locked 
+                                        disabled={!groupsLocked} // Disable if groups are not locked 
                                     >
                                         Start Game
                                     </button>
+
                                 </div>
                             )}
                         </div>
+                        <AnimatePresence>
+                            {showPopup && (
+                                <motion.div
+                                    className="popup-overlay-lobby"
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    exit={{ opacity: 0 }}
+                                    transition={{ duration: 0.2 }}
+                                >
+                                    <motion.div
+                                        className="popup-content-lobby"
+                                        initial={{ scale: 0.8 }}
+                                        animate={{ scale: 1 }}
+                                        exit={{ scale: 0.8 }}
+                                        transition={{ duration: 0.2 }}
+                                    >
+                                        <h3>Not Enough Players</h3>
+                                        <p>There are fewer than 16 players in the game. Are you sure you want to continue?</p>
+                                        <div className="popup-buttons-lobby">
+                                            <button onClick={onContinueAnyway}>Continue Anyway</button>
+                                            <button onClick={onCancelPopup}>Cancel</button>
+                                        </div>
+                                    </motion.div>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
                     </div>
                 ) : (
-                    <div>
-                        <div>
-                            <h2>Lobby log:</h2>
-                            {message && <p className='message-to-room'>{message}</p>}
+
+                    <div className='container-logs'>
+                        <div className='title-logs'>
+                            <h2 id='title-logs-id'>Lobby log:</h2>
+                            <p id='totalplayers'>Total Players Joined: <span>{totalPlayers}</span></p>
+                        </div>
+                        <div className='loggs'>
+
+                            {messages.map((msg, index) => (
+                                <p key={index} className='message-to-room'>{msg}</p>
+                            ))}
                         </div>
                     </div>
+
                 )}
             </div>
         </div>
