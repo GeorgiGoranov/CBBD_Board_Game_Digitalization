@@ -238,11 +238,11 @@ const Room = () => {
                                                 </label>
                                             ))}
                                         </div>
-                                <button onClick={handleSendProfileToGroups}>Send Profile to Groups</button>
+                                        <button onClick={handleSendProfileToGroups}>Send Profile to Groups</button>
                                     </div>
                                 </div>
 
-                                {message && <p>{message}</p>}
+                                {/* {message && <p>{message}</p>} */}
                                 <div className='container-profiles'>
                                     <h2>Select a Profile</h2>
                                     <CreateNewProfiles onProfileSelect={handleProfileSelect} />
@@ -261,14 +261,14 @@ const Room = () => {
                                 {/* Render RoundOne component */}
                                 {currentRound === 1 && (
                                     <div className='outer-cointainer-roun1'>
-                                
+
                                         <RoundOne roomId={roomId} playerID={playerID} socket={socket} group={group} />
 
                                     </div>
                                 )}
                                 {currentRound === 2 && (
                                     <div className='outer-cointainer-roun2'>
-                                     
+
                                         <RoundTwo
                                             roomId={roomId}
                                             playerID={playerID}
@@ -292,7 +292,7 @@ const Room = () => {
 
                     {currentRound === 3 && (
                         <div className='outer-cointainer-roun3'>
-                        
+
                             <RoundThree roomId={roomId} playerID={playerID} socket={socket} role={role} nationality={nationality} />
 
                         </div>

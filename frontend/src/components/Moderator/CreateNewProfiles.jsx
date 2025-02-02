@@ -1,17 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import '../../SCSS/createNewProfiles.scss'
 import { useSessionsContext } from '../../hooks/useSessionContext'; // Adjust the path if needed
+import { motion, AnimatePresence } from 'framer-motion';
 
 
 
-const CreateNewProfiles = ({onProfileSelect  }) => {
-    
+const CreateNewProfiles = ({ onProfileSelect }) => {
+
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const apiUrl = process.env.REACT_APP_BACK_END_URL_HOST;
     const [titleOfProfile, setTitleOfProfile] = useState('');
     const [descriptionOfProfile, setdescriptionOfProfile] = useState('');
     const { sessions, dispatch } = useSessionsContext();  // Use the custom hook to access context
+    const [collapsedProfiles, setCollapsedProfiles] = useState({});
 
     // Save new profile to the backend
     const saveNewProfile = async (e) => {
@@ -63,7 +65,7 @@ const CreateNewProfiles = ({onProfileSelect  }) => {
         // Fetch profiles from the API
         const fetchProfiles = async () => {
             try {
-                const response = await fetch(`${apiUrl}/api/cards/profiles`,{
+                const response = await fetch(`${apiUrl}/api/cards/profiles`, {
                     credentials: 'include'
                 });  // Replace with your correct endpoint
                 if (!response.ok) {
@@ -73,7 +75,13 @@ const CreateNewProfiles = ({onProfileSelect  }) => {
                 const data = await response.json();
                 // Update context with fetched profiles
                 dispatch({ type: 'SET_SESSIONS', payload: data });
+                // Initialize all profiles as collapsed
+                const initialCollapseState = data.reduce((acc, profile) => {
+                    acc[profile._id] = true;  // All profiles collapsed
+                    return acc;
+                }, {});
                 // setProfiles(data)
+                setCollapsedProfiles(initialCollapseState);
                 setLoading(false);
             } catch (err) {
                 console.error('Error fetching profiles:', err);
@@ -105,6 +113,13 @@ const CreateNewProfiles = ({onProfileSelect  }) => {
         }
     };
 
+    const toggleProfileCollapse = (profileId) => {
+        setCollapsedProfiles((prev) => ({
+            ...prev,
+            [profileId]: !prev[profileId]
+        }));
+    };
+
 
     if (loading) {
         return <p>Loading...</p>;
@@ -125,7 +140,7 @@ const CreateNewProfiles = ({onProfileSelect  }) => {
                     placeholder="Title of the Profile"
                     className='input-add-new-profile'
                 />
-                <textarea 
+                <textarea
                     type="text"
                     value={descriptionOfProfile}
                     onChange={(e) => setdescriptionOfProfile(e.target.value)}
@@ -134,12 +149,26 @@ const CreateNewProfiles = ({onProfileSelect  }) => {
                 />
                 <button type="submit">Add</button>
             </form>
-            <ul>
-                {sessions.map((profile, index) => (
-                    <li key={index} className='profile-card' onClick={() => onProfileSelect(profile)}>
-                        <h3>{profile.name}</h3>
-                        <p>{profile.options.en}</p>
-                        <button onClick={() => deleteProfile(profile._id)}>Delete</button>
+            <ul className="profile-list">
+                {sessions.map((profile) => (
+                    <li key={profile._id} className="profile-card" onClick={() => toggleProfileCollapse(profile._id)}>
+                        <div className="profile-header" >
+                            <h3>{profile.name}</h3>
+                        </div>
+                        <AnimatePresence>
+                            {!collapsedProfiles[profile._id] && (
+                                <motion.div
+                                    className="profile-details"
+                                    initial={{ height: 0, opacity: 0 }}
+                                    animate={{ height: 'auto', opacity: 1 }}
+                                    exit={{ height: 0, opacity: 0 }}
+                                    transition={{ duration: 0.3 }}
+                                >
+                                    <p>{profile.options.en}</p>
+                                    <button onClick={() => deleteProfile(profile._id)}>Delete</button>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
                     </li>
                 ))}
             </ul>
