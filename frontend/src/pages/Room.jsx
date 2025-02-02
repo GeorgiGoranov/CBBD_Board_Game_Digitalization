@@ -255,19 +255,20 @@ const Room = () => {
                     ) : (
 
                         <div className='outer-container'>
+                            <h1>Round: {currentRound}</h1>
                             <h2>Group Number: {group}</h2>
                             <div className='information-pannel'>
                                 {/* Render RoundOne component */}
                                 {currentRound === 1 && (
-                                    <div>
-                                        Round 1
+                                    <div className='outer-cointainer-roun1'>
+                                
                                         <RoundOne roomId={roomId} playerID={playerID} socket={socket} group={group} />
 
                                     </div>
                                 )}
                                 {currentRound === 2 && (
-                                    <div>
-                                        Round 2
+                                    <div className='outer-cointainer-roun2'>
+                                     
                                         <RoundTwo
                                             roomId={roomId}
                                             playerID={playerID}
@@ -290,8 +291,8 @@ const Room = () => {
                     )}
 
                     {currentRound === 3 && (
-                        <div>
-                            Round 3
+                        <div className='outer-cointainer-roun3'>
+                        
                             <RoundThree roomId={roomId} playerID={playerID} socket={socket} role={role} nationality={nationality} />
 
                         </div>

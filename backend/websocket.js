@@ -195,7 +195,7 @@ function setupWebSocket(server) {
     // Handle resetting votes when a new dilemma card is selected
     socket.on('resetVotes', () => {
       // Reset the vote counts for this room
-      roomVotes[roomId] = { option1: 0, option2: 0 };
+      roomVotes[roomId] = { option1: 0, option2: 0 }; 
       // Notify all clients with the updated votes
       io.to(roomId).emit('updateVotes', roomVotes[roomId]);
     });

@@ -51,6 +51,13 @@ const RoundTwo = ({ roomId, playerID, socket, group, availableGroups }) => {
         },
     };
 
+    const maxCardsLimit = {
+        priority1: 5,  // Maximum 5 cards for this zone
+        priority2: 5,  // Maximum 5 cards for this zone
+        priority3: 2,  // Maximum 2 cards for this zone
+        priority4: 2   // Maximum 2 cards for this zone
+    };
+
 
     const [cursorPositions, setCursorPositions] = useState({});
     const [userActionOccurred, setUserActionOccurred] = useState(false);
@@ -115,9 +122,15 @@ const RoundTwo = ({ roomId, playerID, socket, group, availableGroups }) => {
             }));
         }
 
-        if (destinationIsCategory) {
-            // Item is being removed from drop zone; no action needed
-        } else {
+        if (!destinationIsCategory) {
+            // Check if the destination drop zone has reached its maximum card limit
+            if (dropZones[destinationDroppableId].length >= maxCardsLimit[destinationDroppableId]) {
+                setSocketMessage(`The ${destinationDroppableId} box has reached its card limit.`);
+                sendGroupMessage(`The ${destinationDroppableId} box has reached its card limit.`)
+                return;  // Prevent adding more cards
+            }
+
+            // Add the item to the destination drop zone
             setDropZones((prev) => {
                 const updatedDestinationItems = Array.from(prev[destinationDroppableId]);
                 updatedDestinationItems.splice(destination.index, 0, movedItem);
@@ -315,7 +328,7 @@ const RoundTwo = ({ roomId, playerID, socket, group, availableGroups }) => {
                             priority4: []
                         });
 
-                        
+
                         console.log('Room state loaded successfully');
                     } else {
                         console.log('No matching group found in room state');
@@ -348,13 +361,25 @@ const RoundTwo = ({ roomId, playerID, socket, group, availableGroups }) => {
             // Handle cursor updates from other players
             updateCursorDisplay(data);
         });
+        socket.on('receiveFeedbackGroupMessage', ({ message }) => {
+            setSocketMessage(message); // Display the received message
+        });
 
-    
+
         return () => {
             socket.off('cursorUpdate');
             socket.off('dragDropUpdate');
+            socket.off('receiveFeedbackGroupMessage');
         };
     }, [socket]);
+
+    const sendGroupMessage = (message) => {
+        socket.emit('sendFeedbackGroupMessage', {
+            roomId,
+            group, // Include the group identifier
+            message,
+        });
+    };
 
     useEffect(() => {
 
@@ -460,9 +485,10 @@ const RoundTwo = ({ roomId, playerID, socket, group, availableGroups }) => {
             </div>
 
 
-            <div>
+            <div className='container-round2-outer'>
 
-                {socketMessage && <p>{socketMessage}</p>}
+                {socketMessage && <div className='error' >{socketMessage}</div>}
+
                 {receivedProfile && (
                     <div className='profile-display'>
                         <h2>Profile:</h2>

@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import "../../SCSS/availableSessions.scss"
 import { useSessionsContext } from '../../hooks/useSessionContext';
 import { useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
+
 const apiUrl = process.env.REACT_APP_BACK_END_URL_HOST;
 
 
@@ -11,6 +13,8 @@ const AvailableSessions = () => {
     const [error, setError] = useState(null);
     const { sessions, dispatch } = useSessionsContext()
     const navigate = useNavigate(); // Use navigate to programmatically change routes
+    const [inactiveSession, setInactiveSession] = useState(null);  // State for inactive session modal
+
 
 
     // useEffect to fetch sessions when the component mounts
@@ -18,7 +22,7 @@ const AvailableSessions = () => {
         // Function to fetch available sessions
         const fetchSessions = async () => {
             try {
-                const response = await fetch(`${apiUrl}/api/routes/available-sessions`,{
+                const response = await fetch(`${apiUrl}/api/routes/available-sessions`, {
                     method: 'GET',
                     credentials: 'include', // Include cookies in the request
                 });
@@ -37,17 +41,15 @@ const AvailableSessions = () => {
 
     // Handle Play Button Click - navigate to the session room
     const handlePlayClick = (session) => {
-
-        if(!session.isActive){
-          
-            alert(`Session ${session.code} is INACTIVE and cannot be joined.`);
-        }else{
-            // navigate(`/room/${session.code}`);
-            navigate(`/lobby/${session.code}`)
-
+        if (!session.isActive) {
+            setInactiveSession(session.code);  // Show modal if session is inactive
+        } else {
+            navigate(`/lobby/${session.code}`);
         }
-
     };
+
+    const closeModal = () => setInactiveSession(null);
+
 
     // Handle Play Button Click - navigate to the session room
     const handleDeleteClick = async (sessionCode) => {
@@ -115,7 +117,7 @@ const AvailableSessions = () => {
                             <p>Host: <span>{session.host}</span></p>
                             <p>Total Participants: <span>{session.players && session.players.length > 0 ? session.players.length : '0'}</span></p>
                             <div className="container-for-activity">
-                                <p className="p-activity">Active: <span className={session.isActive ? 'active' : 'inactive'}>{session.isActive ? 'Yes' : 'No' }</span></p>
+                                <p className="p-activity">Active: <span className={session.isActive ? 'active' : 'inactive'}>{session.isActive ? 'Yes' : 'No'}</span></p>
                                 <i className="bi bi-sliders" onClick={() => handleActivityClick(session.code)}></i>
                                 <i class="bi bi-book-half" onClick={() => handleResultsClick(session.code)} ></i>
                             </div>
@@ -125,6 +127,33 @@ const AvailableSessions = () => {
                 </div>
 
             </div>
+
+            {/* Modal for inactive session */}
+            <AnimatePresence>
+                {inactiveSession && (
+                    <motion.div
+                        className="modal-backdrop"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.1 }}
+                    >
+                        <motion.div
+                            className="modal-content"
+                            initial={{ y: "-100vh", opacity: 0 }}
+                            animate={{ y: 0, opacity: 1 }}
+                            exit={{ y: "-100vh", opacity: 0 }}
+                            transition={{ duration: 0.01, type: 'tween' }}
+                        >
+                            <h3>Inactive Session</h3>
+                            <p>The session "{inactiveSession}" is currently inactive and cannot be joined.</p>
+                            <div className="modal-buttons">
+                                <button onClick={closeModal}>Cancel</button>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     )
 }
