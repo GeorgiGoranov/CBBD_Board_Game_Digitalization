@@ -151,8 +151,8 @@ const CreateNewProfiles = ({ onProfileSelect }) => {
             </form>
             <ul className="profile-list">
                 {sessions.map((profile) => (
-                    <li key={profile._id} className="profile-card" onClick={() => toggleProfileCollapse(profile._id)}>
-                        <div className="profile-header" >
+                    <li key={profile._id} className="profile-card"onClick={() => toggleProfileCollapse(profile._id)} >
+                        <div className="profile-header"onClick={() => onProfileSelect(profile)} >
                             <h3>{profile.name}</h3>
                         </div>
                         <AnimatePresence>
