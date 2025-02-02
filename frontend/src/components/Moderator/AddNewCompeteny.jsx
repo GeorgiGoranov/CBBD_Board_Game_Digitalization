@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import Select from 'react-select';
+import { motion, AnimatePresence } from 'framer-motion';
+import "../../SCSS/addnewcompetency.scss"
+
 
 const AddNewCompetency = () => {
     const [categories, setCategories] = useState([]);
@@ -7,6 +10,7 @@ const AddNewCompetency = () => {
     const [subcategoryName, setSubcategoryName] = useState('');
     const [translations, setTranslations] = useState({ nl: '', de: '', en: '' });
     const [successMessage, setSuccessMessage] = useState(''); // New state for success message
+    const [showConfirmation, setShowConfirmation] = useState(false); // State for popup
     const apiUrl = process.env.REACT_APP_BACK_END_URL_HOST;
 
     // Fetch categories
@@ -31,7 +35,7 @@ const AddNewCompetency = () => {
     };
 
     // Handle new subcategory submission
-    const handleAddSubcategory = async () => {
+    const handleSubmitSubcategory = async () => {
         if (!subcategoryName.trim() || !translations.nl.trim() || !translations.de.trim() || !translations.en.trim()) {
             alert('Please fill in all fields!');
             return;
@@ -69,6 +73,24 @@ const AddNewCompetency = () => {
         }
     };
 
+    // Handle new subcategory confirmation
+    const handleAddSubcategory = () => {
+        if (!subcategoryName.trim() || !translations.nl.trim() || !translations.de.trim() || !translations.en.trim()) {
+            alert('Please fill in all fields!');
+            return;
+        }
+        setShowConfirmation(true); // Show the confirmation popup
+    };
+
+    const handleConfirm = () => {
+        setShowConfirmation(false);
+        handleSubmitSubcategory(); // Proceed with the submission
+    };
+
+    const handleCancel = () => {
+        setShowConfirmation(false);
+    };
+
     // Fetch categories on component mount
     useEffect(() => {
         fetchCategories();
@@ -86,7 +108,6 @@ const AddNewCompetency = () => {
                 placeholder="-- Select a Category --"
             />
 
-            {/* Show input fields only when a category is selected */}
             {selectedCategory && (
                 <div className="add-subcategory-form">
                     <h3>Add Subcategory to: {selectedCategory.label}</h3>
@@ -118,21 +139,51 @@ const AddNewCompetency = () => {
                         placeholder="Enter German translation"
                     />
 
-                    <label htmlFor="translation-en">en Translation (en):</label>
+                    <label htmlFor="translation-en">English Translation (en):</label>
                     <input
                         id="translation-en"
                         type="text"
                         value={translations.en}
                         onChange={(e) => setTranslations((prev) => ({ ...prev, en: e.target.value }))}
-                        placeholder="Enter en translation"
+                        placeholder="Enter English translation"
                     />
 
                     <button onClick={handleAddSubcategory}>Add Subcategory</button>
-                    {/* Display success message */}
                     {successMessage && <div className="success">{successMessage}</div>}
-               
                 </div>
             )}
+
+            {/* Confirmation Popup */}
+            <AnimatePresence>
+                {showConfirmation && (
+                    <motion.div
+                        className="confirmation-popup"
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.8 }}
+                        transition={{ duration: 0.3 }}
+                    >
+                        <div className="popup-content">
+                            <h4>Confirm Addition</h4>
+                            <p>Please confirm the information below before adding the subcategory:</p>
+                            <div className="popup-details">
+                                <p><strong>Category:</strong> {selectedCategory.label}</p>
+                                <p><strong>Subcategory Name:</strong> {subcategoryName}</p>
+                                <p><strong>Translations:</strong></p>
+                                <ul>
+                                    <li><strong>NL:</strong> {translations.nl}</li>
+                                    <li><strong>DE:</strong> {translations.de}</li>
+                                    <li><strong>EN:</strong> {translations.en}</li>
+                                </ul>
+                            </div>
+                            <div className="popup-buttons">
+                                <button onClick={handleSubmitSubcategory}>Yes, Add</button>
+                                <button onClick={() => setShowConfirmation(false)}>Cancel</button>
+                            </div>
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     );
 };
