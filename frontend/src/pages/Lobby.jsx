@@ -209,6 +209,7 @@ const Lobby = () => {
             if (response.ok) {
                 const data = await response.json();
                 setCategories(data); // Update categories state
+                console.log(data)
             } else {
                 console.error('Error fetching categories');
             }
@@ -223,12 +224,14 @@ const Lobby = () => {
             return;
         }
 
+
         // Proceed with saving groups if the player count is valid
         saveGroupsData();
     };
 
     const saveGroupsData = async () => {
         try {
+          
             // Prepare grouped player data
             // Prepare the data to send to the backend
             const groupedPlayersData = groupedPlayers.map((group) => ({
@@ -249,6 +252,93 @@ const Lobby = () => {
 
             if (response.ok) {
                 console.log('Groups saved successfully!');
+                // Emit an event to update all players' tokens
+                socket.emit('updateTokens', {
+                    roomId,
+                    groupedPlayers,
+                });
+
+                // Send the data to the backend
+                const updateResponse = await fetch(`${apiUrl}/api/routes/update-token-group`, {
+                    method: 'POST',
+                    credentials: 'include', // Include JWT cookies
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        code: roomId,
+                        playerUsername: playerID,
+                        nationality,
+                        role,
+                        group: groupedPlayers.find((group) =>
+                            group.players.some((player) => player.playerID === playerID)
+                        )?.groupNumber,
+                    }),
+                });
+                if (updateResponse.ok) {
+                    const data = await updateResponse.json();
+                    console.log('Token updated successfully:', data);
+                } else {
+                    const errorData = await updateResponse.json();
+                    console.error('Error updating token:', errorData.message);
+                    alert('Failed to update token.');
+                }
+
+                const groupsForRound = groupedPlayers.map((grp) => {
+                    // 1) Create a frequency map of nationalities
+                    const nationalityCounts = grp.players.reduce((acc, player) => {
+                        acc[player.nationality] = (acc[player.nationality] || 0) + 1;
+                        return acc;
+                    }, {});
+
+                    // 3) Return the group object
+                    return {
+                        groupNumber: grp.groupNumber,
+                        categories,
+                        dropZones: { priority1: [], priority2: [], priority3: [], priority4: [] },
+                        messages: [],
+                        nationalities: nationalityCounts,
+                    };
+                });
+
+                // 5. Save these groups to your RoundOne DB
+                //    (i.e. "first-round" collection)
+                const roundSaveResponse = await fetch(`${apiUrl}/api/rounds/save-state-first-round`, {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        roomId,
+                        groups: groupsForRound,
+                        categories,
+                    }),
+                });
+
+                const roundSaveResponse2 = await fetch(`${apiUrl}/api/rounds/save-state-second-round`, {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        roomId,
+                        groups: groupsForRound
+                    }),
+                });
+
+                if (!roundSaveResponse.ok) {
+                    const errorData = await roundSaveResponse.json();
+                    console.error('Error saving round data:', errorData.message);
+                    alert('Failed to save round data.');
+                    return;
+                }
+
+                if (!roundSaveResponse2.ok) {
+                    const errorData = await roundSaveResponse.json();
+                    console.error('Error saving round data:', errorData.message);
+                    alert('Failed to save round data.');
+                    return;
+                }
+
+                console.log('Groups and round data saved successfully!');
                 socket.emit('navigateToRoom', { roomId });
             } else {
                 const errorData = await response.json();
@@ -321,7 +411,7 @@ const Lobby = () => {
     };
 
     const lockInGroups = () => {
-
+        fetchCategories()
         // Filter out empty groups
         const nonEmptyGroups = groupedPlayers.filter(
             (group) => group.players.length > 0
