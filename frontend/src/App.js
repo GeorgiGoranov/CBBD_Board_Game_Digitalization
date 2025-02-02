@@ -16,6 +16,7 @@ import { LanguageProvider } from './context/LanguageContext';
 import Chat from './components/Rooms/Chat';
 import Results from './pages/Results'
 import Lobby from './pages/Lobby';
+import Footer from './components/Footer';
 
 
 
@@ -50,6 +51,7 @@ function App() {
 
               </Routes>
             </div>
+            <Footer/>
           </LanguageProvider>
         </AuthProvider>
       </BrowserRouter>

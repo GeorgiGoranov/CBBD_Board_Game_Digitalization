@@ -7,12 +7,17 @@
   --error: #e7195a;
   --lighter-pr: rgba(167, 107, 167, 0.322);
   --green: #155724;
+  --important: #EB005E;
+  --purple: #9E00EB;
+  --lighter-purple: #B74EEB;
 }
+
 
 body {
   background: #f1f1f1;
   margin: 0;
   font-family: "Poppins";
+  height: 100%;
 }
 textarea{
   font-family: "Poppins";
@@ -62,11 +67,11 @@ header .input{
   width: 50px;
 }
 
-
 .pages{
   display: block;
   margin: 0 auto; 
-  width: 1800px;
+  min-height: 82vh;   
+
 }
 
 .home {
