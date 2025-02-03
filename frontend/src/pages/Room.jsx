@@ -223,6 +223,7 @@ const Room = () => {
                                 <div className='question-by-moderator'>
 
                                     <div className="selected-groups">
+                                        <h3>Room Code: {roomId}</h3>
                                         <h4>Select Groups:</h4>
                                         <div className="group-checkboxes">
                                             {availableGroups

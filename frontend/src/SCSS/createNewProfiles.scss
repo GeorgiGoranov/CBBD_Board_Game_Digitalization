@@ -50,13 +50,7 @@
 .profile-card:hover {
     background-color: #eaeaea;
     
-}
-
-.profile-card.selected {
-    background-color: #d1e7fd;
-    border-color: #007bff;
-}
-
+} 
 
 .profile-list{
     max-width: 60vw;
@@ -74,4 +68,11 @@
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+.profile-card.selected {
+    background-color: #d1e7fd;
+    border-color: #007bff;
+    box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3);
+    transition: background-color 0.3s, border-color 0.3s, transform 0.3s;
 }

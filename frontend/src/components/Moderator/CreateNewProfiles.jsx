@@ -14,6 +14,8 @@ const CreateNewProfiles = ({ onProfileSelect }) => {
     const [descriptionOfProfile, setdescriptionOfProfile] = useState('');
     const { sessions, dispatch } = useSessionsContext();  // Use the custom hook to access context
     const [collapsedProfiles, setCollapsedProfiles] = useState({});
+    const [selectedProfileId, setSelectedProfileId] = useState(null); // New state for selected profile
+
 
     // Save new profile to the backend
     const saveNewProfile = async (e) => {
@@ -120,6 +122,12 @@ const CreateNewProfiles = ({ onProfileSelect }) => {
         }));
     };
 
+    const handleProfileClick = (profile) => {
+        setSelectedProfileId(profile._id);
+        onProfileSelect && onProfileSelect(profile);
+        toggleProfileCollapse(profile._id)
+    };
+
 
     if (loading) {
         return <p>Loading...</p>;
@@ -133,7 +141,7 @@ const CreateNewProfiles = ({ onProfileSelect }) => {
         <div className='profiles-outer-contianer'>
             <div className='title-profiles'>
 
-            <h2>Profiles</h2>
+                <h2>Profiles</h2>
             </div>
             <form className="container-input-add-new-profile" onSubmit={saveNewProfile}>
                 <div className='container-button-text'>
@@ -157,7 +165,11 @@ const CreateNewProfiles = ({ onProfileSelect }) => {
             </form>
             <ul className="profile-list">
                 {sessions.map((profile) => (
-                    <li key={profile._id} className="profile-card" onClick={() => toggleProfileCollapse(profile._id)} >
+                    <motion.li key={profile._id}
+                        className={`profile-card ${selectedProfileId === profile._id ? 'selected' : ''}`}
+                        onClick={() => handleProfileClick(profile)}
+
+                    >
                         <div className="profile-header" onClick={() => onProfileSelect && onProfileSelect(profile)} >
                             <h3>{profile.name}</h3>
                         </div>
@@ -175,7 +187,7 @@ const CreateNewProfiles = ({ onProfileSelect }) => {
                                 </motion.div>
                             )}
                         </AnimatePresence>
-                    </li>
+                    </motion.li>
                 ))}
             </ul>
         </div>
