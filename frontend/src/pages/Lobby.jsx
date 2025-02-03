@@ -231,7 +231,7 @@ const Lobby = () => {
 
     const saveGroupsData = async () => {
         try {
-          
+
             // Prepare grouped player data
             // Prepare the data to send to the backend
             const groupedPlayersData = groupedPlayers.map((group) => ({
@@ -324,6 +324,17 @@ const Lobby = () => {
                     }),
                 });
 
+                // Create an empty chat room
+                const chatRoomResponse = await fetch(`${apiUrl}/api/rounds/create-message-room`, {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        roomId,
+                        groups: groupedPlayers.map((group) => ({ groupNumber: group.groupNumber }))
+                    }),
+                });
+
                 if (!roundSaveResponse.ok) {
                     const errorData = await roundSaveResponse.json();
                     console.error('Error saving round data:', errorData.message);
@@ -338,6 +349,12 @@ const Lobby = () => {
                     return;
                 }
 
+
+                if (!chatRoomResponse.ok) {
+                    console.error('Failed to create chat room.');
+                    return;
+                }
+                console.log('Chat room created successfully!');
                 console.log('Groups and round data saved successfully!');
                 socket.emit('navigateToRoom', { roomId });
             } else {

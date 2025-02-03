@@ -173,6 +173,34 @@ const getRoomStateMode = (RoundModel) => {
 
 };
 
+const createChatRoom = async (req, res) => {
+    const { roomId, groups } = req.body;
+
+    try {
+        // Check if the chat room already exists
+        let chatRoom = await ChatRoom.findOne({ roomId });
+        if (chatRoom) {
+            return res.status(400).json({ message: 'Chat room already exists.' });
+        }
+
+        // Create a new chat room with groups
+        chatRoom = new ChatRoom({
+            roomId,
+            groups: groups.map(group => ({
+                groupNumber: group.groupNumber,
+                messages: []
+            }))
+        });
+
+        await chatRoom.save();
+        res.status(201).json({ message: 'Chat room created successfully.' });
+    } catch (error) {
+        console.error('Error creating chat room:', error);
+        res.status(500).json({ message: 'Internal server error.' });
+    }
+};
+
+
 const saveMessage = async (messagesData) => {
     const { roomId, sender, message, group } = messagesData;
     // Sanitize the message text
@@ -312,6 +340,7 @@ module.exports = {
     saveRoomStateMode,
     saveThirdRoomStateMode,
     getCurrentStateThirdRound,
-    getAllCurrentStateThirdRoundCards
+    getAllCurrentStateThirdRoundCards,
+    createChatRoom
 
 }
