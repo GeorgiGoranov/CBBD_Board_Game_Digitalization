@@ -7,7 +7,6 @@ const initSocket = () => {
   if (!socket) {
     // Initialize the WebSocket connection with autoConnect disabled
     socket = io(`${apiUrl}`, {
-      autoConnect: false, 
       transports: ['websocket'], // Prevents auto connection when imported
     });
 

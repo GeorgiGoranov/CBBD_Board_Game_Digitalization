@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from "react-router-dom";
 import AvailableSessions from '../components/Moderator/AvailableSessions';
 import { useSessionsContext } from '../hooks/useSessionContext';
 import "../SCSS/homeModerator.scss"
-import initSocket from '../context/socket';
+
 const apiUrl = process.env.REACT_APP_BACK_END_URL_HOST;
 
 const Home = () => {
@@ -12,7 +12,7 @@ const Home = () => {
  
   const { dispatch } = useSessionsContext()
   const navigate = useNavigate()
-  const socket = initSocket();
+
 
 
   const createGameSession = async () => {
@@ -29,7 +29,7 @@ const Home = () => {
     if (response.ok) {
       dispatch({ type: 'CREATE_SESSIONS', payload: data })
       setSessionCode(data.code); // Show the generated 6-digit code to the moderator
-      //socket.emit('joinSession', data.code); // Create the session room
+  
     } else {
       alert('Error creating game session');
     }

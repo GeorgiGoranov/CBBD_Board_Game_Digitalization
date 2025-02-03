@@ -261,7 +261,7 @@ function setupWebSocket(server) {
       targetPlayers.forEach(player => {
         io.to(player.socketId).emit('receiveFeedbackGroupMessage', { message }); 
       });
-    });
+    }); 
 
     socket.on('startGroupDiscussion', ({ roomId }) => {
       io.to(roomId).emit('groupDiscussionStarted', { message: 'Group discussion has started.' });

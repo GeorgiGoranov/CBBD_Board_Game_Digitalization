@@ -61,8 +61,6 @@ const RoundTwo = ({ roomId, playerID, socket, group, availableGroups }) => {
 
     const [cursorPositions, setCursorPositions] = useState({});
     const [userActionOccurred, setUserActionOccurred] = useState(false);
-
-    const [socketMessage, setSocketMessage] = useState(''); // This can be used to display socket events
     const [socketMessageFeedback, setSocketMessageFeedback] = useState(''); // This can be used to display socket events
 
     const apiUrl = process.env.REACT_APP_BACK_END_URL_HOST;
@@ -224,7 +222,7 @@ const RoundTwo = ({ roomId, playerID, socket, group, availableGroups }) => {
         } catch (error) {
             console.error('Error saving state:', error);
         }
-    }, [roomId, dropZones])
+    }, [roomId, dropZones,apiUrl,group, receivedProfile])
 
 
 
@@ -348,7 +346,7 @@ const RoundTwo = ({ roomId, playerID, socket, group, availableGroups }) => {
             fetchCategories();
             fetchSavedRoomState();
         }
-    }, [roomId, language, group]);
+    }, [roomId, language, group,apiUrl]);
 
     useEffect(() => {
         // Listen for drag-and-drop updates from other clients
@@ -379,7 +377,7 @@ const RoundTwo = ({ roomId, playerID, socket, group, availableGroups }) => {
             socket.off('receiveFeedbackGroupMessage');
             socket.off('receiveProfileData');
         };
-    }, [socket]);
+    }, [socket,playerID]);
 
     const sendGroupMessage = (message) => {
         socket.emit('sendFeedbackGroupMessage', {
@@ -408,7 +406,7 @@ const RoundTwo = ({ roomId, playerID, socket, group, availableGroups }) => {
             document.removeEventListener('mousemove', handleMouseMove);
         };
 
-    }, [playerID, roomId, socket])
+    }, [playerID, roomId, socket, group])
 
     useEffect(() => {
         if (userActionOccurred) {

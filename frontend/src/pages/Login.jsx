@@ -82,7 +82,7 @@ const Login = () => {
             type="text"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="Enter your username"
+            placeholder="Enter your e-mail"
           />
           <h3>Password</h3>
           <input

@@ -12,6 +12,7 @@ import RoundTwo from '../components/Rooms/RoundTwo';
 import RoundThree from '../components/Rooms/RoundThree';
 import GroupDiscussion from '../components/Rooms/GroupDiscussion';
 import CreateNewProfiles from '../components/Moderator/CreateNewProfiles';
+import { motion, AnimatePresence } from 'framer-motion';
 
 
 
@@ -39,6 +40,8 @@ const Room = () => {
     const [selectedProfile, setSelectedProfile] = useState(null);
 
     const [groupReadiness, setGroupReadiness] = useState({});
+
+    const [showMessage, setShowMessage] = useState(!!message);
 
 
     if (!socketRef.current) {
@@ -69,6 +72,20 @@ const Room = () => {
                 : [...prevSelected, groupNumber] // Add if not selected
         );
     };
+
+    useEffect(() => {
+        if (message) {
+            setShowMessage(true);
+
+            // Set a timer to hide the message after 5 seconds
+            const timer = setTimeout(() => {
+                setShowMessage(false);
+            }, 5000);
+
+            // Cleanup the timer when component unmounts or message changes
+            return () => clearTimeout(timer);
+        }
+    }, [message]);
 
     useEffect(() => {
 
@@ -106,7 +123,7 @@ const Room = () => {
 
             fetchUserRole()
         }
-    }, [userSessionCode, navigate, roomId])
+    }, [userSessionCode, navigate, roomId, apiUrl])
 
     useEffect(() => {
         // Connect the socket if it's not already connected
@@ -245,7 +262,7 @@ const Room = () => {
                 </div>
             ) : (
                 <>
-                    {role === 'admin' && currentRound != 3 ? (
+                    {role === 'admin' && currentRound !== 3 ? (
                         <>
                             <div className='outer-container-mod'>
 
@@ -289,8 +306,20 @@ const Room = () => {
                                                 })}
                                         </div>
                                         <button onClick={handleSendProfileToGroups}>Send Profile to Groups</button>
-
                                     </div>
+                                    <AnimatePresence>
+                                        {showMessage && (
+                                            <motion.div
+                                                className='message-room'
+                                                initial={{ opacity: 0, y: -20 }}
+                                                animate={{ opacity: 1, y: 0 }}
+                                                exit={{ opacity: 0, y: -20 }}
+                                                transition={{ duration: 0.5 }}
+                                            >
+                                                {message}
+                                            </motion.div>
+                                        )}
+                                    </AnimatePresence>
                                 </div>
                                 <div className='container-profiles'>
                                     <CreateNewProfiles onProfileSelect={handleProfileSelect} socket={socket} />

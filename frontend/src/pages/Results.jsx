@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import '../SCSS/results.scss'
 import { useLanguage } from '../context/LanguageContext';
-import Papa from 'papaparse';
 
 
 const Results = () => {
@@ -18,54 +17,52 @@ const Results = () => {
     const [error, setError] = useState(null);
     const apiUrl = process.env.REACT_APP_BACK_END_URL_HOST;
 
-    const fetchRoundData = async () => {
-        try {
-            // Run both fetch calls concurrently and handle their results
-            const [firstRoundResult, secondRoundResult, thirdRoundResults] = await Promise.allSettled([
-                fetch(`${apiUrl}/api/rounds/get-state-first-round/${roomId}`),
-                fetch(`${apiUrl}/api/rounds/get-state-second-round/${roomId}`),
-                fetch(`${apiUrl}/api/rounds/get-all-state-third-round-cards/${roomId}`),
-
-            ]);
-
-            // Handle first round fetch
-            if (firstRoundResult.status === 'fulfilled' && firstRoundResult.value.ok) {
-                const firstRoundData = await firstRoundResult.value.json();
-                setFirstRoundDropZones(firstRoundData.groups || {});
-            } else {
-                console.error('First round fetch failed:', firstRoundResult.reason || await firstRoundResult.value.text());
-                setFirstRoundDropZones([]);
-            }
-
-            // Handle second round fetch
-            if (secondRoundResult.status === 'fulfilled' && secondRoundResult.value.ok) {
-                const secondRoundData = await secondRoundResult.value.json();
-                setSecondRoundDropZones(secondRoundData.groups || {});
-            } else {
-                console.error('Second round fetch failed:', secondRoundResult.reason || await secondRoundResult.value.text());
-                setSecondRoundDropZones([]);
-            }
-
-            // Third Round
-            if (thirdRoundResults.status === 'fulfilled' && thirdRoundResults.value.ok) {
-                const thirdRound = await thirdRoundResults.value.json();
-                setThirdRoundDropZones(thirdRound.cards || []);
-            } else {
-                console.warn('Third round fetch failed:', thirdRoundResults.reason || await thirdRoundResults.value.text());
-                setThirdRoundDropZones([]);
-            }
-
-        } catch (error) {
-            console.error('Error fetching round data:', error);
-            setError('Error fetching data for rounds.');
-        }
-    };
-
-
-
     useEffect(() => {
+        const fetchRoundData = async () => {
+            try {
+                // Run both fetch calls concurrently and handle their results
+                const [firstRoundResult, secondRoundResult, thirdRoundResults] = await Promise.allSettled([
+                    fetch(`${apiUrl}/api/rounds/get-state-first-round/${roomId}`),
+                    fetch(`${apiUrl}/api/rounds/get-state-second-round/${roomId}`),
+                    fetch(`${apiUrl}/api/rounds/get-all-state-third-round-cards/${roomId}`),
+
+                ]);
+
+                // Handle first round fetch
+                if (firstRoundResult.status === 'fulfilled' && firstRoundResult.value.ok) {
+                    const firstRoundData = await firstRoundResult.value.json();
+                    setFirstRoundDropZones(firstRoundData.groups || {});
+                } else {
+                    console.error('First round fetch failed:', firstRoundResult.reason || await firstRoundResult.value.text());
+                    setFirstRoundDropZones([]);
+                }
+
+                // Handle second round fetch
+                if (secondRoundResult.status === 'fulfilled' && secondRoundResult.value.ok) {
+                    const secondRoundData = await secondRoundResult.value.json();
+                    setSecondRoundDropZones(secondRoundData.groups || {});
+                } else {
+                    console.error('Second round fetch failed:', secondRoundResult.reason || await secondRoundResult.value.text());
+                    setSecondRoundDropZones([]);
+                }
+
+                // Third Round
+                if (thirdRoundResults.status === 'fulfilled' && thirdRoundResults.value.ok) {
+                    const thirdRound = await thirdRoundResults.value.json();
+                    setThirdRoundDropZones(thirdRound.cards || []);
+                } else {
+                    console.warn('Third round fetch failed:', thirdRoundResults.reason || await thirdRoundResults.value.text());
+                    setThirdRoundDropZones([]);
+                }
+
+            } catch (error) {
+                console.error('Error fetching round data:', error);
+                setError('Error fetching data for rounds.');
+            }
+        };
+
         fetchRoundData();
-    }, [roomId]);
+    }, [roomId,apiUrl]);
 
     // -----------------------------
     //  CSV Export Functions
@@ -96,7 +93,7 @@ const Results = () => {
     // Example flatten function for Rounds 1 & 2:
     function flattenRounds1And2(firstRound, secondRound) {
         const groupedData = {};
-    
+
         // Helper to group by group number
         const addToGroup = (groupNum, round, zone, item, nationalityInfo) => {
             if (!groupedData[groupNum]) groupedData[groupNum] = [];
@@ -107,7 +104,7 @@ const Results = () => {
                 nationalityInfo,
             });
         };
-    
+
         // Process first round data
         firstRound?.forEach(group => {
             const groupNum = group.groupNumber ?? 0;
@@ -117,7 +114,7 @@ const Results = () => {
                 });
             });
         });
-    
+
         // Process second round data
         secondRound?.forEach(group => {
             const groupNum = group.groupNumber ?? 0;
@@ -127,7 +124,7 @@ const Results = () => {
                 });
             });
         });
-    
+
         // Return sorted data by group number
         return Object.entries(groupedData).flatMap(([groupNum, groupItems]) => {
             return groupItems.map(item => ({
@@ -136,7 +133,7 @@ const Results = () => {
             }));
         });
     }
-    
+
 
 
     // Example flatten function for Round 3:
@@ -172,18 +169,18 @@ const Results = () => {
     // The same CSV conversion and download logic as before:
     function convertArrayOfObjectsToCSV(dataArray) {
         if (!dataArray || !dataArray.length) return '';
-    
+
         // 1) Collect headers dynamically
         const allKeys = new Set();
         dataArray.forEach(obj => {
             Object.keys(obj).forEach(key => allKeys.add(key));
         });
         const headers = Array.from(allKeys);
-    
+
         // 2) Create CSV rows
         const lines = [headers.join(',')];  // CSV header row
         let currentGroup = null;
-    
+
         dataArray.forEach(row => {
             // Add a blank line between groups
             if (currentGroup !== row.group) {
@@ -192,7 +189,7 @@ const Results = () => {
                 }
                 currentGroup = row.group;
             }
-    
+
             // Convert row to CSV-friendly format
             const rowValues = headers.map(header => {
                 const val = String(row[header] ?? '').replace(/"/g, '""');
@@ -200,10 +197,10 @@ const Results = () => {
             });
             lines.push(rowValues.join(','));
         });
-    
+
         return lines.join('\n');
     }
-    
+
 
 
     function downloadCSV(csvString, filename) {

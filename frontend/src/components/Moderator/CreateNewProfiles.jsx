@@ -130,11 +130,6 @@ const CreateNewProfiles = ({ onProfileSelect, socket }) => {
     };
 
     useEffect(() => {
-        // Connect the socket if it's not already connected
-        if (!socket.connected) {
-            socket.connect();
-        }
-
 
         socket.on('selectedProfileToNull', () => {
             setSelectedProfileId(false); // Show group discussion UI

@@ -24,6 +24,7 @@ body {
 }
 textarea{
   font-family: "Poppins";
+  border-radius: 6px;
 }
 header {
   display: flex; /* Make header a flex container */
@@ -146,7 +147,7 @@ div.error {
   color: var(--error);
   border-radius: 4px;
   margin: 20px 0;
-  box-sizing: border-box;
+  box-sizing: border-box; 
   max-width: 500px;
   text-align: center;
   

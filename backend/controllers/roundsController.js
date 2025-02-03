@@ -186,7 +186,7 @@ const createChatRoom = async (req, res) => {
         // Check if the chat room already exists
         let chatRoom = await ChatRoom.findOne({ roomId });
         if (chatRoom) {
-            return res.status(400).json({ message: 'Chat room already exists.' });
+            return res.status(200).json({ message: 'Chat room already exists.' });
         }
 
         // Create a new chat room with groups

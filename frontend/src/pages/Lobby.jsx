@@ -85,7 +85,7 @@ const Lobby = () => {
 
             fetchUserRole()
         }
-    }, [userSessionCode, navigate, roomId])
+    }, [userSessionCode, navigate, roomId,apiUrl])
 
     useEffect(() => {
         // Connect the socket if it's not already connected
@@ -149,7 +149,7 @@ const Lobby = () => {
             socket.off('playerLeftRoom');
 
         };
-    }, [socket, role, playerID]);
+    }, [socket, role, playerID,groupedPlayers, navigate, roomId]);
 
     // Function to add a new message and limit the number of messages to 10
     const addMessage = (newMessage) => {
@@ -199,7 +199,7 @@ const Lobby = () => {
         return () => {
             socket.off('updateTokens');
         };
-    }, [socket, roomId, playerID, nationality]);
+    }, [socket, roomId, playerID, nationality,groupedPlayers,apiUrl]);
 
     const fetchCategories = async () => {
         try {
@@ -221,7 +221,7 @@ const Lobby = () => {
     const handleSaveGroups = async () => {
         if (players.length < 16) {
             setShowPopup(true);  // Show popup if there are fewer than 3 players
-            return;
+          return;
         }
 
 
@@ -382,7 +382,7 @@ const Lobby = () => {
             socket.emit('joinSession', { playerID, nationality, gameCode: roomId });
         }
 
-    }, [playerID, roomId, socket])
+    }, [playerID, roomId, socket, nationality])
 
     // Function to create a new empty group manually
     const handleCreateNewGroup = () => {

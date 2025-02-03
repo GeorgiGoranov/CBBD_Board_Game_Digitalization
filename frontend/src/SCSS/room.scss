@@ -37,6 +37,7 @@
   align-items: center;
   text-align: center;
   gap: 10px;
+  margin-left: 15px;
   
   
 }
@@ -51,7 +52,8 @@
   .checkbox-input{
     padding: 0;
     margin: 0;
-    width: 10px;
+    width: 15px;
+
   }
 
   .group-checkboxes {
@@ -79,4 +81,15 @@
 
 }
 
-
+.message-room{
+  display: block;
+  padding: 10px;
+  background: #ffffff;
+  width: 300px;
+  border: 1px solid var(--blue);
+  color: var(--blue);
+  border-radius: 4px;
+  margin: 20px 0;
+  box-sizing: border-box;
+  text-align: center;
+}

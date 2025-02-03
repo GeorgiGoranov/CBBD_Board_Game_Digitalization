@@ -2,7 +2,7 @@ import initSocket from '../../context/socket';
 import React, { useEffect, useState, useRef } from 'react';
 import "../../SCSS/moderatorLayout.scss"
 import { useSessionsContext } from '../../hooks/useSessionContext';
-import { motion, AnimatePresence } from 'framer-motion';
+
 import ConfirmationPopup from '../ConfirmationPopup';
 
 
