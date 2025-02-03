@@ -176,6 +176,12 @@ const getRoomStateMode = (RoundModel) => {
 const createChatRoom = async (req, res) => {
     const { roomId, groups } = req.body;
 
+    console.warn(groups)
+
+    if (!roomId || !Array.isArray(groups) || groups.length === 0) {
+        return res.status(400).json({ message: 'Invalid request body.' });
+    }
+
     try {
         // Check if the chat room already exists
         let chatRoom = await ChatRoom.findOne({ roomId });

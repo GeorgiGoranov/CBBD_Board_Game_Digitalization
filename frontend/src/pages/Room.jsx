@@ -216,6 +216,8 @@ const Room = () => {
             groups: selectedGroups
         });
 
+        socket.emit('setSelectedProfileToNull', {});
+
         setMessage('Profile sent successfully!');
         setSelectedProfile(null);  // Clear selection
         setSelectedGroups([]);       // Clear selected groups
@@ -265,11 +267,11 @@ const Room = () => {
                                                     return (
                                                         <div key={groupNumber} className="group-row">
                                                             <div className="group-info">
-                                                                <span className="group-name">Group {groupNumber}:</span>
+                                                                <span className="group-name">Group {groupNumber}: </span>
                                                                 {isFullyReady ? (
                                                                     <span className="ready-check"> ✔ Fully Ready</span>
                                                                 ) : (
-                                                                    <span className="readiness-status">{readyCount}/{totalCount} ready</span>
+                                                                    <span className="readiness-status">waiting for players to be ready {readyCount}/{totalCount}</span>
                                                                 )}
                                                             </div>
                                                             <label className="group-checkbox">
@@ -291,7 +293,7 @@ const Room = () => {
                                     </div>
                                 </div>
                                 <div className='container-profiles'>
-                                    <CreateNewProfiles onProfileSelect={handleProfileSelect} />
+                                    <CreateNewProfiles onProfileSelect={handleProfileSelect} socket={socket} />
                                 </div>
 
 

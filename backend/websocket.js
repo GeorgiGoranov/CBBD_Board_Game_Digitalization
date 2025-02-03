@@ -177,7 +177,7 @@ function setupWebSocket(server) {
         // Find all players in this room with the same groupNumber
         const roomPlayers = rooms[roomId] || [];
         const targetPlayers = roomPlayers.filter(p => Number(p.group) === Number(groupNumber));
- 
+  
         targetPlayers.forEach((player) => {
           io.to(player.socketId).emit('receiveMessage', { message: result.message });
         });
@@ -259,7 +259,7 @@ function setupWebSocket(server) {
       const targetPlayers = rooms[roomId].filter(player => String(player.group) === String(group));
 
       targetPlayers.forEach(player => {
-        io.to(player.socketId).emit('receiveFeedbackGroupMessage', { message });
+        io.to(player.socketId).emit('receiveFeedbackGroupMessage', { message }); 
       });
     });
 
@@ -297,6 +297,10 @@ function setupWebSocket(server) {
         });
       });
     });
+
+    socket.on('setSelectedProfileToNull', ()=>{
+      io.emit('selectedProfileToNull');
+    })
 
     socket.on('disconnect', () => {
       console.log(`User back-end disconnected: ${socket.id}`);

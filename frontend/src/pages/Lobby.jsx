@@ -343,7 +343,7 @@ const Lobby = () => {
                 }
 
                 if (!roundSaveResponse2.ok) {
-                    const errorData = await roundSaveResponse.json();
+                    const errorData = await roundSaveResponse2.json();
                     console.error('Error saving round data:', errorData.message);
                     alert('Failed to save round data.');
                     return;
@@ -351,7 +351,8 @@ const Lobby = () => {
 
 
                 if (!chatRoomResponse.ok) {
-                    console.error('Failed to create chat room.');
+                    const errorData = await chatRoomResponse.json();
+                    console.error('Failed to create chat room.' + errorData.message);
                     return;
                 }
                 console.log('Chat room created successfully!');

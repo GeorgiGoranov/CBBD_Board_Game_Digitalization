@@ -63,6 +63,8 @@ const RoundTwo = ({ roomId, playerID, socket, group, availableGroups }) => {
     const [userActionOccurred, setUserActionOccurred] = useState(false);
 
     const [socketMessage, setSocketMessage] = useState(''); // This can be used to display socket events
+    const [socketMessageFeedback, setSocketMessageFeedback] = useState(''); // This can be used to display socket events
+
     const apiUrl = process.env.REACT_APP_BACK_END_URL_HOST;
 
 
@@ -125,7 +127,7 @@ const RoundTwo = ({ roomId, playerID, socket, group, availableGroups }) => {
         if (!destinationIsCategory) {
             // Check if the destination drop zone has reached its maximum card limit
             if (dropZones[destinationDroppableId].length >= maxCardsLimit[destinationDroppableId]) {
-                setSocketMessage(`The ${destinationDroppableId} box has reached its card limit.`);
+                setSocketMessageFeedback(`The ${destinationDroppableId} box has reached its card limit.`);
                 sendGroupMessage(`The ${destinationDroppableId} box has reached its card limit.`)
                 return;  // Prevent adding more cards
             }
@@ -362,7 +364,12 @@ const RoundTwo = ({ roomId, playerID, socket, group, availableGroups }) => {
             updateCursorDisplay(data);
         });
         socket.on('receiveFeedbackGroupMessage', ({ message }) => {
-            setSocketMessage(message); // Display the received message
+            setSocketMessageFeedback(message); // Display the received message
+        });
+
+        socket.on('receiveProfileData', (data) => {
+            console.log('Received profile data:', data);
+            setReceivedProfile(data);  // Store the received profile data
         });
 
 
@@ -370,6 +377,7 @@ const RoundTwo = ({ roomId, playerID, socket, group, availableGroups }) => {
             socket.off('cursorUpdate');
             socket.off('dragDropUpdate');
             socket.off('receiveFeedbackGroupMessage');
+            socket.off('receiveProfileData');
         };
     }, [socket]);
 
@@ -487,7 +495,7 @@ const RoundTwo = ({ roomId, playerID, socket, group, availableGroups }) => {
 
             <div className='container-round2-outer'>
 
-                {socketMessage && <div className='error' >{socketMessage}</div>}
+                {socketMessageFeedback && <div className='error' >{socketMessageFeedback}</div>}
 
                 {receivedProfile && (
                     <div className='profile-display'>

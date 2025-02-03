@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 
 
-const CreateNewProfiles = ({ onProfileSelect }) => {
+const CreateNewProfiles = ({ onProfileSelect, socket }) => {
 
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -15,6 +15,7 @@ const CreateNewProfiles = ({ onProfileSelect }) => {
     const { sessions, dispatch } = useSessionsContext();  // Use the custom hook to access context
     const [collapsedProfiles, setCollapsedProfiles] = useState({});
     const [selectedProfileId, setSelectedProfileId] = useState(null); // New state for selected profile
+
 
 
     // Save new profile to the backend
@@ -127,6 +128,25 @@ const CreateNewProfiles = ({ onProfileSelect }) => {
         onProfileSelect && onProfileSelect(profile);
         toggleProfileCollapse(profile._id)
     };
+
+    useEffect(() => {
+        // Connect the socket if it's not already connected
+        if (!socket.connected) {
+            socket.connect();
+        }
+
+
+        socket.on('selectedProfileToNull', () => {
+            setSelectedProfileId(false); // Show group discussion UI
+        });
+
+
+        // Cleanup listener when the component unmounts
+        return () => {
+
+            socket.off('selectedProfileToNull');
+        };
+    }, [socket]);
 
 
     if (loading) {
