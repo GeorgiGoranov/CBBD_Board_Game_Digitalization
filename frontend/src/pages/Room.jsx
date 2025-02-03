@@ -245,7 +245,7 @@ const Room = () => {
                 </div>
             ) : (
                 <>
-                    {role === 'admin' ? (
+                    {role === 'admin' && currentRound != 3 ? (
                         <>
                             <div className='outer-container-mod'>
 

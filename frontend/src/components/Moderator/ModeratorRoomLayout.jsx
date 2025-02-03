@@ -154,7 +154,7 @@ const ModeratorRoomLayout = ({ roomId }) => {
             >
                 Start Round 3
             </button>
-            <button className="group-discussion-btn" onClick={handleStartGroupDiscussion} disabled={inGroupDiscussion}>
+            <button className={`group-discussion-btn ${currentRound >= 3 ? 'disabled' : ''}`} onClick={handleStartGroupDiscussion} disabled={inGroupDiscussion}>
                 Start Group Discussion
             </button>
             {inGroupDiscussion && (
