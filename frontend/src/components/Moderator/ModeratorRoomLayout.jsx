@@ -3,6 +3,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import "../../SCSS/moderatorLayout.scss"
 import { useSessionsContext } from '../../hooks/useSessionContext';
 import { motion, AnimatePresence } from 'framer-motion';
+import ConfirmationPopup from '../ConfirmationPopup';
 
 
 const ModeratorRoomLayout = ({ roomId }) => {
@@ -10,8 +11,10 @@ const ModeratorRoomLayout = ({ roomId }) => {
     const [currentRound, setCurrentRound] = useState(0);
     const [inGroupDiscussion, setInGroupDiscussion] = useState(false); // New state for group discussion
     const apiUrl = process.env.REACT_APP_BACK_END_URL_HOST;
-
-      const { sessions, dispatch } = useSessionsContext()
+    const [popupAction, setPopupAction] = useState(null); // Function to run when confirmed
+    const [showPopup, setShowPopup] = useState(false);
+    const [popupMessage, setPopupMessage] = useState('');
+    const { sessions, dispatch } = useSessionsContext()
 
 
 
@@ -33,65 +36,49 @@ const ModeratorRoomLayout = ({ roomId }) => {
         };
     }, [socket]);
 
+    // Show confirmation popup
+    const showConfirmationPopup = (message, action) => {
+        setPopupMessage(message);
+        setPopupAction(() => action); // Store the action to execute on confirmation
+        setShowPopup(true);
+    };
+
 
     const handleStartOfRounds = () => {
-        // Only allow if we haven't started any round yet (currentRound < 1)
-        if (currentRound >= 1) {
-            alert('You cannot go back to Round 1. The game has already started or advanced!');
-            return;
-        }
+        if (currentRound >= 1) return;
 
-        const confirmed = window.confirm('You are about to START the game! Are you sure?');
-        if (confirmed) {
-
-            // Start Round 1
+        showConfirmationPopup('You are about to START the game! Are you sure?', () => {
             socket.emit('changeRound', { roomId, roundNumber: 1 });
-        }
+        });
 
     }
 
     const handleNextRound = () => {
 
-        // Only allow if currentRound < 2
-        if (currentRound >= 2) {
-            alert('You cannot reset to Round 2 because you are already in Round 2 or beyond!');
-            return;
-        }
+        if (currentRound >= 2) return;
 
-        const confirmed = window.confirm('You are about to go to the NEXT game! Are you sure?');
-        if (confirmed) {
-
-            // Start Round 2
+        showConfirmationPopup('You are about to go to the NEXT game! Are you sure?', () => {
             socket.emit('changeRound', { roomId, roundNumber: 2 });
-        }
+        });
 
     }
 
     const handleNextRound3 = () => {
 
-        // Only allow if currentRound < 3
-        if (currentRound >= 3) {
-            alert('You cannot reset to Round 3 because you are already in Round 3 or beyond!');
-            return;
-        }
+        if (currentRound >= 3) return;
 
-        const confirmed = window.confirm('You are about to go to the NEXT game! Are you sure?');
-        if (confirmed) {
-
-            // Start Round 2
+        showConfirmationPopup('You are about to go to the NEXT game! Are you sure?', () => {
             socket.emit('changeRound', { roomId, roundNumber: 3 });
-        }
+        });
 
     }
 
     const handleConcludeGame = () => {
 
-        const confirmed = window.confirm('You are about to go to the Conclude the Game! Are you sure?');
-        if (confirmed) {
-            // Stop the game
+        showConfirmationPopup('You are about to "END" the game! Are you sure?', () => {
             socket.emit('stopGame', { roomId });
-            handleActivityClick(roomId)
-        }
+            handleActivityClick(roomId);
+        });
 
     }
 
@@ -102,20 +89,18 @@ const ModeratorRoomLayout = ({ roomId }) => {
             return;
         }
 
-        const confirmed = window.confirm('You are about to START Group Discussion. Are you sure?');
-        if (confirmed) {
+        showConfirmationPopup('You are about to START Group Discussion. Are you sure?', () => {
             setInGroupDiscussion(true);
-            socket.emit('startGroupDiscussion', { roomId }); // Notify the room
-        }
+            socket.emit('startGroupDiscussion', { roomId });
+        });
     };
 
     // Handle transitioning from Group Discussion to the next round
     const handleEndGroupDiscussion = () => {
-        const confirmed = window.confirm('You are about to END Group Discussion and proceed to the next round. Are you sure?');
-        if (confirmed) {
-            setInGroupDiscussion(false); // End group discussion phase
-            socket.emit('endGroupDiscussion', { roomId }); // Notify the room
-        }
+        showConfirmationPopup('You are about to END Group Discussion and proceed to the next round. Are you sure?', () => {
+            setInGroupDiscussion(false);
+            socket.emit('endGroupDiscussion', { roomId });
+        });
     };
 
     // Function to toggle the activity status
@@ -147,13 +132,26 @@ const ModeratorRoomLayout = ({ roomId }) => {
 
     return (
         <div className="moderator-controls">
-            <button className="start-btn" onClick={handleStartOfRounds}>
+            <button
+                className={`start-btn ${currentRound > 1 ? 'disabled' : ''}`}
+                onClick={handleStartOfRounds}
+                disabled={currentRound >= 1}
+            >
                 Start Round 1
             </button>
-            <button className="next-btn" onClick={handleNextRound}>
+            <button
+                className={`next-btn ${currentRound > 2 ? 'disabled' : ''}`}
+                onClick={handleNextRound}
+                disabled={currentRound >= 2}
+            >
                 Start Round 2
             </button>
-            <button className="next-btn" onClick={handleNextRound3}>
+            <button
+                className={`next-btn ${currentRound >= 3 ? 'disabled' : ''}`}
+                onClick={handleNextRound3}
+                disabled={currentRound >= 3}
+
+            >
                 Start Round 3
             </button>
             <button className="group-discussion-btn" onClick={handleStartGroupDiscussion} disabled={inGroupDiscussion}>
@@ -167,6 +165,18 @@ const ModeratorRoomLayout = ({ roomId }) => {
             <button className="stop-game-btn" onClick={handleConcludeGame}>
                 Stop Game
             </button>
+
+            {/* Confirmation Popup */}
+            {showPopup && (
+                <ConfirmationPopup
+                    message={popupMessage}
+                    onConfirm={() => {
+                        popupAction();  // Execute the stored action
+                        setShowPopup(false);  // Close the popup
+                    }}
+                    onCancel={() => setShowPopup(false)}
+                />
+            )}
         </div>
 
     )
