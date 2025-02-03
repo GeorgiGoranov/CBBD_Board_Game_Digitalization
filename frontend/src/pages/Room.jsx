@@ -38,6 +38,8 @@ const Room = () => {
     const [selectedGroups, setSelectedGroups] = useState([]); // Selected groups via checkboxes
     const [selectedProfile, setSelectedProfile] = useState(null);
 
+    const [groupReadiness, setGroupReadiness] = useState({});
+
 
     if (!socketRef.current) {
         socketRef.current = initSocket();
@@ -149,6 +151,27 @@ const Room = () => {
             setShowGroupDiscussion(false); // Hide group discussion UI
         });
 
+        socket.on('groupFullyReady', ({ groupNumber }) => {
+            setGroupReadiness(prev => ({
+                ...prev,
+                [groupNumber]: {
+                    ...prev[groupNumber],
+                    isFullyReady: true,
+                }
+            }));
+        });
+
+        socket.on('groupReadinessUpdate', ({ groupNumber, readyCount, totalCount }) => {
+            setGroupReadiness(prev => ({
+                ...prev,
+                [groupNumber]: {
+                    isFullyReady: false,
+                    readyCount,
+                    totalCount
+                }
+            }));
+        });
+
         // Cleanup listener when the component unmounts
         return () => {
             socket.off('playerJoined'); // Remove the listener when the component unmounts
@@ -158,6 +181,8 @@ const Room = () => {
             socket.off('gameStopped');
             socket.off('groupDiscussionStarted');
             socket.off('groupDiscussionEnded');
+            socket.off('groupFullyReady');
+            socket.off('groupReadinessUpdate');
         };
     }, [socket, role, navigate]);
 
@@ -228,26 +253,41 @@ const Room = () => {
                                         <h4>Select Groups:</h4>
                                         <div className="group-checkboxes">
                                             {availableGroups
-                                            .sort((a, b) => a - b) 
-                                            .map((groupNumber) => (
-                                                <label key={groupNumber} className="group-checkbox">
-                                                    <div></div>
-                                                    <input
-                                                        className='checkbox-input'
-                                                        type="checkbox"
-                                                        value={groupNumber}
-                                                        checked={selectedGroups.includes(groupNumber)}
-                                                        onChange={() => handleCheckboxChange(groupNumber)}
-                                                    />
-                                                    Group {groupNumber}
-                                                </label>
-                                            ))}
+                                                .sort((a, b) => a - b)
+                                                .map((groupNumber) => {
+                                                    const info = groupReadiness[groupNumber] || {};
+                                                    const isFullyReady = info.isFullyReady || false;
+                                                    const readyCount = info.readyCount || 0;
+                                                    const totalCount = info.totalCount || players.filter((p) => p.group === groupNumber).length;
+
+                                                    return (
+                                                        <div key={groupNumber} className="group-row">
+                                                            <div className="group-info">
+                                                                <span className="group-name">Group {groupNumber}:</span>
+                                                                {isFullyReady ? (
+                                                                    <span className="ready-check"> ✔ Fully Ready</span>
+                                                                ) : (
+                                                                    <span className="readiness-status">{readyCount}/{totalCount} ready</span>
+                                                                )}
+                                                            </div>
+                                                            <label className="group-checkbox">
+                                                                <input
+                                                                    className="checkbox-input"
+                                                                    type="checkbox"
+                                                                    value={groupNumber}
+                                                                    checked={selectedGroups.includes(groupNumber)}
+                                                                    onChange={() => handleCheckboxChange(groupNumber)}
+                                                                />
+                                                                <span>Select</span>
+                                                            </label>
+                                                        </div>
+                                                    );
+                                                })}
                                         </div>
                                         <button onClick={handleSendProfileToGroups}>Send Profile to Groups</button>
+                                        
                                     </div>
                                 </div>
-
-                                {/* {message && <p>{message}</p>} */}
                                 <div className='container-profiles'>
                                     <CreateNewProfiles onProfileSelect={handleProfileSelect} />
                                 </div>
@@ -313,9 +353,15 @@ const Room = () => {
                     </div>
                 ) : (
                     <div>
-                        {/* <div>Player Layout for Room {roomId}
-                                <ParticipantRoomLayout />
-                            </div> */}
+                        <div>Player Layout for Room {roomId}
+                            {/* Provide the needed props: roomId, socket, playerID, group */}
+                            <ParticipantRoomLayout
+                                roomId={roomId}
+                                socket={socket}
+                                playerID={playerID}
+                                group={group}
+                            />
+                        </div>
                     </div>
                 )}
             </div>

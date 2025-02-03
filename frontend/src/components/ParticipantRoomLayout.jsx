@@ -1,21 +1,30 @@
-const ParticipantRoomLayout = () =>{
+// src/components/ParticipantRoomLayout.js
+import React, { useState } from 'react';
 
-    let checkBeforeStart = false
+const ParticipantRoomLayout = ({ roomId, socket, playerID, group }) => {
+  const [isReady, setIsReady] = useState(false);
 
-
-    const handleOnClick = () =>{
-        if (!checkBeforeStart){
-            alert(` Are you sure?`);
-            checkBeforeStart = true
-        }else{
-            console.log("ready")
-        }
+  const handleReadyClick = () => {
+    if (!isReady) {
+      // Notify the server that this player is ready
+      socket.emit('playerReady', {
+        roomId,
+        playerID,
+        group: Number(group),
+      });
+      setIsReady(true);
+    } else {
+      console.log("Already marked as ready.");
     }
-    return (
-        <div>
-            <button onClick={() => handleOnClick()}>ready</button>
-        </div>
-    )
-}
+  };
 
-export default ParticipantRoomLayout
+  return (
+    <div>
+      <button onClick={handleReadyClick} disabled={isReady}>
+        {isReady ? 'Ready (Locked In)' : 'I\'m Ready'}
+      </button>
+    </div>
+  );
+};
+
+export default ParticipantRoomLayout;
