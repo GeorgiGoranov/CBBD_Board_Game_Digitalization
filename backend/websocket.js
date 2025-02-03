@@ -58,7 +58,7 @@ function setupWebSocket(server) {
       if (!roomVotes[gameCode]) {
         roomVotes[gameCode] = { agree: 0, disagree: 0 };
       }
-      socket.emit('updateVotes', roomVotes[gameCode]); 
+      socket.emit('updateVotes', roomVotes[gameCode]);
 
       // Notify everyone in this specific room about the new player
       io.to(gameCode).emit('playerJoined', { playerID, nationality });
@@ -177,7 +177,7 @@ function setupWebSocket(server) {
         // Find all players in this room with the same groupNumber
         const roomPlayers = rooms[roomId] || [];
         const targetPlayers = roomPlayers.filter(p => Number(p.group) === Number(groupNumber));
-
+ 
         targetPlayers.forEach((player) => {
           io.to(player.socketId).emit('receiveMessage', { message: result.message });
         });
@@ -191,6 +191,12 @@ function setupWebSocket(server) {
       const { roomId, roundNumber } = data;
       // Update the current round for the room
       roomRounds[roomId] = roundNumber;
+
+      // Clear readiness data for this room
+      if (roomsReadiness[roomId]) {
+        roomsReadiness[roomId] = {};  // Reset all readiness for the new round
+        console.log(`Cleared readiness for room ${roomId} because round changed to ${roundNumber}`);
+      }
 
       // Broadcast 'roundChanged' event to all clients in the room
       io.in(roomId).emit('roundChanged', { roundNumber });
@@ -317,7 +323,7 @@ function setupWebSocket(server) {
           'updatePlayerList',
           rooms[roomCode].map(player => ({
             playerID: player.playerID,
-            nationality: player.nationality,
+            nationality: player.nationality, 
             group: player.group
           }))
         );

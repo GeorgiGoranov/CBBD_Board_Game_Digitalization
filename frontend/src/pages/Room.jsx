@@ -132,6 +132,8 @@ const Room = () => {
         socket.on('roundChanged', ({ roundNumber }) => {
             setCurrentRound(roundNumber);
             console.log(`Round changed to ${roundNumber}`);
+            // Reset readiness for all groups whenever a round changes:
+            setGroupReadiness({});
         });
 
         socket.on('gameStopped', () => {
@@ -285,7 +287,7 @@ const Room = () => {
                                                 })}
                                         </div>
                                         <button onClick={handleSendProfileToGroups}>Send Profile to Groups</button>
-                                        
+
                                     </div>
                                 </div>
                                 <div className='container-profiles'>
@@ -360,6 +362,7 @@ const Room = () => {
                                 socket={socket}
                                 playerID={playerID}
                                 group={group}
+                                currentRound={currentRound}
                             />
                         </div>
                     </div>
