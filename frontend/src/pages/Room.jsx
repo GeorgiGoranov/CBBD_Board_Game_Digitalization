@@ -126,11 +126,7 @@ const Room = () => {
     }, [userSessionCode, navigate, roomId, apiUrl])
 
     useEffect(() => {
-        // Connect the socket if it's not already connected
-        if (!socket.connected) {
-            socket.connect();
-        }
-
+       
         // Listen for new players joining the session
         socket.on('playerJoined', (data) => {
             // setPlayers(players);  // Update the players state with the updated list
@@ -322,6 +318,7 @@ const Room = () => {
                                     </AnimatePresence>
                                 </div>
                                 <div className='container-profiles'>
+                                    {console.log(socket)}
                                     <CreateNewProfiles onProfileSelect={handleProfileSelect} socket={socket} />
                                 </div>
 
@@ -332,8 +329,6 @@ const Room = () => {
                     ) : (
 
                         <div className='outer-container'>
-                            <h1>Round: {currentRound}</h1>
-                            <h2>Group Number: {group}</h2>
                             <div className='information-pannel'>
                                 {/* Render RoundOne component */}
                                 {currentRound === 1 && (
@@ -359,6 +354,8 @@ const Room = () => {
                                 {/* Chat Component - Only for Round 1 and Round 2 */}
                                 {(currentRound === 1 || currentRound === 2) && (
                                     <div className='chat'>
+                                         <h1>Round: {currentRound}</h1>
+                                         <h2>Group Number: {group}</h2>
                                         <Chat playerID={playerID} socket={socket} group={group} />
                                     </div>
                                 )}
@@ -386,7 +383,7 @@ const Room = () => {
                     </div>
                 ) : (
                     <div>
-                        <div>Player Layout for Room {roomId}
+                        <div>
                             {/* Provide the needed props: roomId, socket, playerID, group */}
                             <ParticipantRoomLayout
                                 roomId={roomId}

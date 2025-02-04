@@ -275,6 +275,7 @@ const RoundOne = ({ roomId, playerID, socket, group }) => {
 
     return (
         <div className='round-one-container'>
+
             {socketMessage && <p>{socketMessage}</p>}
 
             {receivedProfile && (
@@ -311,7 +312,7 @@ const RoundOne = ({ roomId, playerID, socket, group }) => {
                                                         {...provided.draggableProps}
                                                         ref={provided.innerRef}
                                                     >
-                                                        <li className="category-item">
+                                                        <li className="category-item-round-1">
                                                             {category.category}
                                                         </li>
                                                     </div>
@@ -324,13 +325,13 @@ const RoundOne = ({ roomId, playerID, socket, group }) => {
                             )}
                         </Droppable>
                     </ul>
-                    <div className="droppable-box-b">
+                    <div className="droppable-box-b-round1">
                         {/* Render the four drop zones (boxes) */}
                         {['priority1', 'priority2', 'priority3', 'priority4'].map((box, index) => (
                             <Droppable droppableId={box} key={box} >
                                 {(provided, snapshot) => (
                                     <div
-                                        className="droppable-box"
+                                        className="droppable-box-round1"
                                         ref={provided.innerRef}
                                         {...provided.droppableProps}
                                     >
@@ -368,10 +369,7 @@ const RoundOne = ({ roomId, playerID, socket, group }) => {
 
 
                 </DragDropContext>
-                <div className='feedback-box-round-1'>
 
-                    {socketMessageFeedback && <div className='error' >{socketMessageFeedback}</div>}
-                </div>
 
                 {Object.entries(cursorPositions)
                     .filter(([pid, pos]) => pos.group === group)
@@ -396,6 +394,10 @@ const RoundOne = ({ roomId, playerID, socket, group }) => {
 
 
             </div >
+            <div className='feedback-box-round-1'>
+
+                {socketMessageFeedback && <div className='error' >{socketMessageFeedback}</div>}
+            </div>
         </div>
     )
 }

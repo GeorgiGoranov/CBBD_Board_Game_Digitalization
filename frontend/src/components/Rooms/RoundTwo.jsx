@@ -469,7 +469,7 @@ const RoundTwo = ({ roomId, playerID, socket, group, availableGroups }) => {
                             <div className='priority-boxes-round2'>
 
                                 {['priority5', 'priority6', 'priority7', 'priority8'].map((priority, index) => (
-                                    <div className="droppable-box" key={priority}>
+                                    <div className="droppable-box-round-1" key={priority}>
                                         <h2 className="box-text">Priority {index + 1}</h2>
                                         {dropZonesInit[priority] && dropZonesInit[priority].length > 0 ? (
                                             dropZonesInit[priority].map((item, itemIndex) => (

@@ -3,7 +3,14 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    margin: 0;
+    padding: 0;
+    height: 500px;
+    width: 300px;
+    place-content: center;
 }
+
+
 
 .api-item {
     display: flex;
@@ -14,18 +21,20 @@
     border: 1px solid #ddd;
     background-color: #f9f9f9;
     overflow-y: scroll;
+    
 }
 
 
-.category-item {
+.category-item-round-1 {
     padding: 10px;
     cursor: pointer;
-    border: 1px solid #ccc;
+    border: 1px solid var(--blue);
     margin-bottom: 5px;
     transition: background-color 0.2s ease;
+    
 }
 
-.category-item.selected {
+.category-item-round-1.selected {
     background-color: dodgerblue;
     color: white;
     font-weight: bold;
@@ -40,25 +49,27 @@
 
 
 
-.droppable-box-b {
+.droppable-box-b-round1 {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
   
     min-height: 100px;
     text-align: center;
 }
 
-.droppable-box {
-    flex: 1;
-    padding: 20px;
+.droppable-box-round1 {
+    display: block;
+    padding: 15px;
     background-color: var(--lighter-pr);
-    border: 2px dashed #ccc;
-    min-height: 100px;
+    height: 100%;
+    min-width: 50px;
     text-align: center;
+    border: 2px dashed #636;
 }
 .box-text{
     color: var(--primary);
 }
+
 
 
 .dragdrop-container-1 {
@@ -75,5 +86,9 @@
 .feedback-box-round-1{
     display: flex;
     justify-content: center;
+}
+
+.dragdrop-container-1{
+    display: flex;
 }
 

@@ -1,17 +1,25 @@
-import React, { useState } from 'react';
+import React, { useState,useRef } from 'react';
 import { useNavigate } from "react-router-dom";
 import AvailableSessions from '../components/Moderator/AvailableSessions';
 import { useSessionsContext } from '../hooks/useSessionContext';
 import "../SCSS/homeModerator.scss"
+import initSocket from '../context/socket';
 
 const apiUrl = process.env.REACT_APP_BACK_END_URL_HOST;
 
 const Home = () => {
 
   const [sessionCode, setSessionCode] = useState('');
- 
+
   const { dispatch } = useSessionsContext()
   const navigate = useNavigate()
+  const socketRef = useRef();
+
+  if (!socketRef.current) {
+    socketRef.current = initSocket();
+  }
+
+  const socket = socketRef.current;
 
 
 
@@ -29,18 +37,18 @@ const Home = () => {
     if (response.ok) {
       dispatch({ type: 'CREATE_SESSIONS', payload: data })
       setSessionCode(data.code); // Show the generated 6-digit code to the moderator
-  
+
     } else {
       alert('Error creating game session');
     }
 
   };
 
-  const addNewCompetencies = () =>{
+  const addNewCompetencies = () => {
     navigate('/additions/1')
   }
 
-  const createNewProfile = () =>{
+  const createNewProfile = () => {
     navigate('/additions/2')
   }
 

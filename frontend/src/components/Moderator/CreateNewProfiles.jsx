@@ -17,7 +17,7 @@ const CreateNewProfiles = ({ onProfileSelect, socket }) => {
     const [selectedProfileId, setSelectedProfileId] = useState(null); // New state for selected profile
 
 
-
+    console.log(socket)
     // Save new profile to the backend
     const saveNewProfile = async (e) => {
         e.preventDefault();
@@ -140,8 +140,9 @@ const CreateNewProfiles = ({ onProfileSelect, socket }) => {
         return () => {
 
             socket.off('selectedProfileToNull');
-        };
-    }, [socket]);
+        }
+        
+    }, [socket])
 
 
     if (loading) {

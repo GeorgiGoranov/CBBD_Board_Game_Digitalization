@@ -85,13 +85,7 @@ const Chat = ({ playerID, socket, group }) => {
                         </div>
                     </div>
                 ))}
-                {/* <div ref={messagesEndRef} /> */}
-            </div>
-            {/* {showNewMessageAlert && (
-                <div className="new-message-alert" onClick={handleNewMessageClick}>
-                    New message(s) added - Click to see
-                </div>
-            )} */}
+            </div> 
             <form className="chat-input" onSubmit={sendMessage}>
                 <input
                     type="text"
