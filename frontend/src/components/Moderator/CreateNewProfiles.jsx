@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import '../../SCSS/createNewProfiles.scss'
 import { useSessionsContext } from '../../hooks/useSessionContext'; // Adjust the path if needed
 import { motion, AnimatePresence } from 'framer-motion';
+import { SocketContext } from '../../context/SocketContext';
 
 
-
-const CreateNewProfiles = ({ onProfileSelect, socket }) => {
+const CreateNewProfiles = ({ onProfileSelect }) => {
 
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -15,7 +15,7 @@ const CreateNewProfiles = ({ onProfileSelect, socket }) => {
     const { sessions, dispatch } = useSessionsContext();  // Use the custom hook to access context
     const [collapsedProfiles, setCollapsedProfiles] = useState({});
     const [selectedProfileId, setSelectedProfileId] = useState(null); // New state for selected profile
-
+    const socket = useContext(SocketContext); // Access the same socket instance
 
     console.log(socket)
     // Save new profile to the backend
