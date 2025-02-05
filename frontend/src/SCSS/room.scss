@@ -32,12 +32,14 @@
 }
 
 .overlay {
+  display: flex;
+  flex-direction: column;
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.136);
   /* Semi-transparent grey */
   display: flex;
   justify-content: center;
@@ -145,6 +147,9 @@ h2 {
   font-size: 18px;
   margin-top: 35px;
 }
+.chat{
+  z-index: 1001;
+}
 
 #chat-h2 {
   padding-bottom: 15px;
@@ -161,5 +166,12 @@ h2 {
 
 .profile-display:hover {
   background-color: var(--l-pr);
+
+}
+
+.outer-cointainer-roun3{
+  margin-top: 130px;
+  display: flex;
+  justify-content: center;
 
 }

@@ -4,7 +4,7 @@ const {createUser,getAllAvailableSessions,getUser,updateUser,
     getUserLogin,createSession,joinGameSession, isAuth,logOut, fetchPlayers,
     deleteSession,userRole,toggleActivity,joinLobbySession,updateTokenGroup
 ,userRoleUpdated} = require('../controllers/usersController')
-
+ 
 const { requireAuth } = require('../middleware/authMiddleware')
 
 const router = express.Router()
@@ -12,12 +12,12 @@ const router = express.Router()
 router.post('/login', getUserLogin)
 
 router.post('/register' , createUser)
-
+ 
 router.get('/isAuth', isAuth)
 
 router.get('/available-sessions', requireAuth, getAllAvailableSessions)
 
-router.post('/create-session',requireAuth, createSession)
+router.post('/create-session',requireAuth, createSession)  
 
 router.post('/join-game-session', joinGameSession)
 

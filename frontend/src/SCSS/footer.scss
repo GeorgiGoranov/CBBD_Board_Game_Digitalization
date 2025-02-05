@@ -61,3 +61,8 @@ footer {
     color: var(--primary);
 }
 
+@media (max-width: 480px) {
+    footer{
+        position: relative;
+    }
+}

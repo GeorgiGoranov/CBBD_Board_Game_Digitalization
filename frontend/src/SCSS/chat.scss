@@ -5,6 +5,7 @@
   height: 500px;
   width: 300px;
   border: 1px solid #ccc;
+  border-radius: 5px;
 }
 
 .chat-messages {
@@ -14,6 +15,8 @@
   padding: 10px;
   background-color: #f9f9f9;
   height: 500px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
 }
 
 
@@ -46,6 +49,8 @@
   max-width: 100%;
   word-wrap: break-word; /* Breaks long words */
   white-space: pre-wrap; /* Preserves line breaks */
+  
+
 }
 
 .my-message {
@@ -109,3 +114,4 @@
   font-size: 14px;
   font-weight: bold;
 }
+

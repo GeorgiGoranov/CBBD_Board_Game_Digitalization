@@ -1,8 +1,8 @@
-import initSocket from '../../context/socket';
-import React, { useEffect, useState, useRef } from 'react';
+
+import React, { useEffect, useState, useRef, useContext } from 'react';
 import "../../SCSS/moderatorLayout.scss"
 import { useSessionsContext } from '../../hooks/useSessionContext';
-
+import { SocketContext } from '../../context/SocketContext';
 import ConfirmationPopup from '../ConfirmationPopup';
 
 
@@ -15,14 +15,9 @@ const ModeratorRoomLayout = ({ roomId }) => {
     const [showPopup, setShowPopup] = useState(false);
     const [popupMessage, setPopupMessage] = useState('');
     const { sessions, dispatch } = useSessionsContext()
+    const socket = useContext(SocketContext); // Access the same socket instance
 
-
-
-    if (!socketRef.current) {
-        socketRef.current = initSocket();
-    }
-
-    const socket = socketRef.current;
+    
 
     // Listen for server updates about round changes
     useEffect(() => {
@@ -132,6 +127,7 @@ const ModeratorRoomLayout = ({ roomId }) => {
 
     return (
         <div className="moderator-controls">
+           
             <button
                 className={`start-btn ${currentRound > 1 ? 'disabled' : ''}`}
                 onClick={handleStartOfRounds}

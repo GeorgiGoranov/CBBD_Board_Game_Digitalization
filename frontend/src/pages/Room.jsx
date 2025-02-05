@@ -145,6 +145,7 @@ const Room = () => {
             console.log(`Round changed to ${roundNumber}`);
             // Reset readiness for all groups whenever a round changes:
             setGroupReadiness({});
+            setIsOverlayVisible(false);
         });
 
         socket.on('gameStopped', () => {
@@ -250,7 +251,8 @@ const Room = () => {
         <div className='room-container'>
             {isOverlayVisible && (
                 <div className='overlay'>
-                    <p>You are locked in. Please wait for the next round.</p>
+                    <p>You are locked in!</p>
+                    <p>Please wait for the next round.</p>
                 </div>
             )}
 

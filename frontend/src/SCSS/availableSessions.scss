@@ -40,26 +40,26 @@ p span{
     gap: 15px;
 }
 
-.bi.bi-x-circle{
+.bi.bi-trash-fill{
    font-size: 1.5em;
    cursor: pointer;
-   color: var(--primary);
+   color: var(--red);
 }
-.bi.bi-play-btn-fill{
+.bi.bi-box-arrow-in-right{
     font-size: 1.5em;
     cursor: pointer;
-    color: var(--primary);
+    color: var(--l-green);
 }
 .bi.bi-sliders{
     font-size: 1.5em;
     cursor: pointer;
-    color: var(--primary);
+    color: var(--blue);
     
 }
-.bi.bi-book-half{
+.bi.bi-kanban-fill{
     font-size: 1.75rem;
     cursor: pointer;
-    color: var(--primary);
+    color: var(--blue);
 }
 
 .container-for-activity{

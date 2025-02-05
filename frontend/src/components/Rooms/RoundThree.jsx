@@ -145,7 +145,13 @@ const RoundThree = ({ roomId, playerID, socket, role, nationality }) => {
     if (error) return <div>Error: {error}</div>;
 
     const cardOptions = card?.options?.[language]; // Extract options for the selected language
-    if (!cardOptions) return <div>No card or options available</div>;
+
+    if (!cardOptions) return <div className="end">
+         
+        <p>These were all the cards.</p>
+        <p>Thank you for playing!</p>
+
+    </div>;
 
 
     return (
@@ -183,7 +189,10 @@ const RoundThree = ({ roomId, playerID, socket, role, nationality }) => {
 
             </div>
             <div className="score-keepers">
-                <h3>Separate Voting Buttons</h3>
+                <div>
+
+                    <h3>Voting Scores</h3>
+                </div>
 
                 <div className="score-display">
                     <p>{voteCounts.option1}</p>

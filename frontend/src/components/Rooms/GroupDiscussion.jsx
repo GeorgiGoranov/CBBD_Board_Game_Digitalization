@@ -6,7 +6,7 @@ const GroupDiscussion = ({ roomId, apiUrl, availableGroups, socket, playerID, ro
 
     const [currentGroupIndex, setCurrentGroupIndex] = useState(0); // Track the current group
     const [groupData, setGroupData] = useState(null); // Data for the current group
-    const [loading, setLoading] = useState(true);
+
     const [dropZones, setDropZones] = useState({
         priority1: [],
         priority2: [],

@@ -5,6 +5,7 @@
 :root {
   --primary: #636;
   --error: #e7195a;
+  --red: rgb(238, 44, 0);
   --lighter-pr: rgba(167, 107, 167, 0.322);
   --green: #155724;
   --l-green: #36c056;
@@ -24,7 +25,8 @@ body {
   height: 100%;
 
 }
-textarea{
+
+textarea {
   font-family: "Poppins";
   border-radius: 6px;
 }
@@ -32,16 +34,20 @@ textarea{
 header {
   // position: sticky;
   // top: 0;
-  display: flex; /* Make header a flex container */
-  align-items: center; /* Vertically align items */
+  display: flex;
+  /* Make header a flex container */
+  align-items: center;
+  /* Vertically align items */
   background: #636;
   // z-index: 1000;
- 
+
 }
-header .container h1{
- font-size: 1rem;
- color: #fff;
+
+header .container h1 {
+  font-size: 1rem;
+  color: #fff;
 }
+
 header .container {
   max-width: 1400px;
   margin: 0 auto;
@@ -50,8 +56,10 @@ header .container {
 header img {
   background-color: #fff;
 }
+
 header .container {
-  flex: 1; /* Allow the container to take the remaining space */
+  flex: 1;
+  /* Allow the container to take the remaining space */
 }
 
 header a {
@@ -59,27 +67,27 @@ header a {
   text-decoration: none;
 }
 
-header .items{
+header .items {
   display: flex;
   justify-content: space-around;
   align-items: center;
-  
+
 }
 
-header .right-side-container{
+header .right-side-container {
   display: flex;
   gap: 15px;
   align-items: center;
 }
 
-header .input{
+header .input {
   width: 50px;
 }
 
-.pages{
+.pages {
   display: block;
-  margin: 0 auto; 
-  min-height: 82vh;   
+  margin: 0 auto;
+  min-height: 82vh;
 
 
 }
@@ -95,18 +103,21 @@ header .input{
   margin: 20px auto;
   padding: 20px;
   position: relative;
-  box-shadow: 2px 2px 5px rgba(0,0,0,0.05);
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.05);
 }
+
 .user-details h4 {
   margin: 0 0 10px 0;
   font-size: 1.2em;
   color: var(--primary);
 }
+
 .user-details p {
   margin: 0;
   font-size: 0.9em;
   color: #555;
 }
+
 .user-details span {
   position: absolute;
   top: 20px;
@@ -118,7 +129,8 @@ header .input{
   color: #333;
 }
 
-label, input {
+label,
+input {
   display: block;
   width: 100%;
 }
@@ -153,10 +165,10 @@ div.error {
   color: var(--error);
   border-radius: 4px;
   margin: 20px 0;
-  box-sizing: border-box; 
+  box-sizing: border-box;
   max-width: 500px;
   text-align: center;
-  
+
 
 }
 
@@ -165,13 +177,14 @@ div.error {
   display: inline-block;
   cursor: pointer;
   background-color: #fff;
- 
+
   border-radius: 5px;
   padding: 2px 5px;
   display: flex;
   align-items: center;
   width: 75px;
   justify-content: center;
+  z-index: 10002;
 
 }
 
@@ -211,4 +224,29 @@ div.error {
 
 .dropdown-menu li:hover {
   background-color: var(--lighter-pr);
+}
+
+
+
+@media (max-width: 480px) {
+  .logo-container {
+    height: 50px;
+  }
+
+  header .container h1 {
+    display: flex;
+    width: 20px;
+    text-align: center;
+    font-size: 12px;
+    color: #fff;
+    
+  }
+
+  header .items {
+   display: flex;
+   gap: 15px;
+   justify-content: space-around;
+   
+  }
+
 }

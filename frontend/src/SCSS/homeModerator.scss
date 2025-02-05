@@ -14,6 +14,9 @@
 
 .create-session button {
     width: 300px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .start-btn.disabled,
@@ -25,3 +28,9 @@
     border: 1px solid #d0d0d0;
 }
 
+
+.bi.bi-patch-plus-fill,
+.bi.bi-card-checklist,
+.bi.bi-person-lines-fill{
+    font-size: 20px;
+}

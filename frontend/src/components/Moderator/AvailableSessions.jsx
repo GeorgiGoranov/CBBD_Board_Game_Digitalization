@@ -110,8 +110,8 @@ const AvailableSessions = () => {
                             <div className="container-action-buttons">
                                 <p>Session Code: <span>{session.code}</span></p>
                                 <div className="container-for-action-buttons">
-                                    <i className="bi bi-play-btn-fill" onClick={() => handlePlayClick(session)}></i>
-                                    <i className="bi bi-x-circle" onClick={() => handleDeleteClick(session.code)}></i>
+                                    <i className="bi bi-box-arrow-in-right" onClick={() => handlePlayClick(session)}></i>
+                                    <i className="bi bi-trash-fill" onClick={() => handleDeleteClick(session.code)}></i>
                                 </div>
                             </div>
                             <p>Host: <span>{session.host}</span></p>
@@ -119,7 +119,7 @@ const AvailableSessions = () => {
                             <div className="container-for-activity">
                                 <p className="p-activity">Active: <span className={session.isActive ? 'active' : 'inactive'}>{session.isActive ? 'Yes' : 'No'}</span></p>
                                 <i className="bi bi-sliders" onClick={() => handleActivityClick(session.code)}></i>
-                                <i class="bi bi-book-half" onClick={() => handleResultsClick(session.code)} ></i>
+                                <i class="bi bi-kanban-fill" onClick={() => handleResultsClick(session.code)} ></i>
                             </div>
                         </li>
                     ))}

@@ -81,7 +81,9 @@ const getOneCardPerCategory = (CardModel, RoundModel) => {
 
             // 5) If no possible subcategories left, return 404 or similar
             if (possiblePicks.length === 0) {
-                return res.status(404).json({ message: 'No more available subcategories left' });
+                return res.status(200).json({
+                    message: 'These were all the cards. Thank you for playing!'
+                });
             }
 
             // 6) Randomly pick from possiblePicks
