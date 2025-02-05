@@ -142,8 +142,7 @@
   text-align: center;
 }
 
-.chat h1,
-h2 {
+#chat-h2{
   font-size: 18px;
   margin-top: 35px;
 }
@@ -152,7 +151,10 @@ h2 {
 }
 
 #chat-h2 {
+  font-size: 18px;
   padding-bottom: 15px;
+  margin-top: 35px;
+
 }
 
 .profile-display {

@@ -316,7 +316,7 @@ const Room = () => {
                                                     );
                                                 })}
                                         </div>
-                                        <button onClick={handleSendProfileToGroups}>Send Profile to Groups</button>
+                                        <button onClick={handleSendProfileToGroups}>Send Profile to Group/s</button>
                                     </div>
                                     <AnimatePresence>
                                         {showMessage && (
@@ -369,7 +369,7 @@ const Room = () => {
                                 {/* Chat Component - Only for Round 1 and Round 2 */}
                                 {(currentRound === 1 || currentRound === 2) && (
                                     <div className='chat'>
-                                        <h1>Round: {currentRound}</h1>
+                                        <h1 id='chat-h1'>Round: {currentRound}</h1>
                                         <h2 id='chat-h2'>Group Number: {group}</h2>
                                         <Chat playerID={playerID} socket={socket} group={group} />
                                     </div>
