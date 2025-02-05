@@ -1,15 +1,13 @@
 import React, { useState, useEffect } from 'react';
 
 
-const ParticipantRoomLayout = ({ roomId, socket, playerID, group, currentRound }) => {
+const ParticipantRoomLayout = ({ roomId, socket, playerID, group, currentRound,onLockIn  }) => {
     const [isReady, setIsReady] = useState(false);
 
     // Reset isReady to false when currentRound changes
     useEffect(() => {
         setIsReady(false);
-    }, [currentRound]); 
-
-    console.log(currentRound + "+" + isReady)
+    }, [currentRound]);
 
     const handleReadyClick = () => {
         if (!isReady) {
@@ -20,6 +18,7 @@ const ParticipantRoomLayout = ({ roomId, socket, playerID, group, currentRound }
                 group: Number(group),
             });
             setIsReady(true);
+            onLockIn(true); // Notify the parent component
         } else {
             console.log("Already marked as ready.");
         }
@@ -27,8 +26,10 @@ const ParticipantRoomLayout = ({ roomId, socket, playerID, group, currentRound }
 
     return (
         <div>
-            <button onClick={handleReadyClick} disabled={isReady}>
-                {isReady ? 'Ready (Locked In)' : 'I\'m Ready'}
+            <button onClick={handleReadyClick} disabled={isReady}
+                className={`ready-button ${isReady ? 'ready-button--locked' : 'ready-button--default'}`}
+            >
+                {isReady ? 'Locked In' : 'I\'m Ready'}
             </button>
         </div>
     );

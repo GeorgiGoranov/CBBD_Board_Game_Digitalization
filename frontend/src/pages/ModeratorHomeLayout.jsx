@@ -3,7 +3,8 @@ import { useNavigate } from "react-router-dom";
 import AvailableSessions from '../components/Moderator/AvailableSessions';
 import { useSessionsContext } from '../hooks/useSessionContext';
 import "../SCSS/homeModerator.scss"
-import initSocket from '../context/socket';
+
+
 
 const apiUrl = process.env.REACT_APP_BACK_END_URL_HOST;
 
@@ -13,14 +14,6 @@ const Home = () => {
 
   const { dispatch } = useSessionsContext()
   const navigate = useNavigate()
-  const socketRef = useRef();
-
-  if (!socketRef.current) {
-    socketRef.current = initSocket();
-  }
-
-  const socket = socketRef.current;
-
 
 
   const createGameSession = async () => {

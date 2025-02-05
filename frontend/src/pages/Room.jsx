@@ -42,6 +42,9 @@ const Room = () => {
 
     const [showMessage, setShowMessage] = useState(!!message);
 
+    const [isOverlayVisible, setIsOverlayVisible] = useState(false);
+
+
 
 
     useEffect(() => {
@@ -70,6 +73,7 @@ const Room = () => {
     useEffect(() => {
         if (message) {
             setShowMessage(true);
+
 
             // Set a timer to hide the message after 5 seconds
             const timer = setTimeout(() => {
@@ -120,7 +124,7 @@ const Room = () => {
     }, [userSessionCode, navigate, roomId, apiUrl])
 
     useEffect(() => {
-       
+
         // Listen for new players joining the session
         socket.on('playerJoined', (data) => {
             // setPlayers(players);  // Update the players state with the updated list
@@ -225,9 +229,18 @@ const Room = () => {
 
         socket.emit('setSelectedProfileToNull', {});
 
-        setMessage('Profile sent successfully!');
+        // Temporary message clearing to re-trigger animation
+        setMessage('');  // Clear the message first
+        setTimeout(() => {
+            setMessage('Profile sent successfully!');  // Set the new message after clearing
+        }, 10);  // Delay slightly to ensure the state updates properly
         setSelectedProfile(null);  // Clear selection
         setSelectedGroups([]);       // Clear selected groups
+    };
+
+    // Callback to handle when a player locks in
+    const handleLockIn = (lockedIn) => {
+        setIsOverlayVisible(lockedIn);
     };
 
 
@@ -235,6 +248,12 @@ const Room = () => {
 
     return (
         <div className='room-container'>
+            {isOverlayVisible && (
+                <div className='overlay'>
+                    <p>You are locked in. Please wait for the next round.</p>
+                </div>
+            )}
+
             {showGroupDiscussion ? (
                 <div className='container-discussion'>
                     <GroupDiscussion
@@ -304,7 +323,7 @@ const Room = () => {
                                                 initial={{ opacity: 0, y: -20 }}
                                                 animate={{ opacity: 1, y: 0 }}
                                                 exit={{ opacity: 0, y: -20 }}
-                                                transition={{ duration: 0.5 }}
+                                                transition={{ duration: 0.1 }}
                                             >
                                                 {message}
                                             </motion.div>
@@ -312,7 +331,7 @@ const Room = () => {
                                     </AnimatePresence>
                                 </div>
                                 <div className='container-profiles'>
-                                   
+
                                     <CreateNewProfiles onProfileSelect={handleProfileSelect} socket={socket} />
                                 </div>
 
@@ -348,8 +367,8 @@ const Room = () => {
                                 {/* Chat Component - Only for Round 1 and Round 2 */}
                                 {(currentRound === 1 || currentRound === 2) && (
                                     <div className='chat'>
-                                         <h1>Round: {currentRound}</h1>
-                                         <h2 id='chat-h2'>Group Number: {group}</h2>
+                                        <h1>Round: {currentRound}</h1>
+                                        <h2 id='chat-h2'>Group Number: {group}</h2>
                                         <Chat playerID={playerID} socket={socket} group={group} />
                                     </div>
                                 )}
@@ -385,6 +404,7 @@ const Room = () => {
                                 playerID={playerID}
                                 group={group}
                                 currentRound={currentRound}
+                                onLockIn={handleLockIn}
                             />
                         </div>
                     </div>

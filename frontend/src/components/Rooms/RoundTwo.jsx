@@ -6,6 +6,7 @@ import {
 import React, { useState, useEffect, useCallback } from 'react';
 import { useLanguage } from '../../context/LanguageContext';
 import '../../SCSS/roundTwo.scss';
+import { motion } from 'framer-motion';
 
 
 const RoundTwo = ({ roomId, playerID, socket, group, availableGroups }) => {
@@ -222,7 +223,7 @@ const RoundTwo = ({ roomId, playerID, socket, group, availableGroups }) => {
         } catch (error) {
             console.error('Error saving state:', error);
         }
-    }, [roomId, dropZones,apiUrl,group, receivedProfile])
+    }, [roomId, dropZones, apiUrl, group, receivedProfile])
 
 
 
@@ -346,7 +347,7 @@ const RoundTwo = ({ roomId, playerID, socket, group, availableGroups }) => {
             fetchCategories();
             fetchSavedRoomState();
         }
-    }, [roomId, language, group,apiUrl]);
+    }, [roomId, language, group, apiUrl]);
 
     useEffect(() => {
         // Listen for drag-and-drop updates from other clients
@@ -377,7 +378,7 @@ const RoundTwo = ({ roomId, playerID, socket, group, availableGroups }) => {
             socket.off('receiveFeedbackGroupMessage');
             socket.off('receiveProfileData');
         };
-    }, [socket,playerID]);
+    }, [socket, playerID]);
 
     const sendGroupMessage = (message) => {
         socket.emit('sendFeedbackGroupMessage', {
@@ -502,47 +503,57 @@ const RoundTwo = ({ roomId, playerID, socket, group, availableGroups }) => {
 
                     </div>
                 )}
-                <DragDropContext onDragEnd={handleDragDrop}>
+                <DragDropContext 
+                onDragEnd={handleDragDrop}
+                >
                     <ul className="api-list categories-grid">
                         {/* Iterate over categories */}
                         {categoriesData.map((category, categoryIndex) => (
                             <div key={`category-${categoryIndex}`} className="category-container">
-                                <h2
+                                <motion.h2
+
                                     onClick={() => toggleCategoryCollapse(category.category)}
                                     style={{ cursor: 'pointer' }}
+                                    initial={{ y: 0 }}
+                                    whileHover={{ y: -5, color: "#007bff" }}  // Moves up slightly and changes color
+                                    transition={{ type: 'spring', stiffness: 300 }}
                                 >
                                     {category.category}
-                                </h2>
+                                </motion.h2>
+                                <i class="bi bi-arrow-bar-down"></i>
                                 {!collapsedCategories[category.category] && (
-                                    <Droppable droppableId={`category-${category.category}`}>
-                                        {(provided) => (
-                                            <div
-                                                {...provided.droppableProps}
-                                                ref={provided.innerRef}
-                                                className="options-container"
-                                            >
-                                                {category.options.map((option, index) => (
-                                                    <Draggable
-                                                        draggableId={`category-${option.id}`}
-                                                        key={`category-${option.id}`}
-                                                        index={index}
-                                                    >
-                                                        {(provided) => (
-                                                            <div
-                                                                ref={provided.innerRef}
-                                                                {...provided.draggableProps}
-                                                                {...provided.dragHandleProps}
-                                                                className="option-item"
-                                                            >
-                                                                <p>{option.text}</p>
-                                                            </div>
-                                                        )}
-                                                    </Draggable>
-                                                ))}
-                                                {provided.placeholder}
-                                            </div>
-                                        )}
-                                    </Droppable>
+                                    <div className="options-float-panel">
+                                        <Droppable droppableId={`category-${category.category}`}>
+                                            {(provided) => (
+                                                <div
+                                                    {...provided.droppableProps}
+                                                    ref={provided.innerRef}
+                                                    className="options-container"
+                                                >
+                                                    {category.options.map((option, index) => (
+                                                        <Draggable
+                                                            draggableId={`category-${option.id}`}
+                                                            key={`category-${option.id}`}
+                                                            index={index}
+                                                        >
+                                                            {(provided) => (
+                                                                <div
+                                                                    ref={provided.innerRef}
+                                                                    {...provided.draggableProps}
+                                                                    {...provided.dragHandleProps}
+                                                                    className="option-item"
+                                                                   
+                                                                >
+                                                                    <p>{option.text}</p>
+                                                                </div>
+                                                            )}
+                                                        </Draggable>
+                                                    ))}
+                                                    {provided.placeholder}
+                                                </div>
+                                            )}
+                                        </Droppable>
+                                    </div>
                                 )}
                             </div>
                         ))}
