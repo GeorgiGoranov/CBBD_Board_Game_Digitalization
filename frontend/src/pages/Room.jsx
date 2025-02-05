@@ -1,9 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import ModeratorRoomLayout from '../components/Moderator/ModeratorRoomLayout';
 import ParticipantRoomLayout from '../components/ParticipantRoomLayout';
-
-import initSocket from '../context/socket';
 import "../SCSS/room.scss"
 
 import Chat from '../components/Rooms/Chat';
@@ -13,15 +11,16 @@ import RoundThree from '../components/Rooms/RoundThree';
 import GroupDiscussion from '../components/Rooms/GroupDiscussion';
 import CreateNewProfiles from '../components/Moderator/CreateNewProfiles';
 import { motion, AnimatePresence } from 'framer-motion';
-
-
+import { SocketContext } from '../context/SocketContext';
 
 
 const Room = () => {
     const { roomId } = useParams(); // Fetch roomId from the URL
     const [playerID, setPlayerID] = useState('');
     const [message, setMessage] = useState('');
-    const socketRef = useRef();
+
+    const socket = useContext(SocketContext); // Access the same socket instance
+
 
     const [players, setPlayers] = useState([]);
     const [role, setRole] = useState(null); // Role state to determine layout
@@ -44,11 +43,6 @@ const Room = () => {
     const [showMessage, setShowMessage] = useState(!!message);
 
 
-    if (!socketRef.current) {
-        socketRef.current = initSocket();
-    }
-
-    const socket = socketRef.current;
 
     useEffect(() => {
         // Extract unique groups dynamically from players, filtering out undefined or invalid values
@@ -318,7 +312,7 @@ const Room = () => {
                                     </AnimatePresence>
                                 </div>
                                 <div className='container-profiles'>
-                                    {console.log(socket)}
+                                   
                                     <CreateNewProfiles onProfileSelect={handleProfileSelect} socket={socket} />
                                 </div>
 
@@ -355,7 +349,7 @@ const Room = () => {
                                 {(currentRound === 1 || currentRound === 2) && (
                                     <div className='chat'>
                                          <h1>Round: {currentRound}</h1>
-                                         <h2>Group Number: {group}</h2>
+                                         <h2 id='chat-h2'>Group Number: {group}</h2>
                                         <Chat playerID={playerID} socket={socket} group={group} />
                                     </div>
                                 )}

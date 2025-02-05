@@ -12,6 +12,8 @@
   --purple: #9E00EB;
   --lighter-purple: #B74EEB;
   --blue: #0056b3;
+  --l-pr: rgba(167, 107, 167, 0.128);
+
 }
 
 
@@ -26,14 +28,18 @@ textarea{
   font-family: "Poppins";
   border-radius: 6px;
 }
+
 header {
+  // position: sticky;
+  // top: 0;
   display: flex; /* Make header a flex container */
   align-items: center; /* Vertically align items */
   background: #636;
+  // z-index: 1000;
  
 }
 header .container h1{
- font-size: 1.5rem;
+ font-size: 1rem;
  color: #fff;
 }
 header .container {
@@ -159,13 +165,13 @@ div.error {
   display: inline-block;
   cursor: pointer;
   background-color: #fff;
-  border: 1px solid #ccc;
+ 
   border-radius: 5px;
-  padding: 5px 10px;
+  padding: 2px 5px;
   display: flex;
   align-items: center;
-  width: 100px;
-  justify-content: space-between;
+  width: 75px;
+  justify-content: center;
 
 }
 
@@ -182,6 +188,10 @@ div.error {
 
 .dropdown-menu {
   position: absolute;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   top: 100%;
   left: 0;
   right: 0;
@@ -190,7 +200,6 @@ div.error {
   border-radius: 5px;
   margin-top: 5px;
   list-style: none;
-  padding: 0;
   z-index: 1000;
 }
 

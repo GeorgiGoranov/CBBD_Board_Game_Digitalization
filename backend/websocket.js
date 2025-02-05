@@ -9,7 +9,7 @@ const roomRounds = {};  // To keep track of current round per room
 const roomVotes = {}; // Store votes per room: { [roomId]: { agree: number, disagree: number } }
 const roomsReadiness = {};
 
-
+ 
 // WebSocket setup
 function setupWebSocket(server) {
   const io = new Server(server, {
@@ -69,7 +69,7 @@ function setupWebSocket(server) {
           playerID: player.playerID,
           nationality: player.nationality,
           group: player.group
-        }))
+        })) 
       );
 
       // Listen for when a participant becomes ready

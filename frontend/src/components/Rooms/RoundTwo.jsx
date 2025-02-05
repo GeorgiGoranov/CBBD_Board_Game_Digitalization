@@ -473,7 +473,7 @@ const RoundTwo = ({ roomId, playerID, socket, group, availableGroups }) => {
                                         <h2 className="box-text">Priority {index + 1}</h2>
                                         {dropZonesInit[priority] && dropZonesInit[priority].length > 0 ? (
                                             dropZonesInit[priority].map((item, itemIndex) => (
-                                                <div key={`${item.category}-${itemIndex}`} className="draggable-item">
+                                                <div key={`${item.category}-${itemIndex}`} className="draggable-item-roun2">
                                                     {item.category}
                                                 </div>
                                             ))
@@ -497,8 +497,7 @@ const RoundTwo = ({ roomId, playerID, socket, group, availableGroups }) => {
 
                 {receivedProfile && (
                     <div className='profile-display'>
-                        <h2>Profile:</h2>
-                        <h3>{receivedProfile.profile.name}</h3>
+                        <h2>Profile: {receivedProfile.profile.name}</h2>
                         <p>{receivedProfile.profile.options?.en || 'Description not available'}</p>
 
                     </div>

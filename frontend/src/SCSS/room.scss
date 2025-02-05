@@ -59,15 +59,10 @@
 
   .group-checkboxes {
     display: flex;
-    /* Arrange the checkboxes in a row */
     flex-wrap: wrap;
-    /* Allow wrapping to the next line if there's not enough space */
     gap: 16px;
-    /* Add spacing between checkboxes */
     margin-top: 8px;
-    /* Add spacing between the title and the checkboxes */
     margin-bottom: 8px;
-
   }
 
   .group-checkbox {
@@ -102,3 +97,27 @@
   box-sizing: border-box;
   text-align: center;
 }
+
+.chat h1, h2{
+  font-size: 18px;
+  margin-top: 35px;
+}
+
+#chat-h2{
+  padding-bottom: 15px;
+}
+
+.profile-display{
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  margin: 10px 0;
+  transition: background-color 0.3s;
+  box-shadow: 2px 2px 5px rgba(0,0,0,0.05);
+}
+
+.profile-display:hover {
+  background-color: var(--l-pr);
+  
+} 
+

@@ -17,7 +17,6 @@ const CreateNewProfiles = ({ onProfileSelect }) => {
     const [selectedProfileId, setSelectedProfileId] = useState(null); // New state for selected profile
     const socket = useContext(SocketContext); // Access the same socket instance
 
-    console.log(socket)
     // Save new profile to the backend
     const saveNewProfile = async (e) => {
         e.preventDefault();
