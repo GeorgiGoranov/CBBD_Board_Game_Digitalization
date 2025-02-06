@@ -494,7 +494,7 @@ const RoundTwo = ({ roomId, playerID, socket, group, availableGroups }) => {
 
             <div className='container-round2-outer'>
 
-                {socketMessageFeedback && <div className='error' >{socketMessageFeedback}</div>}
+
 
                 {receivedProfile && (
                     <div className='profile-display'>
@@ -503,10 +503,10 @@ const RoundTwo = ({ roomId, playerID, socket, group, availableGroups }) => {
 
                     </div>
                 )}
-                <DragDropContext 
-                onDragEnd={handleDragDrop}
+                <DragDropContext
+                    onDragEnd={handleDragDrop}
                 >
-                    <ul className="api-list categories-grid">
+                    <ul className="categories-grid">
                         {/* Iterate over categories */}
                         {categoriesData.map((category, categoryIndex) => (
                             <div key={`category-${categoryIndex}`} className="category-container">
@@ -542,7 +542,7 @@ const RoundTwo = ({ roomId, playerID, socket, group, availableGroups }) => {
                                                                     {...provided.draggableProps}
                                                                     {...provided.dragHandleProps}
                                                                     className="option-item"
-                                                                   
+
                                                                 >
                                                                     <p>{option.text}</p>
                                                                 </div>
@@ -599,6 +599,8 @@ const RoundTwo = ({ roomId, playerID, socket, group, availableGroups }) => {
                             </Droppable>
                         ))}
                     </div>
+
+                    {socketMessageFeedback && <div className='error' >{socketMessageFeedback}</div>}
 
                 </DragDropContext>
                 {Object.entries(cursorPositions)

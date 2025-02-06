@@ -1,10 +1,12 @@
 .categories-grid {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    width: 800px;
+    grid-template-columns: repeat(3, 1fr);
+
     padding: 8px;
     margin-bottom: 10px;
     gap: 15px;
+
+    
 }
 
 
@@ -110,7 +112,7 @@ h6 {
 
 .container-round2-outer {
     display: block;
-    flex-direction: column;
+  
     align-content: center;
 
 }
@@ -122,6 +124,9 @@ h6 {
     border: 2px solid var(--blue);
     border-radius: 5px;
     position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 
 
     .category-title {

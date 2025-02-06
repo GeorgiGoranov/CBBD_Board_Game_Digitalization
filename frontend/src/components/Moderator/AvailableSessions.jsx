@@ -136,14 +136,14 @@ const AvailableSessions = () => {
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
-                        transition={{ duration: 0.1 }}
+                        transition={{ duration: 0.3 }}
                     >
                         <motion.div
                             className="modal-content"
-                            initial={{ y: "-100vh", opacity: 0 }}
+                            initial={{ y: "-20vh", opacity: 0 }}
                             animate={{ y: 0, opacity: 1 }}
-                            exit={{ y: "-100vh", opacity: 0 }}
-                            transition={{ duration: 0.01, type: 'tween' }}
+                            exit={{ y: "-20vh", opacity: 0 }}
+                            transition={{ duration: 0.3, type: 'tween' }}
                         >
                             <h3>Inactive Session</h3>
                             <p>The session "{inactiveSession}" is currently inactive and cannot be joined.</p>

@@ -397,6 +397,7 @@ const Room = () => {
                         <ModeratorRoomLayout roomId={roomId} />
                     </div>
                 ) : (
+                    
                     <div>
                         <div>
                             {/* Provide the needed props: roomId, socket, playerID, group */}

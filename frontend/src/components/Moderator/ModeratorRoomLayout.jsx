@@ -7,7 +7,7 @@ import ConfirmationPopup from '../ConfirmationPopup';
 
 
 const ModeratorRoomLayout = ({ roomId }) => {
-    const socketRef = useRef();
+   
     const [currentRound, setCurrentRound] = useState(0);
     const [inGroupDiscussion, setInGroupDiscussion] = useState(false); // New state for group discussion
     const apiUrl = process.env.REACT_APP_BACK_END_URL_HOST;
@@ -39,14 +39,14 @@ const ModeratorRoomLayout = ({ roomId }) => {
     };
 
 
-    const handleStartOfRounds = () => {
-        if (currentRound >= 1) return;
+    // const handleStartOfRounds = () => {
+    //     if (currentRound >= 1) return;
 
-        showConfirmationPopup('You are about to START the game! Are you sure?', () => {
-            socket.emit('changeRound', { roomId, roundNumber: 1 });
-        });
+    //     showConfirmationPopup('You are about to START the game! Are you sure?', () => {
+    //         socket.emit('changeRound', { roomId, roundNumber: 1 });
+    //     });
 
-    }
+    // }
 
     const handleNextRound = () => {
 
@@ -128,15 +128,15 @@ const ModeratorRoomLayout = ({ roomId }) => {
     return (
         <div className="moderator-controls">
            
-            <button
+            {/* <button
                 className={`start-btn ${currentRound > 1 ? 'disabled' : ''}`}
                 onClick={handleStartOfRounds}
                 disabled={currentRound >= 1}
             >
                 Start Round 1
-            </button>
+            </button> */}
             <button
-                className={`next-btn ${currentRound > 2 ? 'disabled' : ''}`}
+                className={`next-btn ${currentRound >= 2 ? 'disabled' : ''}`}
                 onClick={handleNextRound}
                 disabled={currentRound >= 2}
             >
