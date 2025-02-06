@@ -6,7 +6,7 @@
     margin-bottom: 10px;
     gap: 15px;
 
-    
+
 }
 
 
@@ -112,7 +112,7 @@ h6 {
 
 .container-round2-outer {
     display: block;
-  
+
     align-content: center;
 
 }
@@ -146,17 +146,447 @@ h6 {
         max-height: 200px;
 
         overflow-y: scroll;
-        
+
     }
 }
 
 .option-item {
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     /* Smooth animation */
-   text-align: center;
+    text-align: center;
 }
 
 .option-item:hover {
     transform: scale(1.1);
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+@media (max-width: 480px) {
+
+    .container-layout-roun2 {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .first-round-choices {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+    }
+
+    .group-decisions-round2 {
+        width: 50%;
+    }
+
+    .priority-boxes-round2 {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+        justify-content: center;
+    }
+
+    .droppable-box-round-1 {
+        display: flex;
+        flex-direction: column;
+        height: 150px;
+        width: 120px;
+    }
+
+    .categories-grid {
+        display: flex;
+        flex-direction: column;
+        width: 300px;
+    }
+
+    .container-round2-outer {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .droppable-box-b {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+}
+
+// Keep 480px styles from 481px to 600px
+@media (max-width: 600px) and (min-width: 481px) {
+
+    .container-layout-roun2 {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .first-round-choices {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+    }
+
+    .group-decisions-round2 {
+        width: 50%;
+    }
+
+    .priority-boxes-round2 {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+        justify-content: center;
+    }
+
+    .droppable-box-round-1 {
+        display: flex;
+        flex-direction: column;
+        height: 150px;
+        width: 120px;
+    }
+
+    .categories-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        justify-content: center;
+        width: 300px;
+    }
+
+    .container-round2-outer {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .droppable-box-b {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        margin: 10px;
+    }
+
+}
+
+// Small screens (tablets, portrait)
+@media (max-width: 850px) and (min-width: 601px) {
+
+    .container-layout-roun2 {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .first-round-choices {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+    }
+
+    .group-decisions-round2 {
+        width: 50%;
+    }
+
+    .priority-boxes-round2 {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+        justify-content: center;
+    }
+
+    .droppable-box-round-1 {
+        display: flex;
+        flex-direction: column;
+        height: 120px;
+        width: 250px;
+        justify-content: center;
+    }
+
+    .categories-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        justify-content: center;
+
+        width: 300px;
+    }
+
+    .category-container h2 {
+        font-size: 20px;
+    }
+
+    .container-round2-outer {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .droppable-box-b {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        margin: 10px;
+    }
+}
+
+
+// Medium screens (tablets, landscape, small laptops)
+@media (max-width: 1020px) and (min-width: 851px) {
+    .container-layout-roun2 {
+        display: flex;
+        flex-direction: column;
+        margin-left: 15px;
+    }
+
+    .first-round-choices {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+    }
+
+    .group-decisions-round2 {
+        width: 50%;
+    }
+
+    .priority-boxes-round2 {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+        justify-content: center;
+    }
+
+    .droppable-box-round-1 {
+        display: flex;
+        flex-direction: column;
+        height: 120px;
+        width: 250px;
+        justify-content: center;
+    }
+
+    .categories-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        justify-content: center;
+
+        width: 300px;
+    }
+
+    .category-container h2 {
+        font-size: 20px;
+    }
+
+    .container-round2-outer {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .droppable-box-b {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        margin: 10px;
+    }
+}
+
+// Medium screens (tablets, landscape, small laptops)
+@media (max-width: 1269px) and (min-width: 1021px) {
+    .container-layout-roun2 {
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+    }
+
+    .priority-boxes-round2 {
+        display: flex;
+        flex-direction: row;
+        gap: 15px;
+    }
+
+    .droppable-box-round-1 {
+        display: flex;
+        height: 120px;
+
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .information-pannel {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+    }
+
+    .chat {
+        margin-right: 15px;
+    }
+
+    .group-decisions-round2 {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        width: 100%;
+    }
+    .container-round2-outer{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+}
+
+// Large screens (laptops and desktops)
+@media (max-width: 1440px) and (min-width: 1270px) {
+
+    .information-pannel {
+        margin: 0;
+    }
+
+    .first-round-choices {
+        margin-left: 15px;
+        align-items: center;
+    }
+
+    .priority-boxes-round2 {
+        font-size: 15px;
+    }
+
+}
+
+// Extra large screens (large desktops)
+@media (max-width: 1700px) and (min-width: 1441px) {
+
+    .information-pannel {
+        display: flex;
+        flex-direction: row;
+        margin-left: 0px;
+        gap: 25px;
+    }
+
+    .first-round-choices {
+        margin-left: 35px;
+        align-items: center;
+    }
+
+    .container-layout-roun2 {
+        gap: 45px;
+        display: flex;
+    }
+
+    .chat {
+        margin-right: 25px;
+    }
+
+
+    .droppable-box-round-1 {
+        display: flex;
+        height: 140px;
+
+        flex-direction: column;
+        justify-content: center;
+
+    }
+
+    .priority-boxes-round2 {
+        font-size: 18px;
+    }
+
+    .container-round2-outer{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+}
+
+
+// Extra large screens (large desktops)
+@media (max-width: 1920px) and (min-width: 1701px) {
+
+    .information-pannel {
+        display: flex;
+        flex-direction: row;
+        margin-left: 0px;
+        gap: 25px;
+    }
+
+    .first-round-choices {
+        margin-left: 35px;
+        align-items: center;
+    }
+
+    .container-layout-roun2 {
+        gap: 45px;
+        display: flex;
+
+    }
+
+    .chat {
+        margin-right: 25px;
+    }
+
+
+    .droppable-box-round-1 {
+        display: flex;
+        height: 140px;
+
+        flex-direction: column;
+        justify-content: center;
+
+    }
+
+    .priority-boxes-round2 {
+        font-size: 18px;
+    }
+
+    .container-round2-outer{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+
+}
+
+// Extra large screens (large desktops)
+@media (min-width: 1921px) {
+
+    .information-pannel {
+        display: flex;
+        flex-direction: row;
+        margin-left: 0px;
+        gap: 25px;
+    }
+
+    .first-round-choices {
+        margin-left: 35px;
+        align-items: center;
+    }
+
+    .container-layout-roun2 {
+        gap: 45px;
+        display: flex;
+
+    }
+
+    .chat {
+        margin-right: 25px;
+    }
+
+
+    .droppable-box-round-1 {
+        display: flex;
+        height: 140px;
+
+        flex-direction: column;
+        justify-content: center;
+
+    }
+
+    .priority-boxes-round2 {
+        font-size: 18px;
+    }
+
+    .container-round2-outer{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .room-container{
+        max-width: 2100px;
+    }
+
+
 }

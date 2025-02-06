@@ -21,7 +21,7 @@ function setupWebSocket(server) {
   });
  
   io.on('connection', (socket) => {
-    console.log(`User back-end initial connection: ${socket.id}`);
+    console.log(`User back-end initial connection: ${socket.id}`);  
 
     // Handle when a player joins a session
     socket.on('joinSession', (data) => {
