@@ -338,8 +338,6 @@ h3 {
 
     }
 
-
-
     .droppable-box-b-round1 {
         display: grid;
         grid-template-columns: repeat(1, 1fr);
@@ -372,14 +370,27 @@ h3 {
 
     }
 
-    
+
     .droppable-box-b-round1 {
         display: grid;
-        grid-template-columns: repeat(1, 1fr);
+        grid-template-columns: repeat(1,1fr);
         justify-content: center;
+        
+        width: 200px;
+        
+    }
 
-        width: 300px;
-        height: 400px;
+    .droppable-box-round1{
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+        height: 80px;
+
+    }
+
+    .outer-cointainer-roun2{
+        display: flex;
+        justify-content: center;
     }
 
     .dragdrop-container-1 {
@@ -393,5 +404,11 @@ h3 {
         position: relative;
         margin-top: 25px;
     }
+
+
+    // .outer-cointainer-roun1{
+    //     margin-left: 80px;
+    // }
+
 
 }

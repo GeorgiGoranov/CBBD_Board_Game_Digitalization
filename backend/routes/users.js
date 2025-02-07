@@ -6,12 +6,12 @@ const {createUser,getAllAvailableSessions,getUser,updateUser,
 ,userRoleUpdated} = require('../controllers/usersController')
  
 const { requireAuth } = require('../middleware/authMiddleware')
-
-const router = express.Router()
-
+ 
+const router = express.Router()  
+ 
 router.post('/login', getUserLogin)
 
-router.post('/register' , createUser)
+router.post('/register' , createUser) 
  
 router.get('/isAuth', isAuth)
 
@@ -22,7 +22,7 @@ router.post('/create-session',requireAuth, createSession)
 router.post('/join-game-session', joinGameSession)
 
 router.post('/join-lobby-session', joinLobbySession)
-
+ 
 router.post('/update-token-group', updateTokenGroup)
 
 router.get('/logout', requireAuth, logOut)

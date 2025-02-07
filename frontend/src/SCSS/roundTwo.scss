@@ -428,7 +428,7 @@ h6 {
 }
 
 // Large screens (laptops and desktops)
-@media (max-width: 1440px) and (min-width: 1270px) {
+@media (max-width: 1550px) and (min-width: 1270px) {
 
     .information-pannel {
         margin: 0;
@@ -446,12 +446,13 @@ h6 {
 }
 
 // Extra large screens (large desktops)
-@media (max-width: 1700px) and (min-width: 1441px) {
+@media (max-width: 1700px) and (min-width: 1550px) {
 
     .information-pannel {
         display: flex;
         flex-direction: row;
-        margin-left: 0px;
+        justify-content: center;
+        margin-left: 0;
         gap: 25px;
     }
 
@@ -497,8 +498,10 @@ h6 {
     .information-pannel {
         display: flex;
         flex-direction: row;
+        justify-content: center;
         margin-left: 0px;
         gap: 25px;
+ 
     }
 
     .first-round-choices {
@@ -545,7 +548,9 @@ h6 {
     .information-pannel {
         display: flex;
         flex-direction: row;
+        justify-content: center;
         margin-left: 0px;
+        
         gap: 25px;
     }
 
@@ -574,6 +579,14 @@ h6 {
 
     }
 
+
+    .droppable-box-b-round1{
+        display: grid;
+        grid-template-columns: repeat(1,1fr);
+        
+        width: 200px;
+    }
+
     .priority-boxes-round2 {
         font-size: 18px;
     }
@@ -586,6 +599,14 @@ h6 {
 
     .room-container{
         max-width: 2100px;
+    }
+
+    .round-one-container{
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        max-width: 1200px;
     }
 
 

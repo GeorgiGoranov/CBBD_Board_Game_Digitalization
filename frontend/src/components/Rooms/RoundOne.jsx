@@ -278,13 +278,17 @@ const RoundOne = ({ roomId, playerID, socket, group }) => {
 
             {socketMessage && <p>{socketMessage}</p>}
 
-            {receivedProfile && (
+            {receivedProfile ? (
                 <div className='profile-display'>
                     <h2>Profile: {receivedProfile.profile.name}</h2>
-                 
+
                     <p>{receivedProfile.profile.options?.en || 'Description not available'}</p>
 
 
+                </div>
+            ) : (
+                <div>
+                    <h2>You are waiting for a Profile from the Moderator!</h2>
                 </div>
             )}
 
