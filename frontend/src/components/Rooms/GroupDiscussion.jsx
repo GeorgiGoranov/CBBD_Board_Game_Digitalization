@@ -172,9 +172,10 @@ const GroupDiscussion = ({ roomId, apiUrl, availableGroups, socket, playerID, ro
                             <h2>Decisions for Group {availableGroups[currentGroupIndex]}</h2>
                             {receivedProfile && (
                                 <div className='profile-display'>
-                                    <h2>Profile:</h2>
-                                    <h3>{receivedProfile.profile.name}</h3>
+                                    <h2>Profile: {receivedProfile.profile.name}</h2>
+
                                     <p>{receivedProfile.profile.options?.en || 'Description not available'}</p>
+
 
                                 </div>
                             )}
