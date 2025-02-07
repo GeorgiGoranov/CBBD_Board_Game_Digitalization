@@ -5,7 +5,7 @@ Here I provide the different artefacts developed during the starting phase of th
 
 
 - [Artefacts](/artefacts)
-- [Project charter] Upcoming 
+- [Project charter](/artefacts) 
 ---
  ## Team Roles
 - **Product Owner:** Niklas N. Meisel
@@ -23,6 +23,9 @@ Here I provide the different artefacts developed during the starting phase of th
 ### Definition of Done
 A task is deemed complete when:
 - All features have achieved production quality.
+  
+  The web app definition of done:
+- The platform must be user-friendly and intuitive for both moderators and participants, with tasks resembling the physical game. It should support real-time interaction between players and moderators, mimicking the physical game environment. Anonymity should be optional to allow flexible game environments. Additionally, the platform must enable data storage, including game results and participant nationality, exportable in a CSV format for further analysis.
 
 ### Sprint Goals
 - Achieve the definition of done.
