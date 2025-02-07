@@ -19,7 +19,7 @@ function setupWebSocket(server) {
       credentials: true, // Enable credentials (cookies, authorization headers)
     }
   });
- 
+  
   io.on('connection', (socket) => {
     console.log(`User back-end initial connection: ${socket.id}`);  
 

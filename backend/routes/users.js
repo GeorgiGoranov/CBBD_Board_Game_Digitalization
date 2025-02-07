@@ -12,7 +12,7 @@ const router = express.Router()
 router.post('/login', getUserLogin)
 
 router.post('/register' , createUser) 
- 
+  
 router.get('/isAuth', isAuth) 
 
 router.get('/available-sessions', requireAuth, getAllAvailableSessions)

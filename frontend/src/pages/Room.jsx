@@ -272,7 +272,7 @@ const Room = () => {
                         role={role}
                         currentRound={currentRound}
                     />
-                    <Chat playerID={playerID} socket={socket} group={group} />
+                    {/* <Chat playerID={playerID} socket={socket} group={group} /> */}
 
                 </div>
             ) : (
@@ -403,9 +403,9 @@ const Room = () => {
                 ) : (
 
                     <div>
-                        <div>
-                            {/* Provide the needed props: roomId, socket, playerID, group */}
-                            <ParticipantRoomLayout
+                        {currentRound !== 3 && (
+
+                            < ParticipantRoomLayout
                                 roomId={roomId}
                                 socket={socket}
                                 playerID={playerID}
@@ -413,7 +413,9 @@ const Room = () => {
                                 currentRound={currentRound}
                                 onLockIn={handleLockIn}
                             />
-                        </div>
+                        )}
+
+
                     </div>
                 )}
             </div>

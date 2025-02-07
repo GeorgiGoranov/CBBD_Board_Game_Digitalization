@@ -99,9 +99,9 @@ const Results = () => {
             if (!groupedData[groupNum]) groupedData[groupNum] = [];
             groupedData[groupNum].push({
                 round,
-                zone,
-                item,
-                nationalityInfo,
+                priority: zone,
+                competency: item,
+                nationality: nationalityInfo,
             });
         };
 

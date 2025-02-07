@@ -139,11 +139,14 @@ h6 {
         position: absolute;
         top: 3rem; // controls how far from the top
         left: 0; // align with left side
+        right: 0;
+        bottom: 0;
         background: #ffffff;
         border: 1px solid #ccc;
         z-index: 999; // ensure it floats above other items
         padding: 1rem;
-        max-height: 200px;
+        height: 200px;
+        
 
         overflow-y: scroll;
 
@@ -424,15 +427,14 @@ h6 {
         flex-direction: column;
         align-items: center;
     }
+   
 
 }
 
 // Large screens (laptops and desktops)
 @media (max-width: 1550px) and (min-width: 1270px) {
 
-    .information-pannel {
-        margin: 0;
-    }
+    
 
     .first-round-choices {
         margin-left: 15px;
@@ -442,6 +444,9 @@ h6 {
     .priority-boxes-round2 {
         font-size: 15px;
     }
+
+   
+    
 
 }
 
