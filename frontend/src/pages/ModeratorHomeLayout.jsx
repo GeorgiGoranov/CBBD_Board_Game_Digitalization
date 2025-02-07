@@ -1,18 +1,19 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState,useRef } from 'react';
 import { useNavigate } from "react-router-dom";
 import AvailableSessions from '../components/Moderator/AvailableSessions';
 import { useSessionsContext } from '../hooks/useSessionContext';
 import "../SCSS/homeModerator.scss"
-import initSocket from '../context/socket';
+
+
+
 const apiUrl = process.env.REACT_APP_BACK_END_URL_HOST;
 
 const Home = () => {
 
   const [sessionCode, setSessionCode] = useState('');
- 
+
   const { dispatch } = useSessionsContext()
   const navigate = useNavigate()
-  const socket = initSocket();
 
 
   const createGameSession = async () => {
@@ -29,26 +30,30 @@ const Home = () => {
     if (response.ok) {
       dispatch({ type: 'CREATE_SESSIONS', payload: data })
       setSessionCode(data.code); // Show the generated 6-digit code to the moderator
-      //socket.emit('joinSession', data.code); // Create the session room
+
     } else {
       alert('Error creating game session');
     }
 
   };
 
-
-
-  const goToCardAndSheetCreation = () => {
-    socket.connect()
-    navigate('/additions')
+  const addNewCompetencies = () => {
+    navigate('/additions/1')
   }
+
+  const createNewProfile = () => {
+    navigate('/additions/2')
+  }
+
 
   return (
     <div className='container-layout'>
       <div className="create-session">
         <h2>Create a Game Session</h2>
-        <button onClick={createGameSession}>Create Session</button>
-        <button onClick={goToCardAndSheetCreation}>Create new Cards and Sheets</button>
+        <button onClick={createGameSession}>Create New Session  <i class="bi bi-patch-plus-fill"></i></button>
+        <button onClick={addNewCompetencies}>Create New Competencies  <i class="bi bi-card-checklist"></i></button>
+        <button onClick={createNewProfile}>Create New Profiles  <i class="bi bi-person-lines-fill"></i></button>
+
 
         {sessionCode && (
           <div className='container'>

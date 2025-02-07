@@ -28,15 +28,38 @@ const saveRoomStateMode = (RoundModel) => {
                         round.groups[existingGroupIndex].dropZones = newGroup.dropZones;
 
                         // For messages, you can either replace them or append:
-                        // Replace existing messages:
+                        // Replace existing messages:~
                         // round.groups[existingGroupIndex].messages = newGroup.messages;
 
                         // Or append new messages to existing:
+
                         if (Array.isArray(newGroup.messages)) {
-                            round.groups[existingGroupIndex].messages = [
-                                ...round.groups[existingGroupIndex].messages,
-                                ...newGroup.messages
-                            ];
+                            const existingMessages = round.groups[existingGroupIndex].messages || [];
+
+                            // Filter out messages with duplicate profileId
+                            const uniqueMessages = newGroup.messages.filter(
+                                (newMsg) => !existingMessages.some(
+                                    (existingMsg) => existingMsg.profileId === newMsg.profileId
+                                )
+                            );
+
+                            // Append only unique messages to the existing ones
+                            round.groups[existingGroupIndex].messages.push(...uniqueMessages);
+                        }
+
+                        // ----- Handle NATIONALITIES -----
+                        if (Array.isArray(newGroup.nationalities)) {
+                            // Option A: Replace existing nationalities
+                            // round.groups[existingGroupIndex].nationalities = newGroup.nationalities;
+
+                            // Option B: Append only unique new nationalities
+                            const existingNationalities = new Set(
+                                round.groups[existingGroupIndex].nationalities || []
+                            );
+                            for (const nat of newGroup.nationalities) {
+                                existingNationalities.add(nat);
+                            }
+                            round.groups[existingGroupIndex].nationalities = Array.from(existingNationalities);
                         }
                     } else {
                         // Add the new group if it doesn't exist
@@ -98,7 +121,6 @@ const saveThirdRoomStateMode = (RoundModel) => {
                 if (!lastCard.votes[vote]) {
                     lastCard.votes[vote] = {
                         count: 0,
-                        playerID: [],
                         nationalities: {
                             german: 0,
                             dutch: 0,
@@ -114,6 +136,7 @@ const saveThirdRoomStateMode = (RoundModel) => {
                     lastCard.votes[vote].nationalities[nationality] = 0;
                 }
                 lastCard.votes[vote].nationalities[nationality] += 1;
+                lastCard.votes[vote].count += 1;
 
                 round.cards[lastCardIndex] = lastCard;
             }
@@ -149,6 +172,40 @@ const getRoomStateMode = (RoundModel) => {
     }
 
 };
+
+const createChatRoom = async (req, res) => {
+    const { roomId, groups } = req.body;
+
+    console.warn(groups)
+
+    if (!roomId || !Array.isArray(groups) || groups.length === 0) {
+        return res.status(400).json({ message: 'Invalid request body.' });
+    }
+
+    try {
+        // Check if the chat room already exists
+        let chatRoom = await ChatRoom.findOne({ roomId });
+        if (chatRoom) {
+            return res.status(200).json({ message: 'Chat room already exists.' });
+        }
+
+        // Create a new chat room with groups
+        chatRoom = new ChatRoom({
+            roomId,
+            groups: groups.map(group => ({
+                groupNumber: group.groupNumber,
+                messages: []
+            }))
+        });
+
+        await chatRoom.save();
+        res.status(201).json({ message: 'Chat room created successfully.' });
+    } catch (error) {
+        console.error('Error creating chat room:', error);
+        res.status(500).json({ message: 'Internal server error.' });
+    }
+};
+
 
 const saveMessage = async (messagesData) => {
     const { roomId, sender, message, group } = messagesData;
@@ -234,6 +291,8 @@ const getCurrentStateThirdRound = (RoundModel) => {
                     card: latestCard,
                     votes: votes,
                 });
+
+
             } else {
                 res.status(404).json({ message: 'No card found for this room' });
             }
@@ -244,6 +303,41 @@ const getCurrentStateThirdRound = (RoundModel) => {
     };
 };
 
+const getAllCurrentStateThirdRoundCards = (RoundModel) => {
+    return async (req, res) => {
+        const { roomId } = req.params;
+
+        try {
+            // Find the room by roomId
+            const room = await RoundModel.findOne({ roomId });
+
+            if (!room) {
+                return res.status(404).json({ message: `Room with ID ${roomId} not found` });
+            }
+
+            if (room.cards.length > 0) {
+                // Normalize the cards to ensure votes are always an object
+                const normalizedCards = room.cards.map(cardEntry => ({
+                    card: cardEntry.card,
+                    votes: cardEntry.votes || {}, // Ensure votes are always an object
+                }));
+
+                // Return all cards with their votes
+                return res.status(200).json({
+                    cards: normalizedCards,
+                });
+            } else {
+                // If no cards exist
+                return res.status(404).json({ message: `No cards found in room with ID ${roomId}` });
+            }
+        } catch (error) {
+            console.error(`Error fetching room state for ID ${roomId}:`, error);
+            return res.status(500).json({ message: 'Error fetching room state', error: error.message });
+        }
+    };
+};
+
+
 
 module.exports = {
     getRoomStateMode,
@@ -251,6 +345,8 @@ module.exports = {
     getMessage,
     saveRoomStateMode,
     saveThirdRoomStateMode,
-    getCurrentStateThirdRound
+    getCurrentStateThirdRound,
+    getAllCurrentStateThirdRoundCards,
+    createChatRoom
 
 }

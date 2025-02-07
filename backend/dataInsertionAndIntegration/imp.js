@@ -6,10 +6,12 @@ const fs = require('fs');
 // Connection URL
 const url = process.env.MONG_URL_CBBD;
 const dbName = 'CBBD';
-const collectionName = 'other-cards';
+// const collectionName = 'other-cards';
+const collectionName = 'profiles-data';
+
 
 // Read the JSON file
-const jsonData = JSON.parse(fs.readFileSync('imp-data-other.json', 'utf8'));
+const jsonData = JSON.parse(fs.readFileSync('imp-data-profiles-def.json', 'utf8'));
 
 async function importData() {
   const client = new MongoClient(url);

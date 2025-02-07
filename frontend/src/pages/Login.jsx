@@ -2,7 +2,7 @@ import { useState, useEffect } from "react"
 import '../SCSS/login.scss'
 import { useNavigate } from "react-router-dom";
 import { useAuth } from '../auth/authContext';
-const apiUrl = process.env.REACT_APP_BACK_END_URL_HOST;
+
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -82,6 +82,7 @@ const Login = () => {
             type="text"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            placeholder="Enter your e-mail"
           />
           <h3>Password</h3>
           <input
@@ -89,6 +90,7 @@ const Login = () => {
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            placeholder="Enter your username"
           />
           <button type="submit" className='buttons'>Login</button>
         </form>
@@ -96,6 +98,7 @@ const Login = () => {
       </div>
       {error && <div className="error">{error}</div>}
       {loginSuccess && <div className="success">Login successful!</div>}
+     
     </div>
   );
 }

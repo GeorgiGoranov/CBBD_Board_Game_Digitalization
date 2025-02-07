@@ -1,23 +1,25 @@
-.lobby-container{
+.lobby-container {
     display: flex;
     justify-content: space-between;
-    max-width: 1000px;
+
 }
 
-.test-layout{
+.test-layout {
     display: flex;
     flex-direction: column;
     padding: 20px;
 }
 
-.player-columns  {
+.player-columns {
     display: flex;
     gap: 20px;
-    
+
 }
 
-.german-players, .dutch-players, .international-players{
-    border: 2px solid var(--primary);
+.german-players,
+.dutch-players,
+.international-players {
+    border: 4px solid var(--primary);
     border-radius: 5%;
     text-align: center;
     padding: 20px;
@@ -29,49 +31,108 @@ ul {
     padding: 0;
 }
 
-.btn{
+.btn {
     width: 200px;
 }
 
-.moderator-layout{
+.moderator-layout {
     display: flex;
 
 }
 
-.message-to-room{
-    font-size: 1.25rem;
+.container-logs {
+    display: block;
+    align-items: center;
+    flex-direction: column;
+    height: 100%;
+    width: 35vw;
+    border: 3px dashed var(--primary);
+    border-top: none;
+    border-right: none;
 }
 
-.test-layout{
+
+.title-logs{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding: 0;
+    margin: 0;
+    background-color: var(--lighter-pr);
+    border-bottom: 3px solid var(--primary);
+    
+}
+
+.container-logs p {
+    margin: 0;
+}
+
+
+.loggs{
+    height: 32vw;
+    background-color: white;
+}
+
+.container-logs .loggs {  
+    overflow-y: auto;
+   
+}
+
+#title-logs-id{
+    margin: 0;
+    padding-top: 10px;
+}
+
+#totalplayers span{
+    font-size: 25px;
+    font-weight: bold;
+}
+
+
+.message-to-room {
+    font-size: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    padding: 10px;
+   
+
+}
+
+.test-layout {
     font-size: 0.75rem;
 }
 
-.lobby-admin-btns{
+.lobby-admin-btns {
     display: flex;
     justify-content: center;
     gap: 15px;
 }
 
 
-.lobby-admin-btns #start{
+.lobby-admin-btns #start {
     transition: background-color 0.3s ease, transform 0.3s ease;
+    background-color: var(--primary);
 }
-.lobby-admin-btns #start:hover{
-    background-color: var(--green);
+
+.lobby-admin-btns #start.valid:hover {
+    background-color: var(--l-green);
     transform: scale(1.1);
 }
 
-.lobby-admin-btns #lock{
-    background-color: rgb(255, 123, 123);
+.lobby-admin-btns #lock {
+    background-color: var(--important);
     transition: background-color 0.3s ease, transform 0.3s ease;
 }
-.lobby-admin-btns #lock:hover{
+
+.lobby-admin-btns #lock:hover {
     background-color: rgb(255, 0, 0);
     transform: scale(1.01);
 }
 
-.player-group{
-    border: 2px solid red;
+.player-group {
+    border: 3px solid var(--blue);
     padding: 10px;
     margin: 10px 0;
     border-radius: 8px;
@@ -79,7 +140,83 @@ ul {
 
 }
 
-.moderator-layout .success{
+.moderator-layout .success {
     margin: 20px;
 }
 
+.player-columns-moderator {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+}
+
+.btn:disabled {
+    background-color: #ccc;
+    color: #666;
+    cursor: not-allowed;
+}
+
+
+.popup-overlay-lobby {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.popup-content-lobby {
+    background: #fff;
+    padding: 20px;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    max-width: 400px;
+    width: 80%;
+}
+
+.popup-buttons-lobby {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 20px;
+
+    button {
+        padding: 8px 16px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        background-color: #007bff;
+        color: #fff;
+        font-weight: bold;
+
+        &:hover {
+            background-color: #0056b3;
+        }
+    }
+}
+
+.bi.bi-plus-square-fill {
+    font-size: 25px;
+    cursor: pointer;
+    color: var(--important);
+    transition: transform 0.2s ease-in-out;
+
+}
+
+.bi.bi-plus-square-fill:hover {
+    color: #007bff;
+    transform: scale(1.1);
+}
+
+.addnew-group {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    text-align: center;
+    gap: 15px;
+}

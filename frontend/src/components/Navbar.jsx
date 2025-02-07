@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth/authContext';
 import { useLanguage } from '../context/LanguageContext';
-const API_URL = process.env.REACT_APP_BACKEND_URL;
 
 
 const NavBar = () => {
@@ -49,36 +48,44 @@ const NavBar = () => {
 
   return (
     <header>
+      <img className='logo-container'
+        src="https://www.fontys.nl/upload/eebc050a-a660-4c8e-8da8-0ed755d3c1dc_LOGO-FON-en-PAY-OFF-CARD-PAARS-WIT-RGB-pay-off-RZ.png"
+        alt="fontys-logo" height="50px" bore
+
+      />
       <div className="container">
         <div className="items">
           <h1>CBBD Competency Game</h1>
-          <div className="right-side-container">
-            <div className="dropdown-container" onClick={toggleDropdown}>
-              <div className="dropdown-header">
-                <i className="bi bi-globe"></i>
-                <span>{language}</span>
-              </div>
-              {isOpen && (
-                <ul className="dropdown-menu">
-                  <li onClick={() => handleSelect("de")}>German (de)</li>
-                  <li onClick={() => handleSelect("nl")}>Dutch (nl)</li>
-                </ul>
-              )}
-            </div>
-            {isAuthenticated && (
-              <button
-                onClick={handleLogout}
-                disabled={isLoggingOut}
-                style={{
-                  backgroundColor: isLoggingOut ? 'red' : '', // Apply red background when logging out
-                  color: isLoggingOut ? 'white' : '',         // Change text color for contrast
-                }}
-              >
-                {isLoggingOut ? 'Logging out...' : 'Log Out'}
-              </button>
-            )}
-          </div>
+
         </div>
+
+      </div>
+      <div className="right-side-container">
+        <div className="dropdown-container" onClick={toggleDropdown}>
+          <div className="dropdown-header">
+            <i className="bi bi-globe"></i>
+            <span>{language}</span>
+          </div>
+          {isOpen && (
+            <ul className="dropdown-menu">
+              <li onClick={() => handleSelect("de")}>German (de)</li>
+              <li onClick={() => handleSelect("nl")}>Dutch (nl)</li>
+              <li onClick={() => handleSelect("en")}>English (en)</li>
+            </ul>
+          )}
+        </div>
+        {isAuthenticated && (
+          <button
+            onClick={handleLogout}
+            disabled={isLoggingOut}
+            style={{
+              backgroundColor: isLoggingOut ? 'red' : '', // Apply red background when logging out
+              color: isLoggingOut ? 'white' : '',         // Change text color for contrast
+            }}
+          >
+            {isLoggingOut ? 'Logging out...' : 'Log Out'}
+          </button>
+        )}
       </div>
     </header>
   );

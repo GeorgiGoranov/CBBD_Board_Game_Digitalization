@@ -1,23 +1,26 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import ModeratorRoomLayout from '../components/Moderator/ModeratorRoomLayout';
 import ParticipantRoomLayout from '../components/ParticipantRoomLayout';
-
-import initSocket from '../context/socket';
 import "../SCSS/room.scss"
 
 import Chat from '../components/Rooms/Chat';
 import RoundOne from '../components/Rooms/RoundOne';
 import RoundTwo from '../components/Rooms/RoundTwo';
 import RoundThree from '../components/Rooms/RoundThree';
-
+import GroupDiscussion from '../components/Rooms/GroupDiscussion';
+import CreateNewProfiles from '../components/Moderator/CreateNewProfiles';
+import { motion, AnimatePresence } from 'framer-motion';
+import { SocketContext } from '../context/SocketContext';
 
 
 const Room = () => {
     const { roomId } = useParams(); // Fetch roomId from the URL
     const [playerID, setPlayerID] = useState('');
     const [message, setMessage] = useState('');
-    const socketRef = useRef();
+
+    const socket = useContext(SocketContext); // Access the same socket instance
+
 
     const [players, setPlayers] = useState([]);
     const [role, setRole] = useState(null); // Role state to determine layout
@@ -26,23 +29,63 @@ const Room = () => {
     const [userSessionCode, setUserSessionCode] = useState(null);
     const [currentRound, setCurrentRound] = useState(0); // Start at round 0
     const [group, setGroup] = useState('');
+    const [showGroupDiscussion, setShowGroupDiscussion] = useState(false); // New state
 
-    const [adminMessage, setAdminMessage] = useState('');
-    const [targetGroup, setTargetGroup] = useState('');
-    // const [socketMessage, setSocketMessage] = useState(''); // This can be used to display socket events
     const apiUrl = process.env.REACT_APP_BACK_END_URL_HOST;
     const [nationality, setNationality] = useState('')
 
+    const [availableGroups, setAvailableGroups] = useState([]); // Unique group numbers
+    const [selectedGroups, setSelectedGroups] = useState([]); // Selected groups via checkboxes
+    const [selectedProfile, setSelectedProfile] = useState(null);
 
-    if (!socketRef.current) {
-        socketRef.current = initSocket();
-    }
+    const [groupReadiness, setGroupReadiness] = useState({});
 
-    const socket = socketRef.current;
+    const [showMessage, setShowMessage] = useState(!!message);
+
+    const [isOverlayVisible, setIsOverlayVisible] = useState(false);
+
+
+
 
     useEffect(() => {
+        // Extract unique groups dynamically from players, filtering out undefined or invalid values
+        const extractUniqueGroups = () => {
+            if (players.length > 0) {
+                const uniqueGroups = Array.from(
+                    new Set(players.map((player) => player.group).filter((group) => group !== 'undefined' && group !== null))
+                ); // Ensure groups are defined and not null
+                setAvailableGroups(uniqueGroups);
+            }
+        };
+
+        extractUniqueGroups();
+    }, [players]); // Re-run when players list changes
+
+    // Handle checkbox toggle for groups
+    const handleCheckboxChange = (groupNumber) => {
+        setSelectedGroups((prevSelected) =>
+            prevSelected.includes(groupNumber)
+                ? prevSelected.filter((g) => g !== groupNumber) // Remove if already selected
+                : [...prevSelected, groupNumber] // Add if not selected
+        );
+    };
+
+    useEffect(() => {
+        if (message) {
+            setShowMessage(true);
 
 
+            // Set a timer to hide the message after 5 seconds
+            const timer = setTimeout(() => {
+                setShowMessage(false);
+            }, 5000);
+
+            // Cleanup the timer when component unmounts or message changes
+            return () => clearTimeout(timer);
+        }
+    }, [message]);
+
+    useEffect(() => {
 
         const fetchUserRole = async () => {
             try {
@@ -78,13 +121,9 @@ const Room = () => {
 
             fetchUserRole()
         }
-    }, [userSessionCode, navigate, roomId])
-    
+    }, [userSessionCode, navigate, roomId, apiUrl])
+
     useEffect(() => {
-        // Connect the socket if it's not already connected
-        if (!socket.connected) {
-            socket.connect();
-        }
 
         // Listen for new players joining the session
         socket.on('playerJoined', (data) => {
@@ -104,17 +143,47 @@ const Room = () => {
         socket.on('roundChanged', ({ roundNumber }) => {
             setCurrentRound(roundNumber);
             console.log(`Round changed to ${roundNumber}`);
+            // Reset readiness for all groups whenever a round changes:
+            setGroupReadiness({});
+            setIsOverlayVisible(false);
         });
 
         socket.on('gameStopped', () => {
-            console.warn(role)
             // Force them back to the start or wherever you want
-            if(role != 'admin'){
+            if (role !== 'admin') {
                 navigate('/duser');
-            }else{
+            } else {
                 navigate('/muser');
             }
-            // or, navigate('/'), or any path you desire
+        });
+
+        socket.on('groupDiscussionStarted', () => {
+            setShowGroupDiscussion(true); // Show group discussion UI
+        });
+
+        socket.on('groupDiscussionEnded', () => {
+            setShowGroupDiscussion(false); // Hide group discussion UI
+        });
+
+        socket.on('groupFullyReady', ({ groupNumber }) => {
+            setGroupReadiness(prev => ({
+                ...prev,
+                [groupNumber]: {
+                    ...prev[groupNumber],
+                    isFullyReady: true,
+                }
+            }));
+        });
+
+        socket.on('groupReadinessUpdate', ({ groupNumber, readyCount, totalCount }) => {
+            setGroupReadiness(prev => ({
+                ...prev,
+                [groupNumber]: {
+                    isFullyReady: false,
+                    readyCount,
+                    totalCount
+                }
+            }));
         });
 
         // Cleanup listener when the component unmounts
@@ -124,11 +193,13 @@ const Room = () => {
             socket.off('playerLeftRoom');
             socket.off('roundChanged');
             socket.off('gameStopped');
+            socket.off('groupDiscussionStarted');
+            socket.off('groupDiscussionEnded');
+            socket.off('groupFullyReady');
+            socket.off('groupReadinessUpdate');
         };
-    }, [socket,role, navigate]);
+    }, [socket, role, navigate]);
 
-    
-    
     useEffect(() => {
         if (playerID && roomId) {
             socket.emit('joinSession', { playerID, gameCode: roomId, group: String(group) });
@@ -137,107 +208,219 @@ const Room = () => {
     }, [playerID, roomId, socket, group])
 
 
-    if (loading) return <div>Loading...</div>;
 
-    const handleAdminFormSubmit = (e) => {
-        e.preventDefault();
-        if (adminMessage.trim() && targetGroup) {
-            // Emit an event to the server to send a message to a specific group
-            socket.emit('sendGroupMessage', {
-                roomId,
-                group: targetGroup,
-                message: adminMessage
-            });
-
-            setAdminMessage('');
-            setTargetGroup('');
-        }
+    const handleProfileSelect = (profile) => {
+        setSelectedProfile(profile);
+        console.log(profile)
     };
+
+    // Send the selected profile to the selected groups
+    const handleSendProfileToGroups = () => {
+        if (!selectedProfile || selectedGroups.length === 0) {
+            alert('Please select a profile and at least one group.');
+            return;
+        }
+
+        // Emit a socket event to send the profile to the groups
+        socket.emit('sendProfileToGroups', {
+            roomId,
+            profile: selectedProfile,
+            groups: selectedGroups
+        });
+
+        socket.emit('setSelectedProfileToNull', {});
+
+        // Temporary message clearing to re-trigger animation
+        setMessage('');  // Clear the message first
+        setTimeout(() => {
+            setMessage('Profile sent successfully!');  // Set the new message after clearing
+        }, 10);  // Delay slightly to ensure the state updates properly
+        setSelectedProfile(null);  // Clear selection
+        setSelectedGroups([]);       // Clear selected groups
+    };
+
+    // Callback to handle when a player locks in
+    const handleLockIn = (lockedIn) => {
+        setIsOverlayVisible(lockedIn);
+    };
+
+
+    if (loading) return <div>Loading...</div>;
 
     return (
         <div className='room-container'>
-
-            {role === 'admin' ? (
-                <>
-                    <div className='question-by-moderator'>
-
-                        <form onSubmit={handleAdminFormSubmit}>
-                            <input
-                                type="text"
-                                value={adminMessage}
-                                onChange={(e) => setAdminMessage(e.target.value)}
-                                placeholder="Enter your Recruitment Job?"
-                            />
-                            <select
-                                value={targetGroup}
-                                onChange={(e) => setTargetGroup(e.target.value)}
-                            >
-                                <option value="">Select a Group</option>
-                                <option value="1">G1</option>
-                                <option value="2">G2</option>
-                                <option value="3">G3</option>
-                                <option value="4">G4</option>
-                            </select>
-                            <button type="submit">Submit</button>
-                        </form>
-
-
-                    </div>
-                </>
-
-            ) : (
-
-                <div className='outer-container'>
-                    <h2>Group Number: {group}</h2>
-                    <div className='information-pannel'>
-                        {/* Render RoundOne component */}
-                        {currentRound === 1 && (
-                            <div>
-                                Round 1
-                                <RoundOne roomId={roomId} playerID={playerID} socket={socket} group={group} />
-
-                            </div>
-                        )}
-                        {currentRound === 2 && (
-                            <div>
-                                Round 2
-                                <RoundTwo roomId={roomId} playerID={playerID} socket={socket} group={group} />
-
-                            </div>
-                        )}
-                        {/* Chat Component - Only for Round 1 and Round 2 */}
-                        {(currentRound === 1 || currentRound === 2) && (
-                            <div className='chat'>
-                                <Chat playerID={playerID} socket={socket} group={group} />
-                            </div>
-                        )}
-                    </div>
-                </div>
-
-            )}
-            {currentRound === 3 && (
+            {!showGroupDiscussion && isOverlayVisible && (
                 <div>
-                    Round 3
-                    <RoundThree roomId={roomId} playerID={playerID} socket={socket} role={role} nationality={nationality} />
-
+                    <div className='overlay'>
+                        <div className='p-overlay'>
+                            <p >You have been marked as Ready!</p>
+                            <p >Please wait for the next round.</p>
+                        </div>
+                    </div>
                 </div>
             )}
 
+            {showGroupDiscussion ? (
+                
+                <div className='container-discussion'>
+                    <GroupDiscussion
+                        roomId={roomId}
+                        apiUrl={apiUrl}
+                        availableGroups={availableGroups}
+                        socket={socket}
+                        group={group}
+                        playerID={playerID}
+                        role={role}
+                        currentRound={currentRound}
+                    />
+                    {/* <Chat playerID={playerID} socket={socket} group={group} /> */}
 
+                </div>
+            ) : (
+                <>
+                    {role === 'admin' && currentRound !== 3 ? (
+                        <>
+                            <div className='outer-container-mod'>
+
+                                <div className='question-by-moderator'>
+
+                                    <div className="selected-groups">
+                                        <h3>Room Code: {roomId}</h3>
+                                        <h4>Current Round: {currentRound}</h4>
+                                        <h4>Select Groups:</h4>
+                                        <div className="group-checkboxes">
+                                            {availableGroups
+                                                .sort((a, b) => a - b)
+                                                .map((groupNumber) => {
+                                                    const info = groupReadiness[groupNumber] || {};
+                                                    const isFullyReady = info.isFullyReady || false;
+                                                    const readyCount = info.readyCount || 0;
+                                                    const totalCount = info.totalCount || players.filter((p) => p.group === groupNumber).length;
+
+                                                    return (
+                                                        <div key={groupNumber} className="group-row">
+                                                            <div className="group-info">
+                                                                <span className="group-name">Group {groupNumber}: </span>
+                                                                {isFullyReady ? (
+                                                                    <span className="ready-check"> ✔ Fully Ready</span>
+                                                                ) : (
+                                                                    <span className="readiness-status">waiting for players to be ready {readyCount}/{totalCount}</span>
+                                                                )}
+                                                            </div>
+                                                            <label className="group-checkbox">
+                                                                <input
+                                                                    className="checkbox-input"
+                                                                    type="checkbox"
+                                                                    value={groupNumber}
+                                                                    checked={selectedGroups.includes(groupNumber)}
+                                                                    onChange={() => handleCheckboxChange(groupNumber)}
+                                                                />
+                                                                <span>Select</span>
+                                                            </label>
+                                                        </div>
+                                                    );
+                                                })}
+                                        </div>
+                                        <button onClick={handleSendProfileToGroups}>Send Profile to Group/s</button>
+                                    </div>
+                                    <AnimatePresence>
+                                        {showMessage && (
+                                            <motion.div
+                                                className='message-room'
+                                                initial={{ opacity: 0, y: -20 }}
+                                                animate={{ opacity: 1, y: 0 }}
+                                                exit={{ opacity: 0, y: -20 }}
+                                                transition={{ duration: 0.1 }}
+                                            >
+                                                {message}
+                                            </motion.div>
+                                        )}
+                                    </AnimatePresence>
+                                </div>
+                                <div className='container-profiles'>
+
+                                    <CreateNewProfiles onProfileSelect={handleProfileSelect} socket={socket} />
+                                </div>
+
+
+                            </div>
+                        </>
+
+                    ) : (
+
+                        <div className='outer-container'>
+                            <div className='information-pannel'>
+                                {/* Render RoundOne component */}
+                                {currentRound === 1 && (
+                                    <div className='outer-cointainer-roun1'>
+
+                                        <RoundOne roomId={roomId} playerID={playerID} socket={socket} group={group} />
+
+                                    </div>
+                                )}
+                                {currentRound === 2 && (
+                                    <div className='outer-cointainer-roun2'>
+
+                                        <RoundTwo
+                                            roomId={roomId}
+                                            playerID={playerID}
+                                            socket={socket}
+                                            group={group}
+                                            availableGroups={availableGroups}
+                                        />
+
+                                    </div>
+                                )}
+                                {/* Chat Component - Only for Round 1 and Round 2 */}
+                                {(currentRound === 1 || currentRound === 2) && (
+                                    <div className='chat'>
+                                        <h1 id='chat-h1'>Round: {currentRound}</h1>
+                                        <h2 id='chat-h2'>Group Number: {group}</h2>
+                                        <Chat playerID={playerID} socket={socket} group={group} />
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
+                    )}
+
+                    {currentRound === 3 && (
+                        <div className='outer-cointainer-roun3'>
+
+                            <RoundThree roomId={roomId} playerID={playerID} socket={socket} role={role} nationality={nationality} />
+
+                        </div>
+                    )}
+
+                </>)
+
+            }
             {/* Role-based layout */}
             <div className='role-based-layout'>
                 {role === 'admin' ? (
-                    <div className='moderator-container-layout'> Moderator Layout for Room {roomId}
+                    <div className='moderator-container-layout'>
                         <ModeratorRoomLayout roomId={roomId} />
                     </div>
                 ) : (
+
                     <div>
-                        {/* <div>Player Layout for Room {roomId}
-                            <ParticipantRoomLayout />
-                        </div> */}
+                        {currentRound !== 3 && (
+
+                            < ParticipantRoomLayout
+                                roomId={roomId}
+                                socket={socket}
+                                playerID={playerID}
+                                group={group}
+                                currentRound={currentRound}
+                                onLockIn={handleLockIn}
+                            />
+                        )}
+
+
                     </div>
                 )}
             </div>
+
 
         </div>
     )

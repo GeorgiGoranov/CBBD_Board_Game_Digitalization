@@ -17,6 +17,10 @@ export const sessionReducer = (state, action) => {
             return {
                 sessions: state.sessions.filter(session => session.code !== action.payload) // Remove the session by ID
             };
+        case 'DELETE_SESSION_PROFILE':
+            return {
+                sessions: state.sessions.filter(session => session._id !== action.payload)  // Filter by _id instead of code
+            };
         case 'UPDATE_SESSION':
             return {
                 sessions: state.sessions.map(session =>

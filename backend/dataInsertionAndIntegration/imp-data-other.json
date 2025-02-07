@@ -6,49 +6,56 @@
                 "name": "0-2-years",
                 "options": {
                     "nl": "0-2 JAAR",
-                    "de": "0-2 JAHR"
+                    "de": "0-2 JAHR",
+                    "en": "0-2 YEARS"
                 }
             },
             {
                 "name": "2-5-years",
                 "options": {
                     "nl": "2-5 JAAR",
-                    "de": "2-5 JAHR"
+                    "de": "2-5 JAHR",
+                    "en": "2-5 YEARS"
                 }
             },
             {
                 "name": "5-7-years",
                 "options": {
                     "nl": "5-7 JAAR",
-                    "de": "5-7 JAHR"
+                    "de": "5-7 JAHR",
+                    "en": "5-7 YEARS"
                 }
             },
             {
                 "name": "7-10-years",
                 "options": {
                     "nl": "7-10 JAAR",
-                    "de": "7-10 JAHR"
+                    "de": "7-10 JAHR",
+                    "en": "7-10 YEARS"
                 }
             },
             {
                 "name": "more-than-10-years",
                 "options": {
                     "nl": "> 10 JAAR",
-                    "de": "> 10 JAHR"
+                    "de": "> 10 JAHR",
+                    "en": "> 10 YEARS"
                 }
             },
             {
                 "name": "more-than-5-years",
                 "options": {
                     "nl": "> 5 JAAR",
-                    "de": "> 5 JAHR"
+                    "de": "> 5 JAHR",
+                    "en": "> 5 YEARS"
                 }
             },
             {
                 "name": "more-than-15-years",
                 "options": {
                     "nl": "> 15 JAAR",
-                    "de": "> 15 JAHR"
+                    "de": "> 15 JAHR",
+                    "en": "> 15 YEARS"
                 }
             }
         ]
@@ -60,49 +67,56 @@
                 "name": "mbo+",
                 "options": {
                     "nl": "MBO+",
-                    "de": "MBO+"
+                    "de": "MBO+",
+                    "en": "MBO+"
                 }
             },
             {
                 "name": "hbo",
                 "options": {
                     "nl": "HBO",
-                    "de": "HBO"
+                    "de": "HBO",
+                    "en": "HBO"
                 }
             },
             {
                 "name": "university",
                 "options": {
                     "nl": "UNIVERSITAIR",
-                    "de": "UNIVERSITÄT"
+                    "de": "UNIVERSITÄT",
+                    "en": "UNIVERSITY"
                 }
             },
             {
                 "name": "master",
                 "options": {
                     "nl": "MASTER",
-                    "de": "MASTER"
+                    "de": "MASTER",
+                    "en": "MASTER"
                 }
             },
             {
                 "name": "bachelor",
                 "options": {
                     "nl": "BACHELOR",
-                    "de": "BACHELOR"
+                    "de": "BACHELOR",
+                    "en": "BACHELOR"
                 }
             },
             {
                 "name": "university-of-applied-sciences",
                 "options": {
                     "nl": "FACHHOCHSCHULE",
-                    "de": "FACHHOCHSCHULE"
+                    "de": "FACHHOCHSCHULE",
+                    "en": "UNIVERSITY OF APPLIED SCIENCES"
                 }
             },
             {
                 "name": "professional-training",
                 "options": {
                     "nl": "BERUFSAUSBILDUNG",
-                    "de": "BERUFSAUSBILDUNG"
+                    "de": "BERUFSAUSBILDUNG",
+                    "en": "PROFESSIONAL TRAINING"
                 }
             }
         ]
@@ -114,28 +128,32 @@
                 "name": "general",
                 "options": {
                     "nl": "ALGEMEEN",
-                    "de": "ALLGEMEIN"
+                    "de": "ALLGEMEIN",
+                    "en": "GENERAL"
                 }
             },
             {
                 "name": "comparabl-position",
                 "options": {
                     "nl": "VERGELIJKBARE FUNCTIE",
-                    "de": "VERGLEICHBAREN POSITION"
+                    "de": "VERGLEICHBAREN POSITION",
+                    "en": "COMPARABLE POSITION"
                 }
             },
             {
                 "name": "leadership",
                 "options": {
                     "nl": "LEIDINGGEVENDE",
-                    "de": "FÜHRUNGSERFAHRUNG"
+                    "de": "FÜHRUNGSERFAHRUNG",
+                    "en": "LEADERSHIP EXPERIENCE"
                 }
             },
             {
                 "name": "industry-specific",
                 "options": {
                     "nl": "IN BRANCHE",
-                    "de": "IN BRANCHE"
+                    "de": "IN BRANCHE",
+                    "en": "INDUSTRY-SPECIFIC"
                 }
             }
         ]
@@ -147,70 +165,80 @@
                 "name": "microsoft-office",
                 "options": {
                     "nl": "MS OFFICE",
-                    "de": "MS OFFICE"
+                    "de": "MS OFFICE",
+                    "en": "MS OFFICE"
                 }
             },
             {
                 "name": "word",
                 "options": {
                     "nl": "WORD",
-                    "de": "WORD"
+                    "de": "WORD",
+                    "en": "WORD"
                 }
             },
             {
                 "name": "excel",
                 "options": {
                     "nl": "EXCEL",
-                    "de": "EXCEL"
+                    "de": "EXCEL",
+                    "en": "EXCEL"
                 }
             },
             {
                 "name": "powerpoint",
                 "options": {
                     "nl": "POWERPOINT",
-                    "de": "POWERPOINT"
+                    "de": "POWERPOINT",
+                    "en": "POWERPOINT"
                 }
             },
             {
                 "name": "access",
                 "options": {
                     "nl": "ACCESS",
-                    "de": "ACCESS"
+                    "de": "ACCESS",
+                    "en": "ACCESS"
                 }
             },
             {
                 "name": "sap-erp",
                 "options": {
                     "nl": "SAP/ERP",
-                    "de": "SAP/ERP"
+                    "de": "SAP/ERP",
+                    "en": "SAP/ERP"
                 }
             },
             {
                 "name": "auto-cad",
                 "options": {
                     "nl": "AUTOCAD",
-                    "de": "AUTOCAD"
+                    "de": "AUTOCAD",
+                    "en": "AUTOCAD"
                 }
             },
             {
                 "name": "wms",
                 "options": {
                     "nl": "WMS",
-                    "de": "WMS"
+                    "de": "WMS",
+                    "en": "WMS"
                 }
             },
             {
                 "name": "cloud-services",
                 "options": {
                     "nl": "CLOUD SERVICES",
-                    "de": "CLOUD SERVICES"
+                    "de": "CLOUD SERVICES",
+                    "en": "CLOUD SERVICES"
                 }
             },
             {
                 "name": "solidWorks",
                 "options": {
                     "nl": "SOLIDWORKS",
-                    "de": "SOLIDWORKS"
+                    "de": "SOLIDWORKS",
+                    "en": "SOLIDWORKS"
                 }
             }
         ]
@@ -222,78 +250,95 @@
                 "name": "project-management",
                 "options": {
                     "nl": "PROJECT MANAGEMENT METHODEN (Z.B./B.V. PRINCE)",
-                    "de": "PROJEKT MANAGEMENT METHODEN (Z.B. PRINCE)"
+                    "de": "PROJEKT MANAGEMENT METHODEN (Z.B. PRINCE)",
+                    "en": "PROJECT MANAGEMENT METHODS (E.G. PRINCE)"
                 }
             },
             {
                 "name": "lean-management",
                 "options": {
                     "nl": "LEAN MANAGEMENT (SIX SIGMA)",
-                    "de": "LEAN MANAGEMENT (SIX SIGMA)"
+                    "de": "LEAN MANAGEMENT (SIX SIGMA)",
+                    "en": "LEAN MANAGEMENT (SIX SIGMA)"
                 }
             },
             {
                 "name": "quality-management-methods",
                 "options": {
                     "nl": "QM-METHODEN",
-                    "de": "QM-METHODEN"
+                    "de": "QM-METHODEN",
+                    "en": "QUALITY MANAGEMENT METHODS"
                 }
             },
             {
                 "name": "coaching",
                 "options": {
                     "nl": "BETREUEN/COACHEN",
-                    "de": "BETREUEN/COACHEN"
+                    "de": "BETREUEN/COACHEN",
+                    "en": "COACHING"
                 }
             },
             {
                 "name": "presentation-skills",
                 "options": {
                     "nl": "PRESENTEREN",
-                    "de": "PRÄSENTIEREN"
+                    "de": "PRÄSENTIEREN",
+                    "en": "PRESENTATION SKILLS"
                 }
             },
             {
                 "name": "safety-management",
                 "options": {
                     "nl": "VEILIGHEIDSMANAGEMENT",
-                    "de": "SICHERHEITSMANAGEMENT"
+                    "de": "SICHERHEITSMANAGEMENT",
+                    "en": "SAFETY MANAGEMENT"
                 }
             }
         ]
     },
     {
         "category": "languages-taal",
-        "subcategories":[
+        "subcategories": [
             {
                 "name": "en",
                 "options": {
                     "nl": "ENGELS",
-                    "de": "ENGLISCH"
+                    "de": "ENGLISCH",
+                    "en": "ENGLISH"
                 }
             },
             {
                 "name": "de",
                 "options": {
                     "nl": "DUITS",
-                    "de": "DEUTSCH"
+                    "de": "DEUTSCH",
+                    "en": "GERMAN"
                 }
             },
             {
                 "name": "fr",
                 "options": {
                     "nl": "FRANS",
-                    "de": "FRANZÖSISCH"
+                    "de": "FRANZÖSISCH",
+                    "en": "FRENCH"
+                }
+            },
+            {
+                "name": "nl",
+                "options": {
+                    "nl": "NEDERLANDS",
+                    "de": "NIEDERLÄNDISCH",
+                    "en": "DUTCH"
                 }
             },
             {
                 "name": "es",
                 "options": {
                     "nl": "SPAANS",
-                    "de": "SPANISCH"
+                    "de": "SPANISCH",
+                    "en": "SPANISH"
                 }
             }
         ]
     }
-
 ]

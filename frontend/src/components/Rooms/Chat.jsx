@@ -14,9 +14,10 @@ const Chat = ({ playerID, socket, group }) => {
     // const messagesEndRef = useRef(null);
     const apiUrl = process.env.REACT_APP_BACK_END_URL_HOST;
 
-
+    
 
     useEffect(() => {
+       
         const fetchMessages = async () => {
             try {
                 const response = await fetch(`${apiUrl}/api/rounds/get-message/${roomId}?group=${group}`, {
@@ -49,8 +50,6 @@ const Chat = ({ playerID, socket, group }) => {
             // Emit the message via Socket.IO
             socket.emit('sendMessage', { message: messageData });
 
-            // Update local state
-            // setMessages((prevMessages) => [...prevMessages, messageData]);
             setCurrentMessage('');
         }
     };
@@ -70,32 +69,6 @@ const Chat = ({ playerID, socket, group }) => {
         };
     }, [socket, group]);
 
-    // useEffect(() => {
-    //     if (isAtBottom && messagesEndRef.current) {
-    //         messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
-    //     } else if (!isAtBottom && messages.length > 0) {
-    //         // Check if the last message is from someone other than the current user
-    //         const lastMessage = messages[messages.length - 1];
-    //         if (lastMessage.sender !== playerID) {
-    //             setShowNewMessageAlert(true);
-    //         }
-    //     }
-    // }, [messages, isAtBottom, playerID]);
-
-    // const handleScroll = () => {
-    //     const bottom =
-    //         chatContainerRef.current.scrollHeight - chatContainerRef.current.scrollTop ===
-    //         chatContainerRef.current.clientHeight;
-    //     setIsAtBottom(bottom);
-    //     if (bottom) setShowNewMessageAlert(false);
-    // };
-    // const handleNewMessageClick = () => {
-    //     if (messagesEndRef.current) {
-    //         messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
-    //     }
-    //     setShowNewMessageAlert(false); // Hide alert immediately after clicking
-    // };
-
 
     return (
         <div className="chat-container">
@@ -112,13 +85,7 @@ const Chat = ({ playerID, socket, group }) => {
                         </div>
                     </div>
                 ))}
-                {/* <div ref={messagesEndRef} /> */}
-            </div>
-            {/* {showNewMessageAlert && (
-                <div className="new-message-alert" onClick={handleNewMessageClick}>
-                    New message(s) added - Click to see
-                </div>
-            )} */}
+            </div> 
             <form className="chat-input" onSubmit={sendMessage}>
                 <input
                     type="text"

@@ -17,7 +17,13 @@ const RoundOne = ({ roomId, playerID, socket, group }) => {
     const [userActionOccurred, setUserActionOccurred] = useState(false);
 
     const [socketMessage, setSocketMessage] = useState(''); // This can be used to display socket events
+
+    const [socketMessageFeedback, setSocketMessageFeedback] = useState(''); // This can be used to display socket events
     const apiUrl = process.env.REACT_APP_BACK_END_URL_HOST;
+
+    const [receivedProfile, setReceivedProfile] = useState(null);  // Add state to store the profile data
+
+
 
 
     const handleDragDrop = (results) => {
@@ -26,6 +32,13 @@ const RoundOne = ({ roomId, playerID, socket, group }) => {
 
         // If the item is moved within the same list and position, do nothing
         if (source.droppableId === destination.droppableId && source.index === destination.index) {
+            return;
+        }
+
+        // Prevent adding to a destination that already has an item
+        if (destination.droppableId !== 'ROOT' && dropZones[destination.droppableId].length > 0) {
+            setSocketMessageFeedback(`All drop boxes can only hold one item!`);
+            sendGroupMessage('All drop boxes can only hold one item!')
             return;
         }
 
@@ -55,14 +68,10 @@ const RoundOne = ({ roomId, playerID, socket, group }) => {
                 return updatedCategories;
             });
         } else {
-            setDropZones((prev) => {
-                const updatedDestinationItems = Array.from(prev[destination.droppableId]);
-                updatedDestinationItems.splice(destination.index, 0, movedItem); // Insert item into destination drop zone
-                return {
-                    ...prev,
-                    [destination.droppableId]: updatedDestinationItems,
-                };
-            });
+            setDropZones((prev) => ({
+                ...prev,
+                [destination.droppableId]: [movedItem], // Replace any existing item with the moved item
+            }));
         }
 
         // Emit the drag-drop event to the server with relevant data
@@ -70,6 +79,14 @@ const RoundOne = ({ roomId, playerID, socket, group }) => {
         // Indicate that a user action has occurred
         setUserActionOccurred(true);
 
+    };
+
+    const sendGroupMessage = (message) => {
+        socket.emit('sendFeedbackGroupMessage', {
+            roomId,
+            group, // Include the group identifier
+            message,
+        });
     };
 
     const handleExternalDragDrop = (source, destination, movedItem) => {
@@ -108,7 +125,7 @@ const RoundOne = ({ roomId, playerID, socket, group }) => {
         setCursorPositions((prevPositions) => ({
             ...prevPositions,
             [data.playerID]: {
-                x: data.x ,
+                x: data.x,
                 y: data.y - 50,
                 group: data.group
             },
@@ -116,17 +133,14 @@ const RoundOne = ({ roomId, playerID, socket, group }) => {
 
     };
 
-
     const saveState = useCallback(async () => {
         try {
             const groups = [{
                 groupNumber: group, // If you know the group number from props or context
                 categories,
                 dropZones,
-                messages: socketMessage ? [socketMessage] : [] // put the message in the messages array
-
+                messages: receivedProfile ? [receivedProfile] : [] // put the message in the messages array
             }];
-            console.log(socketMessage)
 
             const response = await fetch(`${apiUrl}/api/rounds/save-state-first-round`, {
                 method: 'POST',
@@ -148,25 +162,10 @@ const RoundOne = ({ roomId, playerID, socket, group }) => {
     }, [roomId, categories, dropZones, group])
 
     useEffect(() => {
-        const fetchCategories = async () => {
-            try {
-                const response = await fetch(`${apiUrl}/api/cards/get-all-categories`,{
-                    credentials: 'include', // Include JWT cookies
-                });
-                if (response.ok) {
-                    const data = await response.json();
-                    setCategories(data); // Update categories state
-                } else {
-                    console.error('Error fetching categories');
-                }
-            } catch (error) {
-                console.error('Error fetching categories:', error);
-            }
-        }
 
         const fetchSavedRoomState = async () => {
             try {
-                const response = await fetch(`${apiUrl}/api/rounds/get-state-first-round/${roomId}`,{
+                const response = await fetch(`${apiUrl}/api/rounds/get-state-first-round/${roomId}`, {
                     credentials: 'include', // Include JWT cookies
                 });
                 if (response.ok) {
@@ -181,7 +180,10 @@ const RoundOne = ({ roomId, playerID, socket, group }) => {
                         setDropZones(currentGroup.dropZones || { priority1: [], priority2: [], priority3: [], priority4: [] });
                         // If you need to restore messages or socketMessage:
                         if (currentGroup.messages && currentGroup.messages.length > 0) {
-                            setSocketMessage(currentGroup.messages[currentGroup.messages.length - 1]);
+                            const lastMessage = currentGroup.messages[currentGroup.messages.length - 1];
+
+                            // Update the state to store the profile data exactly as received from the backend
+                            setReceivedProfile(lastMessage);
                         }
                         console.log('Room state loaded successfully');
                     } else {
@@ -196,7 +198,7 @@ const RoundOne = ({ roomId, playerID, socket, group }) => {
         };
 
         if (group) {
-            fetchCategories();
+            // fetchCategories();
             fetchSavedRoomState();
         }
     }, [roomId, group])
@@ -225,10 +227,20 @@ const RoundOne = ({ roomId, playerID, socket, group }) => {
             setSocketMessage(`${message}`);
         });
 
+        socket.on('receiveFeedbackGroupMessage', ({ message }) => {
+            setSocketMessageFeedback(message); // Display the received message
+        });
+        socket.on('receiveProfileData', (data) => {
+            console.log('Received profile data:', data);
+            setReceivedProfile(data);  // Store the received profile data
+        });
+
         return () => {
             socket.off('cursorUpdate');
             socket.off('dragDropUpdate');
             socket.off('receiveGroupMessage');
+            socket.off('receiveFeedbackGroupMessage');
+            socket.off('receiveProfileData');  // Clean up the listener on unmount
         }
     }, [socket])
 
@@ -263,9 +275,24 @@ const RoundOne = ({ roomId, playerID, socket, group }) => {
 
     return (
         <div className='round-one-container'>
+
             {socketMessage && <p>{socketMessage}</p>}
 
-            <div className='dragdrop-container' >
+            {receivedProfile ? (
+                <div className='profile-display'>
+                    <h2>Profile: {receivedProfile.profile.name}</h2>
+
+                    <p>{receivedProfile.profile.options?.en || 'Description not available'}</p>
+
+
+                </div>
+            ) : (
+                <div>
+                    <h2>You are waiting for a Profile from the Moderator!</h2>
+                </div>
+            )}
+
+            <div className='dragdrop-container-1' >
                 <DragDropContext onDragEnd={handleDragDrop}   >
                     <ul className='api-list'>
                         <Droppable droppableId='ROOT' >
@@ -289,7 +316,7 @@ const RoundOne = ({ roomId, playerID, socket, group }) => {
                                                         {...provided.draggableProps}
                                                         ref={provided.innerRef}
                                                     >
-                                                        <li className="category-item">
+                                                        <li className="category-item-round-1">
                                                             {category.category}
                                                         </li>
                                                     </div>
@@ -302,13 +329,13 @@ const RoundOne = ({ roomId, playerID, socket, group }) => {
                             )}
                         </Droppable>
                     </ul>
-                    <div className="droppable-box-b">
+                    <div className="droppable-box-b-round1">
                         {/* Render the four drop zones (boxes) */}
-                        {['priority1', 'priority2','priority3', 'priority4'].map((box, index) => (
+                        {['priority1', 'priority2', 'priority3', 'priority4'].map((box, index) => (
                             <Droppable droppableId={box} key={box} >
-                                {(provided,snapshot) => (
+                                {(provided, snapshot) => (
                                     <div
-                                        className="droppable-box"
+                                        className="droppable-box-round1"
                                         ref={provided.innerRef}
                                         {...provided.droppableProps}
                                     >
@@ -327,7 +354,7 @@ const RoundOne = ({ roomId, playerID, socket, group }) => {
                                                             {...provided.draggableProps}
                                                             {...provided.dragHandleProps}
                                                             className="draggable-item"
-                                                            
+
                                                         >
                                                             {item.category}
                                                         </div>
@@ -346,6 +373,7 @@ const RoundOne = ({ roomId, playerID, socket, group }) => {
 
 
                 </DragDropContext>
+
 
                 {Object.entries(cursorPositions)
                     .filter(([pid, pos]) => pos.group === group)
@@ -370,6 +398,10 @@ const RoundOne = ({ roomId, playerID, socket, group }) => {
 
 
             </div >
+            <div className='feedback-box-round-1'>
+
+                {socketMessageFeedback && <div className='error' >{socketMessageFeedback}</div>}
+            </div>
         </div>
     )
 }

@@ -18,13 +18,16 @@ const app = express()
 
 const server = http.createServer(app)
 
+const io = setupWebSocket(server)
+
+
 app.use((req, res, next) => {
   console.log(req.path, req.method)
   next()
 })
+// Make `io` available to the rest of the app
+app.set('socketio', io);
 
-
-const io = setupWebSocket(server)
 
 //middleware
 app.use(express.json()) //looks if there is an audit to the request/ if data was sent in to the server

@@ -21,6 +21,10 @@ const CompetencyCardSchema = new Schema({
                 de: {
                     type: String,
                     required: true
+                },
+                en: {
+                    type: String,
+                    required: true
                 }
             }
         }

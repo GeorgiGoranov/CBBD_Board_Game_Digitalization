@@ -20,7 +20,11 @@ const GroupSchema = new Schema({
   messages: {
     type: Array,
     default: []
-  }
+  },
+  nationalities: {
+    type: Array,
+    default: []
+  },
 }, { _id: false });
 
 const SecondRoomSchema = new Schema({

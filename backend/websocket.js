@@ -2,14 +2,14 @@ const { Server } = require('socket.io');
 const { saveMessage } = require('./controllers/roundsController');
 require('dotenv').config()
 
-
+  
 // In-memory stores
 const rooms = {};       // To keep track of players in rooms
 const roomRounds = {};  // To keep track of current round per room
 const roomVotes = {}; // Store votes per room: { [roomId]: { agree: number, disagree: number } }
+const roomsReadiness = {};
 
-
-
+ 
 // WebSocket setup
 function setupWebSocket(server) {
   const io = new Server(server, {
@@ -19,9 +19,9 @@ function setupWebSocket(server) {
       credentials: true, // Enable credentials (cookies, authorization headers)
     }
   });
-
+  
   io.on('connection', (socket) => {
-    console.log(`User back-end initial connection: ${socket.id}`);
+    console.log(`User back-end initial connection: ${socket.id}`);  
 
     // Handle when a player joins a session
     socket.on('joinSession', (data) => {
@@ -69,8 +69,46 @@ function setupWebSocket(server) {
           playerID: player.playerID,
           nationality: player.nationality,
           group: player.group
-        }))
+        })) 
       );
+
+      // Listen for when a participant becomes ready
+      socket.on('playerReady', ({ roomId, playerID, group }) => {
+        // If no readiness structure for room, create it
+        if (!roomsReadiness[roomId]) {
+          roomsReadiness[roomId] = {};
+        }
+        // If no readiness structure for group, create it
+        if (!roomsReadiness[roomId][group]) {
+          roomsReadiness[roomId][group] = {};
+        }
+
+        // Mark the player as ready
+        roomsReadiness[roomId][group][playerID] = true;
+
+        console.log(`Player ${playerID} in group ${group} of room ${roomId} is READY.`);
+
+        // Check if entire group is ready
+        const groupPlayers = rooms[roomId].filter(p => Number(p.group) === Number(group));
+        const allReady = groupPlayers.every(p => roomsReadiness[roomId][group][p.playerID]);
+
+        if (allReady) {
+          console.log(`Group ${group} in room ${roomId} is fully READY!`);
+          // Notify all clients in the room that this group is fully ready
+          io.to(roomId).emit('groupFullyReady', { groupNumber: group });
+        } else {
+          // Optionally: broadcast partial readiness info
+          // For example, how many are ready out of total
+          const readyCount = groupPlayers.filter(p => roomsReadiness[roomId][group][p.playerID]).length;
+          const totalCount = groupPlayers.length;
+
+          io.to(roomId).emit('groupReadinessUpdate', {
+            groupNumber: group,
+            readyCount,
+            totalCount,
+          });
+        }
+      });
     });
 
     socket.on('navigateToRoom', (data) => {
@@ -87,15 +125,21 @@ function setupWebSocket(server) {
     });
 
     socket.on('sendGroupMessage', (data) => {
-      const { roomId, group, message } = data;
+      const { roomId, groups, message } = data;
 
       if (!rooms[roomId]) return;
 
-      const targetPlayers = rooms[roomId].filter(player => String(player.group) === String(group));
+      // Ensure `groups` is an array
+      const targetGroups = Array.isArray(groups) ? groups : [groups];
 
-      targetPlayers.forEach(player => {
-        io.to(player.socketId).emit('receiveGroupMessage', { message });
+      // Loop through each group and send the message to its players
+      targetGroups.forEach((group) => {
+        const targetPlayers = rooms[roomId].filter(player => String(player.group) === String(group));
+        targetPlayers.forEach(player => {
+          io.to(player.socketId).emit('receiveGroupMessage', { message });
+        });
       });
+
     });
 
     socket.on('dragDropUpdate', (data) => {
@@ -133,7 +177,7 @@ function setupWebSocket(server) {
         // Find all players in this room with the same groupNumber
         const roomPlayers = rooms[roomId] || [];
         const targetPlayers = roomPlayers.filter(p => Number(p.group) === Number(groupNumber));
-
+  
         targetPlayers.forEach((player) => {
           io.to(player.socketId).emit('receiveMessage', { message: result.message });
         });
@@ -142,22 +186,35 @@ function setupWebSocket(server) {
       }
     });
 
+
     socket.on('changeRound', (data) => {
       const { roomId, roundNumber } = data;
       // Update the current round for the room
       roomRounds[roomId] = roundNumber;
+
+      // Clear readiness data for this room
+      if (roomsReadiness[roomId]) {
+        roomsReadiness[roomId] = {};  // Reset all readiness for the new round
+        console.log(`Cleared readiness for room ${roomId} because round changed to ${roundNumber}`);
+      }
 
       // Broadcast 'roundChanged' event to all clients in the room
       io.in(roomId).emit('roundChanged', { roundNumber });
 
       console.log(`Round changed to ${roundNumber} in room ${roomId}`);
     });
-    
+
     socket.on('newDilemmaCardData', (data) => {
       const { roomId, card } = data;
 
+      // 1. Reset the server-side votes for this room
+      roomVotes[roomId] = { option1: 0, option2: 0 };
+
       // Broadcast the new card data to all users in the room
       io.to(roomId).emit('updateDilemmaCardData', card);
+
+      // 3. Broadcast the reset counts (optional, to ensure all clients see 0 immediately)
+      io.to(roomId).emit('updateVotes', roomVotes[roomId]);
 
       console.log(`Broadcasted new dilemma card data for room: ${roomId}`);
     });
@@ -165,7 +222,10 @@ function setupWebSocket(server) {
     socket.on('vote', (data) => {
       const { vote, roomId } = data;
 
-      if (!roomVotes[roomId]) roomVotes[roomId] = {};
+      if (!roomVotes[roomId]) {
+        // Initialize counters specifically as option1: 0, option2: 0
+        roomVotes[roomId] = { option1: 0, option2: 0 };
+      }
 
       // Increment vote count for the selected option
       if (!roomVotes[roomId][vote]) {
@@ -178,8 +238,10 @@ function setupWebSocket(server) {
 
     // Handle resetting votes when a new dilemma card is selected
     socket.on('resetVotes', () => {
-      votes = { agree: 0, disagree: 0 }; // Reset vote counts
-      io.emit('updateVotes', votes); // Notify all clients to reset their vote counts
+      // Reset the vote counts for this room
+      roomVotes[roomId] = { option1: 0, option2: 0 };
+      // Notify all clients with the updated votes
+      io.to(roomId).emit('updateVotes', roomVotes[roomId]);
     });
 
     socket.on('stopGame', (data) => {
@@ -189,14 +251,56 @@ function setupWebSocket(server) {
       io.to(roomId).emit('gameStopped');
     });
 
-    socket.on('next-card-3', (data) => {
-      const { roomId } = data;
+    socket.on('sendFeedbackGroupMessage', ({ roomId, group, message }) => {
 
-      // Broadcast 'gameStopped' to all sockets in roomId
-      io.to(roomId).emit('next-card-3-go');
+      if (!rooms[roomId]) return;
+
+
+      const targetPlayers = rooms[roomId].filter(player => String(player.group) === String(group));
+
+      targetPlayers.forEach(player => {
+        io.to(player.socketId).emit('receiveFeedbackGroupMessage', { message }); 
+      });
+    }); 
+
+    socket.on('startGroupDiscussion', ({ roomId }) => {
+      io.to(roomId).emit('groupDiscussionStarted', { message: 'Group discussion has started.' });
     });
 
+    socket.on('endGroupDiscussion', ({ roomId }) => {
+      io.in(roomId).emit('groupDiscussionEnded', { message: 'Group discussion has ended. Proceeding to the next round.' });
+    });
 
+    // Listen for group change events from clients
+    socket.on('groupChange', (newGroupNumber) => {
+      console.log(`Group change to: ${newGroupNumber} by ${socket.id}`);
+      // Broadcast the new group number to all connected clients
+      io.emit('nextGroupUnderDiscussion', newGroupNumber);
+    });
+
+    socket.on('sendProfileToGroups', ({ roomId, profile, groups }) => {
+      if (!rooms[roomId]) return;
+
+      const targetGroups = Array.isArray(groups) ? groups : [groups];
+
+      // Find the profile data (if needed)
+      // You might need a separate function to get the profile details from your database
+      const profileData = { profile }; // Example data
+
+      console.log(profile)
+
+      // Loop through each group and send the profile data to its players
+      targetGroups.forEach((group) => {
+        const targetPlayers = rooms[roomId].filter(player => String(player.group) === String(group));
+        targetPlayers.forEach(player => {
+          io.to(player.socketId).emit('receiveProfileData', profileData);
+        });
+      });
+    });
+
+    socket.on('setSelectedProfileToNull', ()=>{
+      io.emit('selectedProfileToNull');
+    })
 
     socket.on('disconnect', () => {
       console.log(`User back-end disconnected: ${socket.id}`);
@@ -223,7 +327,7 @@ function setupWebSocket(server) {
           'updatePlayerList',
           rooms[roomCode].map(player => ({
             playerID: player.playerID,
-            nationality: player.nationality,
+            nationality: player.nationality, 
             group: player.group
           }))
         );
