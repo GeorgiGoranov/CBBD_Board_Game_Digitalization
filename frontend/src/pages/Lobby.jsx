@@ -242,6 +242,8 @@ const Lobby = () => {
                 })),
             }));
 
+          
+
             // Save to backend
             const response = await fetch(`${apiUrl}/api/routes/join-game-session`, {
                 method: 'POST',
@@ -277,6 +279,8 @@ const Lobby = () => {
                 });
                 if (updateResponse.ok) {
                     const data = await updateResponse.json();
+
+                    console.log(data)
                     console.log('Token updated successfully:', data);
                 } else {
                     const errorData = await updateResponse.json();

@@ -62,7 +62,7 @@ const Results = () => {
         };
 
         fetchRoundData();
-    }, [roomId,apiUrl]);
+    }, [roomId, apiUrl]);
 
     // -----------------------------
     //  CSV Export Functions
@@ -227,12 +227,12 @@ const Results = () => {
         }));
 
         return (
-            <div>
+            <div >
                 <h3>{roundTitle} Decisions:</h3>
                 {remappedGroups.length > 0 ? (
                     remappedGroups.map((group, gIndex) => (
                         <div key={gIndex} className="group-section">
-                            <div>
+                            <div className='groups'>
 
                                 <h4>Group {group.groupNumber}</h4>
                                 {/* Display Nationalities if available */}
@@ -260,7 +260,7 @@ const Results = () => {
                                     {items.length > 0 ? (
                                         <ul>
                                             {items.map((item, index) => (
-                                                <>
+                                                <span key={index} className='item-dz'>
                                                     {isFirstRound ? (
                                                         item.category || 'Unnamed Item'
                                                     ) : isSecondRound ? (
@@ -268,7 +268,9 @@ const Results = () => {
                                                     ) : (
                                                         'Invalid Round Data'
                                                     )}
-                                                </>
+                                                    {/* Add a comma if it's not the last item */}
+                                                    {index < items.length - 1 && <span id='s-box'>, </span> }
+                                                </span>
                                             ))}
                                         </ul>
                                     ) : (
