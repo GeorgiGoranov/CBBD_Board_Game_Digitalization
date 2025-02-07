@@ -269,7 +269,7 @@ const Results = () => {
                                                         'Invalid Round Data'
                                                     )}
                                                     {/* Add a comma if it's not the last item */}
-                                                    {index < items.length - 1 && <span id='s-box'>, </span> }
+                                                    {index < items.length - 1 && <span id='s-box'>, </span>}
                                                 </span>
                                             ))}
                                         </ul>
@@ -301,79 +301,56 @@ const Results = () => {
         );
     };
 
-    const renderThirdRoundCards = (cards) => (
-        <div>
-            <h3>Third Round Decisions:</h3>
-            
-            {cards.length > 0 ? (
-                cards.map((cardData, index) => (
-                    <div key={index} className="card">
-                        <h4>Category: {cardData.card.category || 'Unknown'}</h4>
-                        <h5>Subcategory: {cardData.card.subcategory || 'Unknown'}</h5>
-                        <div className="votes">
-                            {Object.keys(cardData.votes).length > 0 ? (
-                                Object.entries(cardData.votes).map(([option, voteData]) => (
-                                    <div key={option}>
-                                        <p> Vote Count : {voteData.count}</p>
-                                        <div className='container-votes-options'>
-                                            <p className='votes-options'>German: {voteData.nationalities.german || 0}</p>
-                                            <p className='votes-options'>Dutch: {voteData.nationalities.dutch || 0}</p>
-                                            <p className='votes-options'>Other: {voteData.nationalities.other || 0}</p>
+    const renderThirdRoundCards = (cards) => {
+        // Filter out cards with unknown category or subcategory
+        const filteredCards = cards.filter(cardData =>
+            cardData.card.category && cardData.card.category !== 'Unknown' &&
+            cardData.card.subcategory && cardData.card.subcategory !== 'Unknown'
+        );
+
+        return (
+            <div>
+                <h3>Third Round Decisions:</h3>
+
+                {filteredCards.length > 0 ? (
+                    filteredCards.map((cardData, index) => (
+                        <div key={index} className="card">
+                            <div className="card-count-badge">{index + 1}</div>
+                            <h4>Category: {cardData.card.category}</h4>
+                            <h5>Subcategory: {cardData.card.subcategory}</h5>
+                            <div className="votes">
+                                {Object.keys(cardData.votes).length > 0 ? (
+                                    Object.entries(cardData.votes).map(([option, voteData]) => (
+                                        <div key={option}>
+                                            <p>Vote Count: {voteData.count}</p>
+                                            <div className='container-votes-options'>
+                                                <p className='votes-options'>German: {voteData.nationalities.german || 0}</p>
+                                                <p className='votes-options'>Dutch: {voteData.nationalities.dutch || 0}</p>
+                                                <p className='votes-options'>Other: {voteData.nationalities.other || 0}</p>
+                                            </div>
                                         </div>
-                                    </div>
-                                ))
-                            ) : (
-                                <p>No votes recorded.</p>
-                            )}
+                                    ))
+                                ) : (
+                                    <p>No votes recorded.</p>
+                                )}
+                            </div>
+
+                            <div className="options">
+                                <h5>Options ({language.toUpperCase()}):</h5>
+                                <ul>
+                                    {(cardData.card.options?.[language] || []).map((option, nlIndex) => (
+                                        <li key={`nl-${nlIndex}`}>{option}</li>
+                                    ))}
+                                </ul>
+                            </div>
                         </div>
-
-                        <div className="options">
-
-                            <h5>Options ({language.toUpperCase()}):</h5>
-                            <ul>
-                                {(cardData.card.options?.[language] || []).map((option, nlIndex) => (
-                                    <li key={`nl-${nlIndex}`}>{option}</li>
-                                ))}
-                            </ul>
-                        </div>
-
-
-                        {/* {Object.keys(cardData.votes).length > 0 ? (
-                            (cardData.card.options?.[language] || []).map((optionText, index) => {
-                                // Dynamically get the corresponding vote key based on the index
-                                const voteKey = `option${index + 1}`;
-                                const voteData = cardData.votes[voteKey];
-
-                                return (
-                                    <div key={index} className="votes">
-                                        <h3>{optionText}</h3> {/* Display the option text */}
-                        {/* {voteData ? (
-                                            <>
-                                                <p>Votes: {voteData.count}</p>
-                                                <ul>
-                                                    <li className='votes-options'>German: {voteData.nationalities.german || 0}</li>
-                                                    <li className='votes-options'>Dutch: {voteData.nationalities.dutch || 0}</li>
-                                                    <li className='votes-options'>Other: {voteData.nationalities.other || 0}</li>
-                                                </ul>
-                                            </>
-                                        ) : (
-                                            <p>No votes for this option.</p>
-                                        )}
-                                    </div>
-                                );
-                            })
-                        ) : (
-                            <p>No votes recorded.</p>
-                        )} */}
-
-
-                    </div>
-                ))
-            ) : (
-                <p>No cards available for the third round.</p>
-            )}
-        </div>
-    );
+                    ))
+                ) : (
+                    <p>No valid cards found for this round.</p>
+                )}
+            </div>
+        );
+    };
 
 
 
