@@ -154,7 +154,14 @@ h3 {
     }
 
     .overlay {
+        display: flex;
+        text-align: center;
         font-size: 20px;
+    }
+
+    .p-overlay{
+        margin: 0;
+       
     }
 
 

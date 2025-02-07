@@ -7,13 +7,13 @@ const {createUser,getAllAvailableSessions,getUser,updateUser,
  
 const { requireAuth } = require('../middleware/authMiddleware')
  
-const router = express.Router()  
+const router = express.Router()   
  
 router.post('/login', getUserLogin)
 
 router.post('/register' , createUser) 
  
-router.get('/isAuth', isAuth)
+router.get('/isAuth', isAuth) 
 
 router.get('/available-sessions', requireAuth, getAllAvailableSessions)
 

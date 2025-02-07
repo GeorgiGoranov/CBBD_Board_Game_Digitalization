@@ -250,9 +250,13 @@ const Room = () => {
     return (
         <div className='room-container'>
             {isOverlayVisible && (
-                <div className='overlay'>
-                    <p>You are locked in!</p>
-                    <p>Please wait for the next round.</p>
+                <div>
+                    <div className='overlay'>
+                        <div className='p-overlay'>
+                            <p >You have been marked as Ready!</p>
+                            <p >Please wait for the next round.</p>
+                        </div>
+                    </div>
                 </div>
             )}
 
@@ -397,7 +401,7 @@ const Room = () => {
                         <ModeratorRoomLayout roomId={roomId} />
                     </div>
                 ) : (
-                    
+
                     <div>
                         <div>
                             {/* Provide the needed props: roomId, socket, playerID, group */}
