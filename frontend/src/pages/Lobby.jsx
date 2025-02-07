@@ -253,7 +253,7 @@ const Lobby = () => {
             });
 
             if (response.ok) {
-                console.log('Groups saved successfully!');
+                
                 // Emit an event to update all players' tokens
                 socket.emit('updateTokens', {
                     roomId,
@@ -280,7 +280,6 @@ const Lobby = () => {
                 if (updateResponse.ok) {
                     const data = await updateResponse.json();
 
-                    console.log(data)
                     console.log('Token updated successfully:', data);
                 } else {
                     const errorData = await updateResponse.json();
@@ -295,6 +294,8 @@ const Lobby = () => {
                         return acc;
                     }, {});
 
+                    console.warn(nationalityCounts)
+
                     // 3) Return the group object
                     return {
                         groupNumber: grp.groupNumber,
@@ -304,6 +305,8 @@ const Lobby = () => {
                         nationalities: nationalityCounts,
                     };
                 });
+
+                console.warn(groupsForRound)
 
                 // 5. Save these groups to your RoundOne DB
                 //    (i.e. "first-round" collection)

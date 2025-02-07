@@ -1,11 +1,11 @@
-.container-layout{
+.container-layout {
     display: flex;
     flex-direction: row;
     justify-content: space-evenly;
-    
+
 }
 
-.create-session{
+.create-session {
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -28,9 +28,16 @@
     border: 1px solid #d0d0d0;
 }
 
+.stop-game-btn.disabled{
+    background-color: #e0e0e0;
+    color: #a0a0a0;
+    border: 1px solid #d0d0d0;
+}
+
+
 
 .bi.bi-patch-plus-fill,
 .bi.bi-card-checklist,
-.bi.bi-person-lines-fill{
+.bi.bi-person-lines-fill {
     font-size: 20px;
 }

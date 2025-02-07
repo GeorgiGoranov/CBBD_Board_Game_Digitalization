@@ -249,7 +249,7 @@ const Room = () => {
 
     return (
         <div className='room-container'>
-            {isOverlayVisible && (
+            {!showGroupDiscussion && isOverlayVisible && (
                 <div>
                     <div className='overlay'>
                         <div className='p-overlay'>
@@ -261,6 +261,7 @@ const Room = () => {
             )}
 
             {showGroupDiscussion ? (
+                
                 <div className='container-discussion'>
                     <GroupDiscussion
                         roomId={roomId}

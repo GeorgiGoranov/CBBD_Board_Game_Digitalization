@@ -304,6 +304,7 @@ const Results = () => {
     const renderThirdRoundCards = (cards) => (
         <div>
             <h3>Third Round Decisions:</h3>
+            
             {cards.length > 0 ? (
                 cards.map((cardData, index) => (
                     <div key={index} className="card">
@@ -313,7 +314,7 @@ const Results = () => {
                             {Object.keys(cardData.votes).length > 0 ? (
                                 Object.entries(cardData.votes).map(([option, voteData]) => (
                                     <div key={option}>
-                                        <p> Vote Count: {voteData.count}</p>
+                                        <p> Vote Count : {voteData.count}</p>
                                         <div className='container-votes-options'>
                                             <p className='votes-options'>German: {voteData.nationalities.german || 0}</p>
                                             <p className='votes-options'>Dutch: {voteData.nationalities.dutch || 0}</p>

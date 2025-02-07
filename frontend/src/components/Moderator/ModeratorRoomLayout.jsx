@@ -136,21 +136,21 @@ const ModeratorRoomLayout = ({ roomId }) => {
                 Start Round 1
             </button> */}
             <button
-                className={`next-btn ${currentRound >= 2 ? 'disabled' : ''}`}
+                className={`next-btn ${currentRound >= 2 || inGroupDiscussion ? 'disabled' : ''}`}
                 onClick={handleNextRound}
                 disabled={currentRound >= 2}
             >
                 Start Round 2
             </button>
             <button
-                className={`next-btn ${currentRound >= 3 ? 'disabled' : ''}`}
+                className={`next-btn ${currentRound >= 3 || inGroupDiscussion ? 'disabled' : ''}`}
                 onClick={handleNextRound3}
                 disabled={currentRound >= 3}
 
             >
                 Start Round 3
             </button>
-            <button className={`group-discussion-btn ${currentRound >= 3 ? 'disabled' : ''}`} onClick={handleStartGroupDiscussion} disabled={inGroupDiscussion}>
+            <button className={`group-discussion-btn ${currentRound >= 3 || inGroupDiscussion ? 'disabled' : ''}`} onClick={handleStartGroupDiscussion} disabled={inGroupDiscussion}>
                 Start Group Discussion
             </button>
             {inGroupDiscussion && (
@@ -158,7 +158,9 @@ const ModeratorRoomLayout = ({ roomId }) => {
                     End Group Discussion
                 </button>
             )}
-            <button className="stop-game-btn" onClick={handleConcludeGame}>
+            <button className={`stop-game-btn ${currentRound < 3 ? 'disabled' : ''}`} 
+            onClick={handleConcludeGame}
+            >
                 Stop Game
             </button>
 

@@ -49,7 +49,9 @@
         padding: 12px; // Padding inside the vote box
         margin-top: 12px; // Space above the vote section
         border: 1px solid #eee;border: 1px solid #eee; // Subtle border for separation
-
+        display: grid;
+        grid-template-columns: repeat(3,1fr);
+        
         p {
             margin: 4px 0; // Space between vote items
             font-size: 14px; // Smaller font size
