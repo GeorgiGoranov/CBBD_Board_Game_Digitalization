@@ -39,18 +39,21 @@ header {
   align-items: center;
   /* Vertically align items */
   background: #636;
-  // z-index: 1000;
 
 }
 
 header .container h1 {
   font-size: 1rem;
   color: #fff;
+
+
 }
 
 header .container {
   max-width: 1400px;
   margin: 0 auto;
+  display: flex;
+  justify-content: space-evenly;
 }
 
 header img {
@@ -69,8 +72,9 @@ header a {
 
 header .items {
   display: flex;
-  justify-content: space-around;
+  justify-content: space-evenly;
   align-items: center;
+ 
 
 }
 
@@ -78,7 +82,12 @@ header .right-side-container {
   display: flex;
   gap: 15px;
   align-items: center;
+  justify-content: end;
+  margin-right: 25px;
+  
 }
+
+
 
 header .input {
   width: 50px;
@@ -230,23 +239,95 @@ div.error {
 
 @media (max-width: 480px) {
   .logo-container {
-    height: 50px;
+    height: 70px;
   }
 
   header .container h1 {
     display: flex;
-    width: 20px;
+   
     text-align: center;
     font-size: 12px;
     color: #fff;
-    
+
   }
 
   header .items {
-   display: flex;
-   gap: 15px;
-   justify-content: space-around;
-   
+    display: flex;
+    gap: 15px;
+    justify-content: space-around;
+
   }
 
+}
+
+// Keep 480px styles from 481px to 768px
+@media (min-width: 481px) and (max-width: 600px) {
+  .logo-container {
+    height: 70px;
+  }
+
+  header .container h1 {
+    display: flex;
+   
+    text-align: center;
+    font-size: 14px;
+    color: #fff;
+
+  }
+
+  header .items {
+    display: flex;
+    gap: 15px;
+    justify-content: space-around;
+
+  }
+
+}
+
+
+@media (max-width: 850px) and (min-width: 601px) {
+
+  .logo-container {
+    height: 70px;
+  }
+
+  header .container h1 {
+    display: flex;
+ 
+    text-align: center;
+    font-size: 18px;
+    color: #fff;
+
+  }
+
+  header .items {
+    display: flex;
+  
+    justify-content: space-evenly;
+
+  }
+}
+
+
+@media (max-width: 1020px) and (min-width: 851px) {
+
+  .logo-container {
+    height: 70px;
+  }
+
+  header .container h1 {
+    display: flex;
+ 
+    text-align: center;
+    font-size: 20px;
+    color: #fff;
+
+  }
+
+  header .items {
+    display: flex;
+  
+    justify-content: space-evenly;
+
+  }
 }
