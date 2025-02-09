@@ -71,16 +71,6 @@ const Register = () => {
                             type="text"
                             value={username}
                             onChange={(e) => setUsername(e.target.value)}></input>
-                        <h3>Nationality</h3>
-                        <select
-                            className="input"
-                            value={nationality}
-                            onChange={(e) => setNationality(e.target.value)}
-                            placeholder="Select a Nationality">
-                            <option value="" disabled>Select a Nationality</option>
-                            <option value="german">German</option>
-                            <option value="dutch">Dutch</option>
-                        </select>
                         <h3>Password</h3>
                         <input className="input"
                             type="password"
