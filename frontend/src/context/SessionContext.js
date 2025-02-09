@@ -1,48 +1,45 @@
-import { createContext, useReducer } from "react"
+import { createContext, useReducer } from "react";
 
-export const SessionContext = createContext()
-
+export const SessionContext = createContext();
 
 export const sessionReducer = (state, action) => {
     switch (action.type) {
         case 'SET_SESSIONS':
             return {
-                sessions: action.payload
-            }
+                sessions: action.payload || []
+            };
         case 'CREATE_SESSIONS':
             return {
                 sessions: [action.payload, ...state.sessions]
-            }
+            };
         case 'DELETE_SESSION':
             return {
-                sessions: state.sessions.filter(session => session.code !== action.payload) // Remove the session by ID
+                sessions: state.sessions.filter(session => session.code !== action.payload)
             };
         case 'DELETE_SESSION_PROFILE':
             return {
-                sessions: state.sessions.filter(session => session._id !== action.payload)  // Filter by _id instead of code
+                sessions: state.sessions.filter(session => session._id !== action.payload)
             };
         case 'UPDATE_SESSION':
             return {
                 sessions: state.sessions.map(session =>
                     session.code === action.payload.code ? action.payload : session
-                ) // Update the specific session with new data
-            }
+                )
+            };
         default:
-            return state
+            return state;
     }
-}
-//the children represent the passed/ wraped componenets in the provider in our case App.
+};
+
 export const SessionContextProvider = ({ children }) => {
-
+    // Correct initial state: sessions should be an empty array
     const [state, dispatch] = useReducer(sessionReducer, {
-        session: [] // Initialize sessions as an empty array
-    })
+        sessions: []
+    });
 
-
-    //outputing the wraped App components back so that they can be rendered with the wrap
     return (
         <SessionContext.Provider value={{ ...state, dispatch }}>
             {children}
         </SessionContext.Provider>
-    )
-}
+    );
+};
