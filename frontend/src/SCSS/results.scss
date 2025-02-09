@@ -113,14 +113,27 @@
     
 }
 
-.item-dz{
-    
+#btn-dw{
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s ease, background-color 0.3s ease; /* Smooth animation */
+}
+
+#btn-dw:hover{
+    background-color: var(--important);
+    transform: scale(1.1); /* Slightly increase the size on hover */
 }
 
 #s-box{
     color: var(--primary);
     font-weight: bold;
     font-size: 25px;
+}
+
+#p-votes span{
+    color: var(--blue);
+    font-weight: bold;
+    
 }
 
 .messages{

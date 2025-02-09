@@ -92,7 +92,7 @@ const ModeratorRoomLayout = ({ roomId }) => {
 
     // Handle transitioning from Group Discussion to the next round
     const handleEndGroupDiscussion = () => {
-        showConfirmationPopup('You are about to END Group Discussion and proceed to the next round. Are you sure?', () => {
+        showConfirmationPopup('You are about to "END" the Group Discussion. Are you sure?', () => {
             setInGroupDiscussion(false);
             socket.emit('endGroupDiscussion', { roomId });
         });

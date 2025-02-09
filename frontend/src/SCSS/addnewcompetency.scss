@@ -1,11 +1,7 @@
 .confirmation-popup {
     position: fixed;
     top: 20%;
-    transform: translate(-50%, -50%);
-    background-color: white;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+   
     width: 450px;
     padding: 20px;
     z-index: 1000;

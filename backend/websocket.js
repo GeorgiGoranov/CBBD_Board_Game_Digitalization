@@ -2,14 +2,14 @@ const { Server } = require('socket.io');
 const { saveMessage } = require('./controllers/roundsController');
 require('dotenv').config()
 
-  
+   
 // In-memory stores
 const rooms = {};       // To keep track of players in rooms
 const roomRounds = {};  // To keep track of current round per room
 const roomVotes = {}; // Store votes per room: { [roomId]: { agree: number, disagree: number } }
 const roomsReadiness = {};
-
- 
+   
+  
 // WebSocket setup
 function setupWebSocket(server) {
   const io = new Server(server, {

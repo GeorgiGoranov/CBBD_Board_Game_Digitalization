@@ -322,7 +322,7 @@ const Results = () => {
                                 {Object.keys(cardData.votes).length > 0 ? (
                                     Object.entries(cardData.votes).map(([option, voteData]) => (
                                         <div key={option}>
-                                            <p>Vote Count: {voteData.count}</p>
+                                            <p id='p-votes'>Vote Count for {option.replace(/option(\d+)/i, 'option $1')} : <span>{voteData.count}</span></p>
                                             <div className='container-votes-options'>
                                                 <p className='votes-options'>German: {voteData.nationalities.german || 0}</p>
                                                 <p className='votes-options'>Dutch: {voteData.nationalities.dutch || 0}</p>
@@ -361,7 +361,7 @@ const Results = () => {
             <p>Game Session Results for Room ID: {roomId}</p>
             {error && <p style={{ color: 'red' }}>{error}</p>}
             {/* Button to trigger CSV download */}
-            <button onClick={handleExportCsv}>Download Results as CSV</button>
+            <button id='btn-dw' onClick={handleExportCsv}>Download Results as CSV <i class="bi bi-download"></i></button>
             <div className='results'>
                 {/* First Round */}
                 {firstRoundDropZones ? renderDropZones(firstRoundDropZones, 'First Round') : <p>Loading first round data...</p>}

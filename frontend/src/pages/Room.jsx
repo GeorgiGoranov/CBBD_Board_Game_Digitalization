@@ -44,6 +44,8 @@ const Room = () => {
 
     const [isOverlayVisible, setIsOverlayVisible] = useState(false);
 
+    const [roundAnim, setRoundAnim] = useState(currentRound); // for animation purposes 
+
 
 
 
@@ -244,6 +246,10 @@ const Room = () => {
         setIsOverlayVisible(lockedIn);
     };
 
+    useEffect(() => {
+        setRoundAnim(currentRound); // Update the round when currentRound changes
+    }, [currentRound]);
+
 
     if (loading) return <div>Loading...</div>;
 
@@ -261,7 +267,7 @@ const Room = () => {
             )}
 
             {showGroupDiscussion ? (
-                
+
                 <div className='container-discussion'>
                     <GroupDiscussion
                         roomId={roomId}
@@ -285,8 +291,17 @@ const Room = () => {
                                 <div className='question-by-moderator'>
 
                                     <div className="selected-groups">
-                                        <h3>Room Code: {roomId}</h3>
-                                        <h4>Current Round: {currentRound}</h4>
+                                        <h3 id='h3-room'>Room Code: <span>{roomId}</span></h3>
+                                        <h2 id='h2-room'>Current Round:
+                                            <motion.span
+                                                key={roundAnim}
+                                                initial={{ opacity: 0, y: -20}}  // Start hidden and slightly above
+                                                animate={{ opacity: 1, y: 0}}    // Fade in and move to normal position
+                                                exit={{ opacity: 0, y: 20 }}       // Fade out and move down
+                                                transition={{ duration: 0.5 }}      // Animation duration
+                                            >
+                                                {currentRound}
+                                            </motion.span></h2>
                                         <h4>Select Groups:</h4>
                                         <div className="group-checkboxes">
                                             {availableGroups
@@ -302,9 +317,9 @@ const Room = () => {
                                                             <div className="group-info">
                                                                 <span className="group-name">Group {groupNumber}: </span>
                                                                 {isFullyReady ? (
-                                                                    <span className="ready-check"> ✔ Fully Ready</span>
+                                                                    <span className="ready-check"> <span>✔ Fully Ready</span></span>
                                                                 ) : (
-                                                                    <span className="readiness-status">waiting for players to be ready {readyCount}/{totalCount}</span>
+                                                                    <span className="readiness-status"><span>waiting for players to be ready</span> {readyCount}/{totalCount}</span>
                                                                 )}
                                                             </div>
                                                             <label className="group-checkbox">

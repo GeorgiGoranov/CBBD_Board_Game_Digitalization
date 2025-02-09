@@ -158,8 +158,8 @@ const RoundThree = ({ roomId, playerID, socket, role, nationality }) => {
         <div className="round-three-container">
             <div>
                 <h1>Dilemma Card</h1>
-                <h2>Category: {card.category || "Unknown"}</h2>
-                <p>Subcategory: {card.subcategory || "Unknown"}</p>
+                <h2>Category: <span>{card.category || "Unknown"}</span></h2>
+                <p>Subcategory: <span>{card.subcategory || "Unknown"}</span></p>
 
                 <div className="options-container-dilemma">
                     {cardOptions.map((cardOptions, index) => {

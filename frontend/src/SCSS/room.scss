@@ -87,7 +87,7 @@
 
 .information-pannel {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: 2fr 1fr;
   align-items: center;
   text-align: center;
   margin-left: 90px;
@@ -185,6 +185,25 @@
   display: flex;
   justify-content: center;
 
+}
+
+#h3-room span{
+  color: var(--important);
+}
+
+#h2-room span{
+  color: var(--blue);
+  font-size: 35px;
+}
+
+.ready-check span{
+  color: var(--l-green);
+  font-weight: bold;
+}
+
+.readiness-status span{
+  color: var(--important);
+  font-weight: bold;
 }
 
 

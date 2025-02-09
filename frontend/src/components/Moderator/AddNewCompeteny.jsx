@@ -177,8 +177,8 @@ const AddNewCompetency = () => {
                                 </ul>
                             </div>
                             <div className="popup-buttons">
-                                <button onClick={handleSubmitSubcategory}>Yes, Add</button>
-                                <button onClick={() => setShowConfirmation(false)}>Cancel</button>
+                                <button onClick={handleConfirm}>Yes, Add</button>  {/* Use handleConfirm here */}
+                                <button onClick={handleCancel}>Cancel</button>     {/* handleCancel to close the popup */}
                             </div>
                         </div>
                     </motion.div>
