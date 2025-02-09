@@ -50,9 +50,9 @@ const Home = () => {
     <div className='container-layout'>
       <div className="create-session">
         <h2>Create a Game Session</h2>
-        <button onClick={createGameSession}>Create New Session  <i class="bi bi-patch-plus-fill"></i></button>
-        <button onClick={addNewCompetencies}>Create New Competencies  <i class="bi bi-card-checklist"></i></button>
-        <button onClick={createNewProfile}>Create New Profiles  <i class="bi bi-person-lines-fill"></i></button>
+        <button onClick={createGameSession}>Create New Session  <i className="bi bi-patch-plus-fill"></i></button>
+        <button onClick={addNewCompetencies}>Create New Competencies  <i className="bi bi-card-checklist"></i></button>
+        <button onClick={createNewProfile}>Create New Profiles  <i className="bi bi-person-lines-fill"></i></button>
 
 
         {sessionCode && (

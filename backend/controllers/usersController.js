@@ -343,6 +343,9 @@ const logOut = async (req, res) => {
 const getAllAvailableSessions = async (req, res) => {
     try {
         const allSessions = await SessionModel.find({}).sort({ createdAt: -1 });
+        if (allSessions.length === 0) {
+            return res.status(200).json({ message: 'No available sessions yet' }); // Return message for no sessions
+        }
         res.status(200).json(allSessions);
     } catch (error) {
         console.error('Error fetching sessions:', error);

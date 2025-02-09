@@ -14,6 +14,7 @@ const AvailableSessions = () => {
     const { sessions, dispatch } = useSessionsContext()
     const navigate = useNavigate(); // Use navigate to programmatically change routes
     const [inactiveSession, setInactiveSession] = useState(null);  // State for inactive session modal
+    const [message, setMessage] = useState('')
 
 
 
@@ -30,8 +31,14 @@ const AvailableSessions = () => {
                     throw new Error('Error fetching sessions');
                 }
                 const data = await response.json();
-
-                dispatch({ type: 'SET_SESSIONS', payload: data })
+                // Handle the case when there are no sessions
+                if (data.message) {
+                    setMessage(data.message);  // Set message if backend indicates no sessions
+                } else if (Array.isArray(data) && data.length === 0) {
+                    setMessage('No Available Sessions Yet!');
+                } else {
+                    dispatch({ type: 'SET_SESSIONS', payload: data });
+                }
             } catch (error) {
                 setError(error.message);
             }
@@ -103,6 +110,7 @@ const AvailableSessions = () => {
         <div>
             <h2>Available Game Sessions</h2>
             <div className="container-sessions">
+                {message && <p>{message}</p>}
                 {error && <p>{error}</p>}
                 <div className="idividual-containers">
                     {sessions && sessions.map((session) => (
