@@ -84,7 +84,7 @@ const Register = () => {
                             onChange={(e) => setRole(e.target.value)}
                             placeholder="Select a Role">
                             <option value="" disabled>Select a role</option>
-                            <option value="user">User</option>
+                            {/* <option value="user">User</option> */}
                             <option value="admin">Moderator</option>
                         </select>
 
