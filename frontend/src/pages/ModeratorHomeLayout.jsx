@@ -45,6 +45,10 @@ const Home = () => {
     navigate('/additions/2')
   }
 
+  const goToRegister = () => {
+    navigate('/register')
+  }
+
 
   return (
     <div className='container-layout'>
@@ -53,6 +57,8 @@ const Home = () => {
         <button onClick={createGameSession}>Create New Session  <i className="bi bi-patch-plus-fill"></i></button>
         <button onClick={addNewCompetencies}>Create New Competencies  <i className="bi bi-card-checklist"></i></button>
         <button onClick={createNewProfile}>Create New Profiles  <i className="bi bi-person-lines-fill"></i></button>
+        <button onClick={goToRegister}>Create New Admin Account  <i class="bi bi-person-add"></i></button>
+
 
 
         {sessionCode && (
