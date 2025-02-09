@@ -29,7 +29,6 @@ const createUser = async (req, res) => {
         emptyFields.push("password");
     }
 
-
     if (emptyFields.length > 0) {
         return res
             .status(400)
@@ -39,7 +38,7 @@ const createUser = async (req, res) => {
     try {
 
         const hashedPassword = await bcrypt.hash(password, saltRounds)
-        const user = await User.create({ name, username, email, role, nationality, password: hashedPassword })
+        const user = await User.create({ name, username, email, role, password: hashedPassword })
         res.status(200).json(user)
     } catch (error) {
         res.status(400).json({ error: error.message })

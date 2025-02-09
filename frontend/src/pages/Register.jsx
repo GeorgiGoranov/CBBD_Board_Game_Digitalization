@@ -8,7 +8,6 @@ const Register = () => {
     const [username, setUsername] = useState('')
     const [email, setEmail] = useState('')
     const [role, setRole] = useState('')
-    const [nationality, setNationality] = useState('')
     const [password, setPassword] = useState('')
     const [error, setError] = useState(null)
     
