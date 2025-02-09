@@ -22,7 +22,7 @@ const Register = () => {
         setRegistrySuccess(false); // Reset login success on new submission
         setError(null); // Reset error state on new submission
 
-        const user = { name, username, email, role,nationality, password }
+        const user = { name, username, email, role, password }
 
         const response = await fetch(`${apiUrl}/api/routes/register`, {
             method: 'POST',
@@ -42,7 +42,6 @@ const Register = () => {
             setUsername('')
             setEmail('')
             setRole('')
-            setNationality('')
             setPassword('')
             setRegistrySuccess(true);
             setError(null)

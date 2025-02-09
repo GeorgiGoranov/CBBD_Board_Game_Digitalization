@@ -9,7 +9,7 @@ const saltRounds = 10;
 
 //create user
 const createUser = async (req, res) => {
-    const { name, username, email, role, nationality, password } = req.body
+    const { name, username, email, role, password } = req.body
 
     let emptyFields = [];
 
@@ -24,9 +24,6 @@ const createUser = async (req, res) => {
     }
     if (!role) {
         emptyFields.push("role");
-    }
-    if (!nationality) {
-        emptyFields.push("nationality");
     }
     if (!password) {
         emptyFields.push("password");
