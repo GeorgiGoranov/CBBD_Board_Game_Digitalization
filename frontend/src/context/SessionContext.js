@@ -35,7 +35,7 @@ export const sessionReducer = (state, action) => {
 export const SessionContextProvider = ({ children }) => {
 
     const [state, dispatch] = useReducer(sessionReducer, {
-        session: null
+        session: [] // Initialize sessions as an empty array
     })
 
 
