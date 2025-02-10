@@ -71,7 +71,7 @@ const Results = () => {
     const handleExportCsv = () => {
         // 1) Flatten data for Rounds 1 & 2
         const round12Data = flattenRounds1And2(firstRoundDropZones, secondRoundDropZones);
-        console.log(round12Data)
+       
         const csvRound12 = convertArrayOfObjectsToCSV(round12Data);
 
         // 2) Flatten data for Round 3

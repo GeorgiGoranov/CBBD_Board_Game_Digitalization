@@ -19,9 +19,7 @@ const ParticipantRoomLayout = ({ roomId, socket, playerID, group, currentRound,o
             });
             setIsReady(true);
             onLockIn(true); // Notify the parent component
-        } else {
-            console.log("Already marked as ready.");
-        }
+        } 
     };
 
     return (

@@ -49,7 +49,6 @@ const Login = () => {
         setPassword('');
         setError(null);
         setLoginSuccess(true);
-        console.log('User logged in', data);
 
         await login()
         // Navigate based on the role of the logged-in user

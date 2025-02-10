@@ -151,9 +151,7 @@ const RoundOne = ({ roomId, playerID, socket, group }) => {
                     groups
                 }),
             });
-            if (response.ok) {
-                console.log('State saved successfully');
-            } else {
+            if (!response.ok) {
                 console.error('Failed to save state');
             }
         } catch (error) {
@@ -170,7 +168,6 @@ const RoundOne = ({ roomId, playerID, socket, group }) => {
                 });
                 if (response.ok) {
                     const data = await response.json();
-                    console.log(data)
                     // Convert group to a number if it's a string
                     const groupNumber = Number(group);
                     const currentGroup = data.groups?.find(g => g.groupNumber === groupNumber);
@@ -185,7 +182,6 @@ const RoundOne = ({ roomId, playerID, socket, group }) => {
                             // Update the state to store the profile data exactly as received from the backend
                             setReceivedProfile(lastMessage);
                         }
-                        console.log('Room state loaded successfully');
                     } else {
                         console.log('No matching group found in room state');
                     }
@@ -221,8 +217,6 @@ const RoundOne = ({ roomId, playerID, socket, group }) => {
         // Listen for group messages
         socket.on('receiveGroupMessage', ({ message }) => {
 
-            // Only the targeted group members will get this
-            console.log("Group message received:", message);
             // You can display it in the UI as needed
             setSocketMessage(`${message}`);
         });
@@ -231,7 +225,6 @@ const RoundOne = ({ roomId, playerID, socket, group }) => {
             setSocketMessageFeedback(message); // Display the received message
         });
         socket.on('receiveProfileData', (data) => {
-            console.log('Received profile data:', data);
             setReceivedProfile(data);  // Store the received profile data
         });
 

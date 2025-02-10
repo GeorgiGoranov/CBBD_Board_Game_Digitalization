@@ -44,7 +44,7 @@ const Register = () => {
             setPassword('')
             setRegistrySuccess(true);
             setError(null)
-            console.log('new user added', json)
+           
         }
     }
 

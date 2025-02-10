@@ -35,7 +35,7 @@ const GroupDiscussion = ({ roomId, apiUrl, availableGroups, socket, playerID, ro
                             (g) => String(g.groupNumber).trim() === String(currentGroupNumber).trim()
                         );
 
-                        console.log(matchingGroup)
+                   
                         if (matchingGroup) {
                             setGroupData(matchingGroup);
                             setDropZones(matchingGroup.dropZones || { priority1: [], priority2: [], priority3: [], priority4: [] });
@@ -47,7 +47,7 @@ const GroupDiscussion = ({ roomId, apiUrl, availableGroups, socket, playerID, ro
                                 setReceivedProfile(lastMessage);
                             }
                         } else {
-                            console.log('No matching group found.');
+                          
                             setGroupData(null);
                             setDropZones({ priority1: [], priority2: [], priority3: [], priority4: [] });
                         }
@@ -74,7 +74,7 @@ const GroupDiscussion = ({ roomId, apiUrl, availableGroups, socket, playerID, ro
                             (g) => String(g.groupNumber).trim() === String(currentGroupNumber).trim()
                         );
 
-                        console.log(matchingGroup)
+                      
                         if (matchingGroup) {
                             setGroupData(matchingGroup);
                             setDropZones(matchingGroup.dropZones || { priority1: [], priority2: [], priority3: [], priority4: [] });
@@ -86,7 +86,6 @@ const GroupDiscussion = ({ roomId, apiUrl, availableGroups, socket, playerID, ro
                                 setReceivedProfile(lastMessage);
                             }
                         } else {
-                            console.log('No matching group found.');
                             setGroupData(null);
                             setDropZones({ priority1: [], priority2: [], priority3: [], priority4: [] });
                         }
@@ -115,7 +114,7 @@ const GroupDiscussion = ({ roomId, apiUrl, availableGroups, socket, playerID, ro
     useEffect(() => {
         if (socket) {
             const handleNextGroupUnderDiscussion = (newGroupNumber) => {
-                console.log('Received new group number via socket:', newGroupNumber);
+             
                 const newIndex = availableGroups.findIndex(
                     (g) => String(g).trim() === String(newGroupNumber).trim()
                 );

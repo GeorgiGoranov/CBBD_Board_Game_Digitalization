@@ -23,7 +23,6 @@ const ModeratorRoomLayout = ({ roomId }) => {
     useEffect(() => {
         socket.on('roundChanged', ({ roundNumber }) => {
             setCurrentRound(roundNumber);
-            console.log(`Moderator received: current round is now ${roundNumber}`);
         });
 
         return () => {
@@ -111,7 +110,6 @@ const ModeratorRoomLayout = ({ roomId }) => {
 
             if (response.ok) {
                 // Update state with the new session data
-                console.log("Session Status Changes Successfully")
                 dispatch({
                     type: 'UPDATE_SESSION',
                     payload: updatedSession

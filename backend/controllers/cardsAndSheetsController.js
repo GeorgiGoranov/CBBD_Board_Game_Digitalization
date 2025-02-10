@@ -35,7 +35,6 @@ const getOneCardPerCategory = (CardModel, RoundModel) => {
             // 1) Grab roomId from query (or from req.body if you prefer)
             const { roomId } = req.params;
 
-            console.log(roomId)
             if (!roomId) {
                 return res.status(400).json({ message: 'roomId is required' });
             }

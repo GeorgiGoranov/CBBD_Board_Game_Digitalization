@@ -144,7 +144,7 @@ const Room = () => {
 
         socket.on('roundChanged', ({ roundNumber }) => {
             setCurrentRound(roundNumber);
-            console.log(`Round changed to ${roundNumber}`);
+           
             // Reset readiness for all groups whenever a round changes:
             setGroupReadiness({});
             setIsOverlayVisible(false);
@@ -213,7 +213,6 @@ const Room = () => {
 
     const handleProfileSelect = (profile) => {
         setSelectedProfile(profile);
-        console.log(profile)
     };
 
     // Send the selected profile to the selected groups

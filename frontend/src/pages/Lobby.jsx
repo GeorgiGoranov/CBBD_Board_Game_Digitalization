@@ -184,9 +184,7 @@ const Lobby = () => {
                         }),
                     });
 
-                    if (updateResponse.ok) {
-                        console.log(`Token updated successfully for ${playerID}`);
-                    } else {
+                    if (!updateResponse.ok) {
                         const errorData = await updateResponse.json();
                         console.error(`Error updating token for ${playerID}:`, errorData.message);
                     }
@@ -209,7 +207,6 @@ const Lobby = () => {
             if (response.ok) {
                 const data = await response.json();
                 setCategories(data); // Update categories state
-                console.log(data)
             } else {
                 console.error('Error fetching categories');
             }
@@ -279,8 +276,6 @@ const Lobby = () => {
                 });
                 if (updateResponse.ok) {
                     const data = await updateResponse.json();
-
-                    console.log('Token updated successfully:', data);
                 } else {
                     const errorData = await updateResponse.json();
                     console.error('Error updating token:', errorData.message);
@@ -362,8 +357,6 @@ const Lobby = () => {
                     console.error('Failed to create chat room.' + errorData.message);
                     return;
                 }
-                console.log('Chat room created successfully!');
-                console.log('Groups and round data saved successfully!');
                 socket.emit('navigateToRoom', { roomId });
             } else {
                 const errorData = await response.json();

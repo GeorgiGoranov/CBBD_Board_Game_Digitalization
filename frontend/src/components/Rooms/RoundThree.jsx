@@ -53,9 +53,7 @@ const RoundThree = ({ roomId, playerID, socket, role, nationality }) => {
             if (!response.ok) {
                 const errorData = await response.json();
                 console.error('Error saving state:', errorData.message);
-            } else {
-                console.log('State saved successfully');
-            }
+            } 
         } catch (error) {
             console.error('Error saving state:', error);
         }

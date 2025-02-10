@@ -60,7 +60,7 @@ const AvailableSessions = () => {
 
     // Handle Play Button Click - navigate to the session room
     const handleDeleteClick = async (sessionCode) => {
-        console.log(sessionCode)
+       
         try {
             const response = await fetch(`${apiUrl}/api/routes/delete-session/${sessionCode}`, {
                 method: 'DELETE',

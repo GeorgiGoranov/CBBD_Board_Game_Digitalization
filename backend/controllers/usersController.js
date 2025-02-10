@@ -373,9 +373,6 @@ const fetchPlayers = async (req, res) => {
 const deleteSession = async (req, res) => {
     const { code } = req.params;
 
-    // Log the code received to confirm it's being passed correctly
-    console.log('Session code received:', code);
-
     if (!code) {
         return res.status(400).json({ error: 'Session code is missing' });
     }
@@ -385,11 +382,8 @@ const deleteSession = async (req, res) => {
         const session = await SessionModel.findOneAndDelete({ code: code });
 
         if (!session) {
-            console.log('Session not found');
             return res.status(404).json({ error: 'Session not found' });
         }
-
-        console.log('Session deleted:', session);
         res.status(200).json({ message: 'Session deleted successfully' });
     } catch (error) {
         console.error('Error during session deletion:', error);
